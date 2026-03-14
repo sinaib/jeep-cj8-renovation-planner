@@ -6,7 +6,7 @@ import type {
   Task, Phase, Gap, AgentMessage, TaskStatus, GapSeverity,
   Decision, CarFact, ResearchNote, TaskDependency, FileMeta,
 } from '../types';
-import { scheduleBackgroundAnalysis } from '../ai/agentBackground';
+import { scheduleBackgroundAnalysis, triggerTaskCompletedAnalysis } from '../ai/agentBackground';
 import { logChange } from './changelog';
 
 // ─── Dual-write storage: localStorage (instant) + disk file (persistent) ─────
@@ -105,6 +105,7 @@ interface RenovationActions {
   addAgentMessage: (message: Omit<AgentMessage, 'id' | 'timestamp'>) => void;
   setAgentStreaming: (streaming: boolean) => void;
   updateLastAgentMessage: (content: string, toolCalls?: AgentMessage['toolCalls']) => void;
+  compressAgentHistory: (summaryContent: string, idsToReplace: string[]) => void;
 
   // UI
   setActiveTask: (taskId: string | null) => void;
@@ -230,6 +231,10 @@ export const useRenovationStore = create<RenovationStore>()(
           ...(actualCostILS !== undefined ? { actualCostILS } : {}),
         });
         scheduleBackgroundAnalysis();
+        // Proactive: check what just got unblocked by this completion
+        if (task) {
+          triggerTaskCompletedAnalysis(taskId, task.name);
+        }
       },
 
       setTaskStatus: (taskId, status) => {
@@ -456,6 +461,19 @@ export const useRenovationStore = create<RenovationStore>()(
           history[history.length - 1] = { ...history[history.length - 1], content, ...(toolCalls ? { toolCalls } : {}) };
           return { agentHistory: history };
         }),
+
+      compressAgentHistory: (summaryContent, idsToReplace) =>
+        set((s) => ({
+          agentHistory: [
+            {
+              id: nanoid(8),
+              role: 'assistant' as const,
+              content: summaryContent,
+              timestamp: new Date().toISOString(),
+            },
+            ...s.agentHistory.filter((m) => !idsToReplace.includes(m.id)),
+          ],
+        })),
 
       setActiveTask: (taskId) => set({ activeTaskId: taskId }),
       setActivePhase: (phaseId) => set({ activePhaseId: phaseId }),

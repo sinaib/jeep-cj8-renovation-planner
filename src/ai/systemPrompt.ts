@@ -1,62 +1,27 @@
-import { useRenovationStore } from '../store/useRenovationStore';
+/**
+ * systemPrompt.ts
+ *
+ * Splits the system prompt into two parts:
+ *
+ *  1. STATIC_SYSTEM_PROMPT — CJ8 platform knowledge, approach rules,
+ *     communication style. Never changes between requests. Marked with
+ *     cache_control in agentClient.ts → charged at ~10% cost after the
+ *     first request in a session.
+ *
+ *  2. buildDynamicContext() (from contextSelector.ts) — live plan state,
+ *     car profile, decisions. Rebuilt each request, never cached.
+ *
+ * buildSystemPrompt() is kept for backward compatibility (used by
+ * background analysis which sends the full context in one string).
+ */
 
-export function buildSystemPrompt(): string {
-  const store = useRenovationStore.getState();
-  const { phases, tasks, gaps, appState, decisions, carFacts, researchNotes, taskDependencies } = store;
+import { buildDynamicContext } from './contextSelector';
 
-  // ── Car profile ──────────────────────────────────────────────────────────
-  const carProfile = carFacts.length === 0
-    ? '  No facts recorded yet — build this up through conversation.'
-    : carFacts
-        .sort((a, b) => a.key.localeCompare(b.key))
-        .map((f) => `  ${f.key}: ${f.value} [confirmed by: ${f.confirmedBy}]`)
-        .join('\n');
+// ─── Static (cacheable) ────────────────────────────────────────────────────────
+// Everything here is pure knowledge / instructions — no live state.
+// agentClient.ts marks this with cache_control: { type: 'ephemeral' }.
 
-  // ── Decisions log ─────────────────────────────────────────────────────────
-  const decisionsLog = decisions.length === 0
-    ? '  No decisions recorded yet.'
-    : decisions
-        .map((d) => `  [${d.category.toUpperCase()}] ${d.summary}${d.rationale ? ` — ${d.rationale}` : ''} (${d.madeBy})`)
-        .join('\n');
-
-  // ── Research notes ────────────────────────────────────────────────────────
-  const researchLog = researchNotes.length === 0
-    ? '  No research notes yet.'
-    : researchNotes
-        .slice(-15) // Keep last 15 to avoid token bloat
-        .map((n) => `  [${n.topic}] ${n.finding}${n.source ? ` (${n.source})` : ''}`)
-        .join('\n');
-
-  // ── Full plan ─────────────────────────────────────────────────────────────
-  const planSummary = phases.length === 0
-    ? '  No phases defined yet.'
-    : phases
-        .sort((a, b) => a.order - b.order)
-        .map((p) => {
-          const phaseTasks = p.taskIds.map((id) => tasks[id]).filter(Boolean);
-          const done = phaseTasks.filter((t) => t.status === 'done').length;
-          const taskLines = phaseTasks
-            .map((t) => {
-              const deps = taskDependencies
-                .filter((d) => d.taskId === t.id)
-                .map((d) => tasks[d.dependsOnTaskId]?.name ?? d.dependsOnTaskId);
-              const depNote = deps.length > 0 ? ` ← needs: [${deps.join(', ')}]` : '';
-              const costNote = t.estimatedCostILS ? ` | ₪${t.estimatedCostILS}` : '';
-              const notePreview = t.notes ? ` | note: ${t.notes.split('\n').pop()?.slice(0, 60)}` : '';
-              return `    [${t.id}] [${t.status.toUpperCase()}] ${t.name} (${t.priority})${costNote}${depNote}${notePreview}`;
-            })
-            .join('\n');
-          return `  Phase ${p.order} [${p.id}]: ${p.name} — ${p.subtitle} (${done}/${phaseTasks.length} done)\n${taskLines || '    (no tasks yet)'}`;
-        })
-        .join('\n\n');
-
-  // ── Active gaps ───────────────────────────────────────────────────────────
-  const activeGaps = gaps.filter((g) => !g.dismissed);
-  const gapLines = activeGaps.length === 0
-    ? '  None'
-    : activeGaps.map((g) => `  [${g.severity.toUpperCase()}] ${g.description}`).join('\n');
-
-  return `You are an expert automotive restoration advisor specializing in classic Jeep vehicles. You are working with the owner of a specific vehicle — a Jeep CJ8 Scrambler 1989 — to build and maintain a comprehensive, intelligent restoration plan.
+export const STATIC_SYSTEM_PROMPT = `You are an expert automotive restoration advisor specializing in classic Jeep vehicles. You are working with the owner of a specific vehicle — a Jeep CJ8 Scrambler 1989 — to build and maintain a comprehensive, intelligent restoration plan.
 
 ## Your approach
 
@@ -72,12 +37,14 @@ You start from first principles. You do not follow rigid templates or checklists
 ## What you know about this platform
 
 The 1989 Jeep CJ8 Scrambler is a rare pickup-body variant of the CJ series. Key technical context:
-- Most common engine: AMC 258 inline-6 (4.2L), occasionally AMC 304 V8
+- Engine: AMC 150 2.5L Iron Duke 4-cylinder (base) or AMC 258 inline-6 (4.2L)
 - Transmissions: T4 or T5 4-speed manual; Dana 300 transfer case
-- Axles: Dana 30 front, AMC Model 20 rear (weak point — known for rear axle shaft breakage)
-- Frame: ladder-type body-on-frame, prone to rust at body mount locations
-- Electrical: all 12V positive ground converted by this era
-- Common 1989-era weak points: rear main seal, oil pan gasket, head gasket on high-mileage 258s, Carter YF carburetor, brake master cylinder, drum brake components, steering box wear, AMC 20 rear axle shafts, wiring harness brittleness, body mount rust-through
+- Axles: Dana 30 front, AMC Model 20 rear (weak point — known for rear axle shaft breakage under load)
+- Frame: ladder-type body-on-frame, prone to rust at body mount locations and rear crossmember
+- Electrical: 12V, positive-ground converted by this era; factory harness notorious for brittleness after 30+ years
+- Common weak points: rear main seal, oil pan gasket, head gasket on high-mileage engines, Carter YF carburetor (lean/rich issues), brake master cylinder, drum brake wheel cylinders, steering box wear, AMC 20 rear axle shafts, wiring harness brittleness, body mount rust-through, leaf spring bushings
+- CJ8 Scrambler-specific: longer wheelbase (103.5" vs 93.4" CJ7), bed adds weight behind rear axle (affects handling and suspension tuning), harder to find body-specific parts than CJ7
+- Israeli market note: most parts ship from the US (expensive, slow). Local suppliers for generic fasteners, welding consumables, paint. Euro-market Jeep parts occasionally available. Budget 30–40% premium vs US pricing for imported parts.
 
 This is background knowledge. The actual plan must reflect what THIS car needs, based on what the user tells you and what you research.
 
@@ -122,42 +89,13 @@ One rule: don't turn every response into a project review. Only surface a signal
 - When you add tasks, briefly explain why (use agentRationale)
 - Costs in Israeli Shekels (₪) — account for Israeli market pricing (import costs, local supplier availability)
 - Keep responses concise unless detail is genuinely needed
-- Use the tools silently — don't narrate every tool call, just do the work and summarize what you did
+- Use the tools silently — don't narrate every tool call, just do the work and summarize what you did`;
 
-## Current application state: ${appState.toUpperCase()}
+// ─── Backward-compatible full prompt ──────────────────────────────────────────
+// Used by background analysis (agentBackground.ts) which sends a single
+// string prompt. For main agent calls, use STATIC_SYSTEM_PROMPT +
+// buildDynamicContext() separately so caching works.
 
----
-
-## CAR PROFILE (what we know so far)
-${carProfile}
-
----
-
-## DECISIONS LOG
-${decisionsLog}
-
----
-
-## RESEARCH NOTES (recent)
-${researchLog}
-
----
-
-## CURRENT RENOVATION PLAN
-${planSummary}
-
----
-
-## ACTIVE GAP FLAGS
-${gapLines}
-
----
-
-## PHASE & TASK IDs (for tool calls)
-Phases:
-${phases.map((p) => `  ${p.id}: "${p.name}" (order ${p.order})`).join('\n') || '  (none yet)'}
-
-Tasks:
-${Object.values(tasks).slice(0, 40).map((t) => `  ${t.id}: "${t.name}" [${t.status}] in phase ${t.phaseId}`).join('\n') || '  (none yet)'}
-${Object.values(tasks).length > 40 ? `  ... and ${Object.values(tasks).length - 40} more` : ''}`;
+export function buildSystemPrompt(query = '', opts?: { taskId?: string; phaseId?: string }): string {
+  return `${STATIC_SYSTEM_PROMPT}\n\n---\n\n${buildDynamicContext(query, opts)}`;
 }

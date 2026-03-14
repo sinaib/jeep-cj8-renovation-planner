@@ -177,7 +177,10 @@ export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarPro
         updateLastAgentMessage(`⚠️ ${parseApiError(error)}`);
         setToolActivity([]);
       },
-    }, imageCopy ?? undefined);
+    }, imageCopy ?? undefined, {
+      taskId: currentTask?.id,
+      phaseId: currentPhase?.id,
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

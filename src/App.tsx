@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useRenovationStore } from './store/useRenovationStore';
 import { TopBar } from './components/layout/TopBar';
 import { JourneyStrip } from './components/layout/JourneyStrip';
@@ -8,6 +8,7 @@ import { AgentBar } from './components/agent/AgentBar';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { OnboardingScreen } from './components/onboarding/OnboardingScreen';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
+import { maybeRunWeeklyCheck } from './ai/agentBackground';
 import type { Task } from './types';
 import './styles/globals.css';
 
@@ -79,6 +80,13 @@ function AppShell() {
 
 export default function App() {
   const appState = useRenovationStore((s) => s.appState);
+
+  // Run weekly health check on load (at most once per week, silent)
+  useEffect(() => {
+    if (appState !== 'onboarding') {
+      maybeRunWeeklyCheck();
+    }
+  }, [appState]);
 
   return appState === 'onboarding' ? (
     <OnboardingScreen />

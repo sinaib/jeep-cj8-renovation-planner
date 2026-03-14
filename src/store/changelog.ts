@@ -8,7 +8,10 @@ export type ChangelogEventType =
   | 'decision'
   | 'agent_turn'
   | 'snapshot'
-  | 'agent_bulk_change';
+  | 'agent_bulk_change'
+  | 'history_compressed'   // conversation history compressed to save tokens
+  | 'fast_query'           // simple query routed to fast (haiku) tier
+  | 'proactive_analysis';  // background proactive analysis fired
 
 export interface ChangelogEntry {
   t: string;                       // ISO timestamp

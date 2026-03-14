@@ -80,6 +80,8 @@ export function AgentDrawer({ open, onClose }: AgentDrawerProps) {
         updateLastAgentMessage(`⚠️ ${parseApiError(error)}`);
         setToolActivity([]);
       },
+    }, undefined, {
+      taskId: appState !== 'onboarding' ? undefined : undefined, // onboarding: no task context
     });
   };
 
