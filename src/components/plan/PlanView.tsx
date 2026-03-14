@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRenovationStore } from '../../store/useRenovationStore';
+import { CostDashboard } from '../dashboard/CostDashboard';
 import type { TaskStatus } from '../../types';
 
 const STATUS_DOT: Record<TaskStatus, { color: string; symbol: string }> = {
@@ -22,7 +23,7 @@ const DECISION_CATEGORY_COLOR: Record<string, string> = {
   other: 'var(--text-dim)',
 };
 
-type Tab = 'plan' | 'decisions' | 'research' | 'profile';
+type Tab = 'plan' | 'costs' | 'decisions' | 'research' | 'profile';
 
 export function PlanView() {
   const [activeTab, setActiveTab] = useState<Tab>('plan');
@@ -46,6 +47,7 @@ export function PlanView() {
 
   const tabs: { id: Tab; label: string; count?: number }[] = [
     { id: 'plan', label: 'Plan', count: totalTasks },
+    { id: 'costs', label: '₪ Costs' },
     { id: 'decisions', label: 'Decisions', count: decisions.length },
     { id: 'research', label: 'Research', count: researchNotes.length },
     { id: 'profile', label: 'Car Profile', count: carFacts.length },
@@ -135,6 +137,9 @@ export function PlanView() {
           </button>
         ))}
       </div>
+
+      {/* ── Costs tab ────────────────────────────────────────────────────── */}
+      {activeTab === 'costs' && <CostDashboard />}
 
       {/* ── Plan tab ─────────────────────────────────────────────────────── */}
       {activeTab === 'plan' && (

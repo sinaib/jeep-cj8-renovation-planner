@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.jeepplanner.dev</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/npm</string>
+        <string>run</string>
+        <string>dev</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/sinaibareket/Desktop/Projects/JeepRenovationPlanner/jeep-planner</string>
+
+    <!-- Start automatically when you log in -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Restart automatically if it crashes -->
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Log files — check these if something goes wrong -->
+    <key>StandardOutPath</key>
+    <string>/tmp/jeep-planner.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/jeep-planner-error.log</string>
+
+    <!-- Give it time to start up before marking as failed -->
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+</dict>
+</plist>

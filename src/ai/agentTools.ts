@@ -259,39 +259,19 @@ export async function executeToolCall(
   switch (toolName) {
 
     case 'search_web': {
+      // Routes through the Vite server-side proxy (/api/search) to bypass
+      // browser CORS restrictions on the DuckDuckGo API. No API key required.
       const query = toolInput.query as string;
       try {
         const response = await fetch(
-          `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`,
-          { signal: AbortSignal.timeout(8000) }
+          `/api/search?q=${encodeURIComponent(query)}`,
+          { signal: AbortSignal.timeout(12000) }
         );
-        const data = await response.json();
-        const parts: string[] = [];
-
-        if (data.AbstractText) {
-          parts.push(`Summary: ${data.AbstractText}`);
-          if (data.AbstractSource) parts[0] += ` (${data.AbstractSource})`;
-        }
-
-        if (data.RelatedTopics?.length > 0) {
-          const topics = (data.RelatedTopics as Array<{ Text?: string; Topics?: Array<{ Text?: string }> }>)
-            .flatMap((t) => (t.Topics ? t.Topics : [t]))
-            .filter((t) => t.Text)
-            .slice(0, 6)
-            .map((t) => `• ${t.Text}`)
-            .join('\n');
-          if (topics) parts.push(`Related findings:\n${topics}`);
-        }
-
-        if (data.Answer) parts.push(`Direct answer: ${data.Answer}`);
-
-        const result = parts.length > 0
-          ? `Web search: "${query}"\n\n${parts.join('\n\n')}`
-          : `No structured results found for "${query}". Drawing on built-in knowledge.`;
-
-        return result;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json() as { result: string };
+        return data.result || `No results found for "${query}".`;
       } catch {
-        return `Search for "${query}" unavailable — drawing on built-in knowledge about Jeep restoration.`;
+        return `Search unavailable for "${query}" — drawing on built-in CJ8 knowledge.`;
       }
     }
 

@@ -46,6 +46,34 @@ The 1989 Jeep CJ8 Scrambler is a rare pickup-body variant of the CJ series. Key 
 - CJ8 Scrambler-specific: longer wheelbase (103.5" vs 93.4" CJ7), bed adds weight behind rear axle (affects handling and suspension tuning), harder to find body-specific parts than CJ7
 - Israeli market note: most parts ship from the US (expensive, slow). Local suppliers for generic fasteners, welding consumables, paint. Euro-market Jeep parts occasionally available. Budget 30–40% premium vs US pricing for imported parts.
 
+## Parts Sourcing — Israeli & International Suppliers
+
+### Israel-based (use these first — no import, no customs)
+- **JEEPOLOG** (jeepolog.co.il) — The primary CJ8 specialist in Israel. Sells CJ/YJ/TJ parts, has deep CJ8 expertise (produced the Hebrew manual). Call first for anything CJ8-specific.
+- **4x4 Israel** — General off-road parts, accessories, lift kits, suspension. Search "4x4 ישראל" for current contact.
+- **Auto parts chains (רשתות חלפים)**: Shlomo Sixt Auto Parts, SuperPharm Auto (SIXT), Auto Hangar (אוטו האנגר) — for generic consumables: oil filters, belts, plugs, coolant, brake fluid.
+- **Welding & metal supply**: Local hardware stores (Home Center, ACE) carry welding wire, grinding discs, epoxy, JB Weld. For structural steel and angle iron: metal suppliers in industrial zones (Petah Tikva, Rishon LeZion industrial areas have multiple).
+- **Rubber & seals**: Bituach Techni or industrial rubber suppliers — for hose material, O-rings, gasket sheet, inner tube rubber.
+- **Bearings**: NSK, SKF, FAG bearings available locally through bearing supply houses. Bring the old bearing to match.
+
+### US suppliers (ship to Israel — budget +30–40% for shipping + customs + VAT)
+Use these for CJ8-specific body parts, drivetrain rebuilds, and specialty items not available locally.
+- **Quadratec** (quadratec.com) — Large Jeep specialist. Good stock of CJ8-compatible parts. Ships internationally. Free US shipping over threshold.
+- **Morris 4x4 Center** (morris4x4center.com) — CJ-era specialist. Good for frame parts, body panels, trim.
+- **Omix-ADA** (omix-ada.com) — OEM-quality replacement parts for CJ series. The standard for restoration-quality parts.
+- **RubiTrux** (rubitrux.com) — CJ8 Scrambler specialist, harder-to-find Scrambler-specific bed and body parts.
+- **Crown Automotive** (crownautomotive.net) — AMC engine components, gasket sets, seals, suspension parts. Good for engine and drivetrain specifics.
+- **Rock Auto** (rockauto.com) — Cheapest US prices on generic parts (bearings, seals, brake hardware, filters). Ships internationally. No phone support — online only.
+- **Novak Conversions** (novak-adapt.com) — Jeep drivetrain adapters, engine swap kits, transfer case parts.
+- **Alloy USA / Superior Axle** — AMC 20 one-piece axle shaft conversion kits (the critical upgrade for the weak stock axle shafts).
+
+### Ordering strategy for Israeli users
+1. Check JEEPOLOG first for availability and local pricing.
+2. For US orders: consolidate into one shipment via a freight forwarder (חברת משלוחים) or use direct shipping — customs clearance adds 5-10 business days.
+3. Parts over ~$75 USD value trigger Israeli customs. Budget +17% VAT + import duty (varies by category, typically 0–12% for auto parts).
+4. For urgent/small parts: Quadratec and RockAuto both ship FedEx/UPS international — typical delivery 7-14 days.
+5. Euro-market alternative: German suppliers (e.g., Onlineshop4x4 in Germany) sometimes have CJ-compatible parts at lower EU prices with faster EU shipping — but CJ8 availability is thin in Europe.
+
 This is background knowledge. The actual plan must reflect what THIS car needs, based on what the user tells you and what you research.
 
 ## Technical Manual Knowledge — Embedded Reference
