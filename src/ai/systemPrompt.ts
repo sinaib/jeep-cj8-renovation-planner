@@ -48,6 +48,95 @@ The 1989 Jeep CJ8 Scrambler is a rare pickup-body variant of the CJ series. Key 
 
 This is background knowledge. The actual plan must reflect what THIS car needs, based on what the user tells you and what you research.
 
+## Technical Manual Knowledge — Embedded Reference
+
+### Battlefield Repairs Manual (TM 9-2320-356-BD)
+Source: US Army field repair guide for tactical wheeled vehicles. Written for the same era and mechanicals as the CJ8. These procedures apply directly to restoration work — swap "combat emergency" for "waiting on parts" and the wisdom is identical.
+
+**ENGINE REPAIRS**
+Cracked or holed intake manifold castings can be sealed with auto body epoxy (JB Weld-type), gasket sealer, or aluminum patch + epoxy on unpressurized portions. Punched oil pan field repair without removal: clean the hole, roughen edges, lay fine wire mesh (cut 1" larger than hole) over thin epoxy coat, add second epoxy layer, cover with aluminum patch coated in more epoxy. Allow 2-3 hours full cure before adding oil. Damaged exhaust manifolds: cover breach with sheet metal wrapped with exhaust tape/fiberglass as gasket layer, secure with hose clamps; welding is permanent fix. Cracked/leaking exhaust ahead of any O2 sensor causes rich running on the AMC 258 carbureted setup.
+
+**Oil system emergencies:** Zero oil pressure with a failed pump — overfilling by one quart creates marginal splash lubrication at low RPM for ~5 minutes. Oil substitutes (descending preference): ATF, hydraulic fluid, transmission fluid, cooking oil — drain and flush immediately after. Diesel fuel can thin oil at max 3:1 (diesel:oil) ratio.
+
+Exhaust smoke diagnosis: blue = oil burning (rings/valve seals), black = rich/clogged air intake, white/steam = coolant in combustion (head gasket). Power loss with high oil consumption = rings. Sudden power loss at highway speed = check fuel delivery first (filter, pump, float level), then ignition.
+
+**FUEL SYSTEM**
+The Carter YF/BBD carburetor is a low-pressure gravity-assist/mechanical-pump system — easy to field repair. Metal fuel tank leak: drain below the leak, clean and roughen, patch with riveted sheet metal + fuel-resistant sealer, OR thread a bolt through two large washers with a rubber hose section between — insert into hole, tighten to compress hose radially and seal. This plug method works on any hole small enough to accept the hose section.
+
+Rubber fuel line failure: cut out the damaged section, bridge with metal tubing (any rigid tube of correct OD inserted into hose ends), wire-clamp tightly. Metal fuel line cracks: coat with sealant, wrap with fuel-resistant rubber material, wire clamp. Leaking flared fittings that won't seal by tightening: wrap Teflon tape or string around the flared end, coat with fuel-resistant sealant, reinstall nut. Swollen O-rings at fuel connections: let them air-dry until they shrink. Cut O-rings: cut a larger O-ring to length and glue ends. Clogged fuel filter: blow compressed air from inside outward to clean paper elements.
+
+Carter YF known issues: sticky float (floods engine), worn needle/seat (raw fuel smell, fuel in oil), accelerator pump diaphragm failure (hesitation off idle), choke thermostat coil failure (cold start issues). The 258 runs best at 3.5–4.5 psi fuel pressure — mechanical pump failure is often a ruptured diaphragm, which can be temporarily patched with gasket material and sealer.
+
+**COOLING SYSTEM**
+Thermostat stuck closed (most common non-leak overheating cause): remove it entirely and run without. Engine runs slightly cooler, adequate for warm climates. Collapsed lower radiator hose (suction side) causes overheating ONLY at high RPM, not at idle — diagnostic signature. Fix: insert a tin can with ends removed, stiff wire coil, or coat hanger spiral inside the hose to maintain shape.
+
+Radiator small leaks: stop-leak compound, or improvise with ground black pepper, raw egg (protein coagulates on leak), or oatmeal — run with radiator cap loose to prevent pressure buildup. Punctured radiator core tube: clip fins 1–2" each side, pinch tube flat, fold the pinched end over twice for a double crimp, epoxy or solder the ends.
+
+Hose clamp substitute: wrap wire once around hose, form a loop, pull free end through the loop, crimp back twice — won't slip if done correctly. Hose improvisation: garden hose, heater hose, or inner tube rubber. Insert a pipe section inside overlapping ends, clamp both sides. Coolant substitutes (descending preference): correct 50/50 antifreeze, water alone, ATF, hydraulic fluid — petroleum-based fluids attack rubber hoses and reduce heat transfer.
+
+AMC 258 cooling specifics: the factory thermostat is 195°F — a 180°F replacement improves heat management in hot climates. The AMC 258 is prone to overheating if the radiator is marginal — even a 30% blockage of fins causes problems in stop-and-go. The water pump impeller on the AMC 258 can spin freely on the shaft if the pressed fit fails — engine overheats immediately at load, idles fine.
+
+**ELECTRICAL SYSTEM**
+The CJ8 runs 12V negative-ground DC. Never reverse polarity — destroys alternator diodes and any solid-state component instantly. Fuse substitution: ballpoint pen spring, aluminum foil strip, or a length of solder (solder provides limited protection — melts before wiring burns). Always find the short before bypassing protection.
+
+Broken wires: strip ends, twist together tightly, solder with rosin-core solder for lowest resistance. Without a soldering iron: twist very tightly, secure with hose clamp or safety wire, insulate heavily. Heavy battery cable failure: fabricate from ~75 strands of communication wire twisted together — short-term only. Broken battery terminal post: drill 1/8–3/16" hole through stub, attach cable clamp with screw + large washer. Cracked battery case: epoxy is acid-resistant — drain below crack, roughen surface, fill with epoxy or fiberglass, full cure before refilling.
+
+Alternator brush wear: carbon core from a D-cell/C-cell flashlight battery (carbon-zinc type) can be cut to size. Shape to fit brush holder, place old brush wire under retaining spring for electrical contact, seat by running on sandpaper wrapped over commutator. Delco-Remy starter solenoid won't engage: remove, rotate plunger shaft 180 degrees, reinstall — presents unworn side. Neutral safety switch failure: disconnect both wires and tape together to bypass — engine will now crank in any gear.
+
+CJ8 wiring specific: the factory harness is notorious for brittleness after 30+ years. Key failure points: the bulkhead connector (corroded pins cause intermittent problems), the grounds (body to frame, engine to frame — clean to bare metal and re-torque), the ignition switch contacts (high resistance causes weak spark). Common cause of no-start after years of storage: high resistance in the starting circuit from corroded connections — measure voltage drop across each connection, not just at the battery.
+
+**TRANSMISSION & TRANSFER CASE**
+Cracked/holed housing: clean and roughen, apply fine wire mesh + hardening epoxy sealer + aluminum can patch + final epoxy coat. Allow 2–3 hours cure before adding fluid. Small hole: wooden peg coated in silicone or non-hardening sealer driven into hole. The Dana 300 front output housing and main case are cast aluminum — takes epoxy well if surface is clean and properly keyed with sandpaper.
+
+Shift lever broken: clamp vise-grips on remaining stub. Minimum useful state: reverse + one forward gear. T4/T5 levers are hollow — insert a long screwdriver as lever extension. Dana 300 broken shift linkage: reach through floor and move shift rail directly with vise-grips. Establish 2WD-High as minimum position for highway movement.
+
+T5 specific: the T5 in the CJ8 is the World Class variant — uses Teflon synchronizer rings that are sensitive to the wrong gear oil. Must use ATF Dexron III or T5-specific fluid, NOT 80W-90 gear oil (damages synchros). The Dana 300 takes 80W-90 or Dexron ATF — check fill plug before adding any fluid.
+
+**AXLES & DRIVELINE**
+Broken axle shaft on one side: vehicle often still moveable using opposite axle + remaining drive. Remove shaft stub, stuff hub with rags, fabricate cover from cardboard or sheet metal to prevent contamination. Dana 30 front differential: locking the hubs and disengaging front drive is standard procedure when driving on pavement to reduce wear.
+
+AMC Model 20 weakness: two-piece axle shafts retained by C-clips are the known failure point under high torque. If outer shaft spline strips, wheel pulls outward — remove shaft completely. Avoid high-torque situations (deep mud, rocks, traction control braking) until shafts are upgraded. Upgrade path: one-piece 35-spline conversion kits are available from Alloy USA and Superior Axle.
+
+Bent driveshaft: remove shaft, measure OD. Find steel pipe within 1/2" of that dimension. Slide over damaged area, weld in 1/2" passes alternating 180 degrees apart — never run a continuous bead (warps from heat). Expect some vibration at higher speeds after repair.
+
+Axle housing oil leaks from cracks: clean exterior, fill crack with silicone sealer, JB Weld, or metal filler. Wooden peg + sealant for holes. U-bolt substitution: threaded rod of correct diameter (typically 7/16" or 1/2" on CJ8) bent into U-shape, two nuts per leg (one nut + one jam nut). Spring eye bushing worn out: wrap rubber hose or inner tube material around spring bolt to take up slop.
+
+**BRAKES & WHEELS**
+The CJ8 uses non-power hydraulic drum brakes. If brake fluid is unavailable, substitutes (descending preference): hydraulic fluid/ATF/power steering fluid, ethylene glycol antifreeze, water — petroleum-based fluids and alcohol WILL damage rubber cups and seals, plan for full brake rebuild after use.
+
+Isolating a leaking wheel cylinder or brake line: cut the line feeding the failed circuit, fold 2" back on itself and crimp flat, fold the crimped section in half and crimp again — double-fold crimp holds brake system pressure. Wire the crimped end to a stationary point. Vehicle will pull to the braking side; reduce speed.
+
+Hydraulic line at connections: wrap Teflon tape or string around the flared tube end, coat with sealant, reinstall fitting nut. Cracked metal brake lines: wrap with rubber inner tube material, coat with sealant, wire-clamp over crack. Burst rubber brake hose: cut out damaged section, bridge with metal tubing inserted 1" into each hose end, coat joints with sealant, clamp with hose clamps or tightly twisted wire.
+
+CJ8-specific brake notes: the master cylinder is under the hood, driver's side — single-circuit (no proportioning valve, no split circuit on early models). Brake pedal going to floor without visible leak usually means the master cylinder cup has failed — remanufactured masters are inexpensive. Rear drums on the AMC 20 seize frequently from rust if the vehicle sits — soak with penetrating oil, back off adjuster wheel, and tap drum with rubber mallet before forcing.
+
+**STEERING**
+The Saginaw recirculating-ball steering box operates without power assist — heavy but functional if the box itself is intact. Steering box adjustment: there's a set screw on the top of the Saginaw box — tightening it reduces on-center play. Don't overtighten (less than 1/4 turn from the zero-preload point) or the box will bind in turns.
+
+Bent tie rod tube: straighten with a pry bar or improvised lever. Loose tie rod ends that are flopping but still threaded: wire the joint tightly — emergency only, a separated tie rod at speed means total loss of steering. Toe-in setting after steering work: front measurement between tire sidewalls (at axle height) should be approximately 1/4" shorter than rear measurement. Adjust by threading tie rod ends in or out on the tube.
+
+Drag link or pitman arm damage: heat with torch and reshape with vise and hammer if no replacement. Any repaired steering joint should be wired to prevent separation if original retaining hardware is missing.
+
+CJ8 steering specifics: the factory drag link and tie rod are undersized for off-road use — known flex and bend points. Upgraded 1-inch DOM steel tube tie rods are a common and worthwhile modification. King pins on the Dana 30 wear out — typical symptom is a clunking sound on bumps and inconsistent steering. King pin rebuild kits include bushings, bearings, thrust washers, and seals — the work requires a press for bushing removal/installation.
+
+**FRAME & SUSPENSION**
+Broken leaf spring: NEVER weld with a continuous pass — removes heat treatment and the spring collapses under load. Weld using 1/4" passes only, alternating across the break, letting each pass cool. Grind flush so adjacent leaves mate. Acceptable if no more than 2 leaves are broken in the pack.
+
+Frame cracks: the CJ8's steel channel frame cracks at body mount areas, crossmember junctions, and spring perch welds. Clean the crack, remove paint and rust, and run a two-pass weld bead. Without welding equipment: drill a small stop hole at each crack end to prevent propagation, fill with epoxy. Gusset plate welded over cracked area is the proper semi-permanent fix.
+
+CJ8-specific frame notes: the rear crossmember is a known rust and cracking point — inspect during any teardown. Body mount holes often rust out and the bolts become part of the body-to-frame structure — penetrating oil and heat are essential for removal. The longer CJ8 wheelbase (103.5") puts more stress on the frame at the rear spring perch than a CJ7, especially with a bed load.
+
+**GASKETS, SEALS & GENERAL REPAIRS**
+Head gasket failure on AMC 258: symptoms are rough running, milky oil (coolant in oil), white exhaust steam, loss of coolant with no visible external leak, or pressure in coolant reservoir. Field repair: remove head, clean both surfaces to bare metal, lay soft copper wire around each cylinder bore (trim to eliminate overlap — acts as fire ring substitute), install old gasket coated with hardening gasket sealer, reinstall. Or coat gasket with thick bead of high-temp RTV, let skin 10–15 minutes before assembly, then torque head bolts. AMC 258 head bolt torque sequence: start from center, spiral outward. Torque spec: 85–110 ft-lbs (check service manual for specific year). Retorque after initial warm-up.
+
+Fabricating gaskets: cut leather, cardboard, gasket sheet, or inner tube rubber. Hold material against surface and tap with ball-peen hammer along bolt hole edges to scribe shape. Coat both sides with sealer before assembly. Reusable old gaskets can be reused with fresh sealer on both faces.
+
+V-belt substitution (alternator, water pump): improvised rope or wire belt — provide minimal function, require immediate attention to tension. Adjustable-link V-belts are the best spare to carry.
+
+Epoxy guidelines: JB Weld and similar two-part metal-filled epoxies — full cure in 2–3 hours at room temperature, heat accelerates cure. Prepare surface to bare metal for maximum adhesion — epoxy will not bond to oil, paint, or rust. Fine wire mesh embedded in epoxy layer dramatically increases structural strength. Aluminum beverage cans are ideal patch backing: conform easily, take epoxy well.
+
+Thread repair without tap/die: clean damaged threads with a wire brush, nail, or scribe. A hardened nut threaded on backward chases and realigns damaged threads.
+
 ## Saving knowledge into tasks — CRITICAL
 
 Every task is a living document. Your job is to make tasks rich, not just named.
