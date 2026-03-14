@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jeep CJ8 Planner — What Is This?</title>
+<title>Jeep CJ8 Planner — Project Overview v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -50,993 +50,1331 @@ body {
   background: rgba(244,237,214,0.96);
   backdrop-filter: blur(8px);
   border-bottom: 2px solid var(--border);
-  padding: 0 48px;
+  padding: 10px 24px;
   display: flex;
-  gap: 0;
-  overflow-x: auto;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-.nav a {
-  text-decoration: none;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 13px 16px;
+.nav-brand {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--amber);
+  font-family: var(--mono);
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  transition: color .15s, border-color .15s;
 }
-.nav a:hover { color: var(--amber); border-color: var(--amber); }
-
-/* ── STORY HERO ── */
-.hero {
-  min-height: 92vh;
+.nav-links {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 80px 48px 60px;
-  max-width: 860px;
+  gap: 4px;
+  flex-wrap: wrap;
+  list-style: none;
 }
-.hero-eyebrow {
+.nav-links a {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.nav-links a:hover {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--amber);
+}
+
+/* ── LAYOUT ── */
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+section {
+  margin-bottom: 64px;
+  scroll-margin-top: 60px;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+p {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 20px 24px;
+}
+
+.card-sm {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+}
+
+/* ── CHIP ── */
+.chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--amber);
-  margin-bottom: 28px;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 2px solid;
+  white-space: nowrap;
+  font-family: var(--mono);
 }
-.hero-eyebrow::before { content: ''; display: block; width: 24px; height: 2px; background: var(--amber); }
-.hero h1 {
-  font-size: clamp(36px, 5vw, 60px);
+
+/* ── SECTION 1: HERO ── */
+.hero-title {
+  font-size: 28px;
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-bottom: 32px;
+  line-height: 1.3;
+  margin-bottom: 16px;
 }
-.hero h1 em {
+.hero-title em {
   font-style: normal;
   color: var(--amber);
 }
-.hero-body {
-  font-size: 18px;
-  color: var(--text-muted);
-  max-width: 620px;
-  line-height: 1.75;
-  margin-bottom: 48px;
-}
-.hero-scroll {
+.stat-chips {
   display: flex;
-  align-items: center;
   gap: 10px;
-  font-size: 13px;
-  color: var(--text-dim);
-  font-weight: 500;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
-.hero-scroll-line { width: 40px; height: 1px; background: var(--border-strong); }
+.stat-chip {
+  background: var(--surface);
+  border: 2px solid var(--amber);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--amber);
+  box-shadow: 3px 3px 0 rgba(212,131,42,0.2);
+}
+.hero-desc {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-left: 4px solid var(--amber);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  box-shadow: var(--shadow);
+}
 
-/* ── SECTION WRAPPER ── */
-.section {
-  padding: 80px 48px;
-  max-width: 960px;
+/* ── SECTION 2: ARCHITECTURE FLOW ── */
+.flow-box {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: center;
+  position: relative;
+}
+.flow-box strong {
+  font-size: 13px;
+  color: var(--text);
+}
+.flow-box small {
+  display: block;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-size: 11px;
+}
+.flow-arrow {
+  text-align: center;
+  font-family: var(--mono);
+  color: var(--text-dim);
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 0;
+}
+.flow-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 8px 0;
+}
+.flow-split-label {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.flow-fast { border-color: var(--green); }
+.flow-fast strong { color: var(--green); }
+.flow-full { border-color: var(--blue); }
+.flow-full strong { color: var(--blue); }
+.flow-wrapper {
+  max-width: 600px;
   margin: 0 auto;
 }
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--amber);
-  margin-bottom: 12px;
+
+/* ── SECTION 3: AGENTS ── */
+.agent-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
 }
-.section-title {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+.agent-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.agent-header {
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--border);
+}
+.agent-emoji { font-size: 28px; margin-bottom: 8px; }
+.agent-name { font-size: 13px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.agent-model { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-family: var(--mono); }
+.agent-mode { font-size: 12px; font-weight: 600; margin-top: 8px; }
+.agent-body { padding: 14px 20px; }
+.agent-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.agent-row:last-child { border-bottom: none; }
+.agent-row-label { color: var(--text-dim); font-weight: 600; flex-shrink: 0; width: 90px; }
+.agent-row-val { color: var(--text-muted); text-align: right; }
+.fast-accent { color: var(--green); }
+.full-accent { color: var(--blue); }
+
+.routing-callout {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
   margin-bottom: 16px;
 }
-.section-body {
-  font-size: 16px;
-  color: var(--text-muted);
-  max-width: 600px;
-  line-height: 1.75;
-  margin-bottom: 48px;
+.routing-callout h4 {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  font-family: var(--mono);
 }
-
-/* FULL-BLEED BAND */
-.band {
-  background: var(--text);
-  color: var(--bg);
-  padding: 80px 48px;
-}
-.band .section-label { color: var(--amber-dim); }
-.band .section-title { color: #FFFDF7; }
-.band .section-body { color: #B8A07A; max-width: 640px; }
-
-/* ── PROBLEM SECTION ── */
-.problem-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 48px;
-}
-.problem-card {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  padding: 24px;
-  box-shadow: var(--shadow);
-}
-.problem-card .icon { font-size: 32px; margin-bottom: 14px; display: block; }
-.problem-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-.problem-card p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
-
-/* ── WHAT IT IS ── */
-.what-row {
+.routing-rule {
   display: flex;
   align-items: flex-start;
-  gap: 48px;
-  margin-bottom: 64px;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 12px;
+  font-family: var(--mono);
 }
-.what-text { flex: 1; }
-.what-text h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
-.what-text p { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: 12px; }
-.what-visual {
-  flex: 1;
+.routing-rule-cond { color: var(--text-muted); flex: 1; }
+.routing-rule-dest {
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.route-fast { background: rgba(45,122,58,0.1); color: var(--green); border: 1px solid var(--green); }
+.route-full { background: rgba(26,111,168,0.1); color: var(--blue); border: 1px solid var(--blue); }
+
+.mini-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.mini-card {
   background: var(--surface);
   border: 2px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  min-width: 0;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
 }
-.chat-mock {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.chat-bubble {
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.5;
-  max-width: 80%;
-}
-.chat-bubble.user {
-  background: var(--amber-bg);
-  border: 1px solid var(--amber-dim);
-  align-self: flex-end;
-  border-radius: 12px 12px 4px 12px;
-}
-.chat-bubble.agent {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  align-self: flex-start;
-  border-radius: 12px 12px 12px 4px;
-}
-.chat-tool {
-  align-self: flex-start;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--amber);
-  padding: 4px 10px;
-  background: var(--amber-bg);
-  border: 1px solid var(--amber-dim);
-  border-radius: 4px;
-  margin-top: -4px;
-}
-
-/* ── HOW IT WORKS ── */
-.steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
-  padding-left: 48px;
-  margin-bottom: 64px;
-}
-.steps::before {
-  content: '';
-  position: absolute;
-  left: 16px;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: var(--border);
-}
-.step {
-  position: relative;
-  padding-bottom: 40px;
-}
-.step:last-child { padding-bottom: 0; }
-.step-dot {
-  position: absolute;
-  left: -40px;
-  top: 4px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--amber);
-  border: 3px solid var(--bg);
-  box-shadow: 0 0 0 2px var(--amber);
-}
-.step-num {
-  font-size: 11px;
+.mini-card h4 {
+  font-size: 12px;
   font-weight: 700;
-  color: var(--amber);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  color: var(--text);
 }
-.step h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.step p { font-size: 14px; color: var(--text-muted); line-height: 1.7; max-width: 520px; }
+.mini-card p {
+  font-size: 12px;
+  margin: 0;
+  color: var(--text-muted);
+}
 
-/* ── TOOLS ── */
-.tool-group {
-  margin-bottom: 24px;
-  border: 2px solid;
-  border-radius: 12px;
+/* ── SECTION 4: TOOLS ── */
+.category-panel {
+  border: 2px solid var(--border);
+  border-radius: 8px;
   overflow: hidden;
+  margin-bottom: 16px;
   box-shadow: var(--shadow);
 }
-.tool-group-header {
+.category-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 18px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface-2);
 }
-.tool-group-count { margin-left: auto; font-size: 11px; font-weight: 400; opacity: 0.7; }
+.category-chip {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 2px solid;
+  font-family: var(--mono);
+}
+.category-count {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
   padding: 14px;
   background: var(--surface);
 }
 .tool-card {
-  background: var(--bg);
+  background: var(--surface);
   border: 2px solid var(--border);
   border-radius: 8px;
-  box-shadow: 2px 2px 0 rgba(28,21,16,0.09);
-  padding: 12px 14px;
+  box-shadow: 3px 3px 0 rgba(28,21,16,0.08);
+  padding: 14px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  transition: box-shadow 0.15s;
 }
-.tool-icon { font-size: 22px; margin-bottom: 4px; }
-.tool-name { font-family: var(--mono); font-size: 11px; font-weight: 700; }
-.tool-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+.tool-card:hover {
+  box-shadow: 4px 4px 0 rgba(28,21,16,0.15);
+}
+.tool-emoji { font-size: 22px; line-height: 1; }
+.tool-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+}
+.tool-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
 
-.tg-research { border-color: var(--amber); }
-.tg-research .tool-group-header { background: #FDF3E0; color: #7A4010; }
-.tg-profile  { border-color: var(--green); }
-.tg-profile .tool-group-header  { background: #E8F5E9; color: #1A4D22; }
-.tg-decisions{ border-color: var(--blue); }
-.tg-decisions .tool-group-header { background: #E3F2FD; color: #0D3D6B; }
-.tg-plan     { border-color: var(--orange); }
-.tg-plan .tool-group-header     { background: #FFF3E0; color: #7A3010; }
-.tg-progress { border-color: var(--red); }
-.tg-progress .tool-group-header { background: #FFEBEE; color: #7A1810; }
-.tg-enrichment { border-color: var(--purple); }
-.tg-enrichment .tool-group-header { background: #F3E8FF; color: #3D1A7A; }
-.tg-intel    { border-color: var(--gray); }
-.tg-intel .tool-group-header    { background: #F5F5F5; color: #333; }
+.auto-pop-box {
+  background: var(--amber-bg);
+  border: 2px solid var(--amber);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 16px;
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.auto-pop-box strong { color: var(--amber); }
 
-/* ── MEMORY ── */
+/* ── SECTION 5: INTELLIGENCE LAYER ── */
 .memory-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
 }
 .memory-card {
   background: var(--surface);
   border: 2px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: var(--shadow);
-  padding: 18px 14px;
-  text-align: center;
+  padding: 16px 18px;
 }
-.memory-icon { font-size: 28px; margin-bottom: 8px; }
-.memory-name { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
-.memory-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+.memory-emoji { font-size: 24px; margin-bottom: 8px; }
+.memory-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.memory-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin: 0; }
 
-/* ── TWO MODELS ── */
-.models-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-.model-card {
-  border: 2px solid;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-}
-.model-card.haiku { border-color: var(--green); }
-.model-card.sonnet { border-color: var(--blue); }
-.model-head {
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.model-card.haiku .model-head { background: #E8F5E9; }
-.model-card.sonnet .model-head { background: #E3F2FD; }
-.model-emoji { font-size: 30px; }
-.model-name { font-size: 14px; font-weight: 700; }
-.model-id { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.model-body { background: var(--surface); padding: 16px 20px; }
-.model-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 13px;
-  border-bottom: 1px solid var(--border);
-}
-.model-row:last-child { border: none; }
-.model-row-label { color: var(--text-muted); font-size: 12px; }
-.model-row-val { font-weight: 600; font-size: 12px; text-align: right; }
-.badge-fast { background:#E8F5E9; color:var(--green); border:1px solid #A5D6A7; font-size:10px; font-weight:700; padding:1px 7px; border-radius:3px; }
-.badge-full { background:#E3F2FD; color:var(--blue); border:1px solid #90CAF9; font-size:10px; font-weight:700; padding:1px 7px; border-radius:3px; }
-
-/* ── ARCH DIAGRAM ── */
-.arch-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 48px;
-}
-.arch-box {
+.task-anatomy {
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: 8px;
   box-shadow: var(--shadow);
-  padding: 12px 24px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  min-width: 240px;
+  padding: 16px 20px;
 }
-.arch-box.dark { background: var(--text); color: var(--bg); border-color: var(--text); }
-.arch-box.amber { border-color: var(--amber); background: var(--amber-bg); }
-.arch-box.green { border-color: var(--green); }
-.arch-box.blue  { border-color: var(--blue); }
-.arch-box.purple{ border-color: var(--purple); background: #F3E8FF; }
-.arch-arrow { font-size: 20px; color: var(--border-strong); padding: 3px 0; line-height: 1; }
-.arch-split {
-  display: grid;
-  grid-template-columns: 1fr 48px 1fr;
-  width: 100%;
-  max-width: 680px;
-  align-items: start;
+.task-anatomy h4 {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  font-family: var(--mono);
 }
-.arch-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
-.arch-or { display: flex; align-items: flex-start; justify-content: center; padding-top: 10px; font-size: 12px; color: var(--text-dim); font-style: italic; }
-.arch-label-fast { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: #E8F5E9; color: var(--green); border: 1px solid #A5D6A7; border-radius: 4px; padding: 2px 8px; margin-bottom: 4px; }
-.arch-label-full { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: #E3F2FD; color: var(--blue); border: 1px solid #90CAF9; border-radius: 4px; padding: 2px 8px; margin-bottom: 4px; }
-.arch-note { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-top: 3px; }
-
-/* ── CONTEXT ── */
-.context-table {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  margin-bottom: 20px;
-}
-.context-row {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-}
-.context-row:last-child { border: none; }
-.context-trigger {
-  width: 220px;
-  flex-shrink: 0;
-  padding: 12px 16px;
-  background: var(--surface-2);
-  border-right: 2px solid var(--border);
-  font-size: 12px;
-  font-weight: 600;
-}
-.context-trigger small { display: block; font-family: var(--mono); font-size: 10px; font-weight: 400; color: var(--text-dim); margin-top: 2px; }
-.context-result { flex: 1; padding: 12px 16px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
-.context-result strong { color: var(--text); }
-.context-always {
-  background: var(--amber-bg);
-  border-top: 2px solid var(--amber-dim);
-  padding: 12px 16px;
+.task-anatomy pre {
+  font-family: var(--mono);
   font-size: 12px;
   color: var(--text-muted);
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
 }
 
-/* ── BACKGROUND TRIGGERS ── */
-.bg-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 18px;
-  margin-bottom: 48px;
-}
-.bg-card {
+/* ── SECTION 6: CONTEXT SELECTION ── */
+.context-flow {
   background: var(--surface);
   border: 2px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 20px 24px;
+  overflow-x: auto;
+}
+.context-flow pre {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.9;
+  white-space: pre;
+  overflow-x: auto;
+}
+.token-callout {
+  background: rgba(45,122,58,0.07);
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  box-shadow: var(--shadow);
+}
+.token-callout strong { color: var(--green); }
+
+/* ── SECTION 7: BACKGROUND INTELLIGENCE ── */
+.bg-agent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.bg-agent-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
   box-shadow: var(--shadow);
   overflow: hidden;
 }
-.bg-head { padding: 14px 18px; border-bottom: 2px solid var(--border); }
-.bg-icon { font-size: 24px; margin-bottom: 6px; display: block; }
-.bg-title { font-size: 14px; font-weight: 700; }
-.bg-sub { font-size: 11px; color: var(--text-dim); }
-.bg-body { padding: 14px 18px; font-size: 12px; color: var(--text-muted); line-height: 1.65; }
-.bg-when { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); margin-bottom: 4px; margin-top: 10px; }
-.bg-tools { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-.bg-tool { font-family: var(--mono); font-size: 10px; background: var(--surface-3); border: 1px solid var(--border); border-radius: 3px; padding: 2px 6px; color: var(--text-muted); }
-.silent { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; background: #F3E8FF; color: var(--purple); border: 1px solid #CE93D8; border-radius: 3px; padding: 2px 7px; margin-top: 8px; }
+.bg-agent-header {
+  padding: 12px 18px;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface-2);
+}
+.bg-agent-title { font-size: 14px; font-weight: 700; }
+.bg-agent-trigger {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  margin-top: 4px;
+}
+.bg-agent-body { padding: 14px 18px; }
+.bg-agent-row {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  line-height: 1.5;
+}
+.bg-agent-row strong { color: var(--text); font-weight: 600; }
+.silent-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  background: rgba(90,90,90,0.1);
+  border: 1px solid var(--gray);
+  color: var(--gray);
+  border-radius: 3px;
+  font-family: var(--mono);
+  margin-left: 8px;
+  vertical-align: middle;
+}
 
-/* ── STORAGE ── */
+/* ── SECTION 8: DATA STORAGE ── */
 .storage-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
+  gap: 20px;
   margin-bottom: 20px;
 }
-.storage-card {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.storage-head {
-  background: var(--surface-3);
-  border-bottom: 2px solid var(--border);
-  padding: 11px 18px;
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.storage-body { padding: 16px 18px; font-size: 12px; color: var(--text-muted); line-height: 1.8; }
-.file-tree { font-family: var(--mono); font-size: 11px; line-height: 2.1; color: var(--text); }
-.file-tree .comment { color: var(--text-dim); }
-.api-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; }
-.api-grid code { font-family: var(--mono); font-size: 10px; background: var(--surface-3); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; white-space: nowrap; }
-.cl-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.cl-chip { font-family: var(--mono); font-size: 10px; background: var(--surface-3); border: 1px solid var(--border); border-radius: 3px; padding: 2px 7px; color: var(--text-muted); }
-
-/* ── STACK ── */
-.stack-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 14px;
-}
-.stack-card {
+.file-tree {
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: 8px;
-  padding: 14px 16px;
-  box-shadow: 2px 2px 0 rgba(28,21,16,0.09);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
 }
-.stack-layer { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-dim); margin-bottom: 4px; }
-.stack-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-.stack-desc { font-size: 11px; color: var(--text-muted); line-height: 1.55; }
+.file-tree h4 {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  font-family: var(--mono);
+}
+.file-tree pre {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
 
-/* ── DIVIDER ── */
-hr { border: none; border-top: 2px solid var(--border); max-width: 960px; margin: 0 auto; }
+.storage-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.storage-layer {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.storage-layer-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.storage-layer-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.storage-layer-desc { font-size: 12px; color: var(--text-dim); }
 
-code {
+.changelog-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.changelog-chip {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 8px;
   font-family: var(--mono);
   font-size: 11px;
-  background: var(--surface-3);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 1px 5px;
+  color: var(--text-muted);
 }
 
-@media(max-width: 720px) {
-  .hero { padding: 60px 24px; }
-  .section { padding: 56px 24px; }
-  .band { padding: 56px 24px; }
-  .nav { padding: 0 16px; }
-  .problem-grid, .models-row, .bg-grid, .storage-grid { grid-template-columns: 1fr; }
-  .memory-grid { grid-template-columns: repeat(3, 1fr); }
-  .what-row { flex-direction: column; gap: 24px; }
-  .arch-split { grid-template-columns: 1fr; }
-  .context-trigger { width: 160px; }
+/* ── SECTION 9: TECH STACK ── */
+.stack-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.stack-table th {
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+.stack-table td {
+  padding: 10px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.stack-table tr:last-child td { border-bottom: none; }
+.stack-table td:first-child { color: var(--text-dim); font-weight: 600; font-size: 12px; }
+.stack-table td:last-child { font-family: var(--mono); font-size: 12px; color: var(--text); }
+
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  border-top: 2px dashed var(--border);
+  margin: 48px 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 620px) {
+  .agent-grid, .storage-grid, .mini-cards, .flow-split { grid-template-columns: 1fr; }
+  .hero-title { font-size: 22px; }
+  .tool-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<!-- NAV -->
 <nav class="nav">
-  <a href="#problem">The Problem</a>
-  <a href="#what">What It Is</a>
-  <a href="#howitworks">How It Works</a>
-  <a href="#tools">Tools</a>
-  <a href="#memory">Memory</a>
-  <a href="#arch">Architecture</a>
-  <a href="#storage">Data</a>
-  <a href="#stack">Stack</a>
+  <span class="nav-brand">🚙 CJ8 Planner</span>
+  <ul class="nav-links">
+    <li><a href="#hero">Overview</a></li>
+    <li><a href="#flow">Architecture</a></li>
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#tools">23 Tools</a></li>
+    <li><a href="#memory">Memory</a></li>
+    <li><a href="#context">Context</a></li>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#storage">Storage</a></li>
+    <li><a href="#stack">Stack</a></li>
+  </ul>
 </nav>
 
-<!-- ── HERO ── -->
-<div class="hero" id="top">
-  <div class="hero-eyebrow">Jeep CJ8 Scrambler · 1989</div>
-  <h1>Restoring a classic Jeep<br>is <em>not a simple project.</em></h1>
-  <p class="hero-body">
-    35 years of worn systems. Hundreds of decisions that compound on each other.
-    Parts you can't find locally. Costs that stack up faster than you expect.
-    Dependencies where doing the wrong thing first costs you twice.
-    <br><br>
-    This is the tool built to manage all of that — with an AI that knows CJ8s,
-    builds the plan with you, and keeps watching quietly in the background.
-  </p>
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    Scroll to understand it
-  </div>
-</div>
+<div class="page">
 
-<!-- ── THE PROBLEM ── -->
-<hr>
-<div class="section" id="problem">
-  <div class="section-label">Why this exists</div>
-  <div class="section-title">The problem with restoring a classic Jeep</div>
-  <div class="section-body">
-    A spreadsheet doesn't know that you need to fix the frame before you replace the suspension.
-    A notes app doesn't know what an AMC 20 rear axle shaft failure looks like, or that the
-    Carter YF carburetor on a '89 CJ8 has a known idle problem. And neither one remembers
-    what you decided about the engine rebuild three weeks ago.
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 1 — HERO
+══════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="section-label">What Is This</div>
+  <h2 class="hero-title">AI-powered local restoration planner<br>for a <em>1989 Jeep CJ8 Scrambler</em></h2>
+
+  <div class="stat-chips">
+    <div class="stat-chip">🔧 23 tools</div>
+    <div class="stat-chip">🤖 2 AI agents</div>
+    <div class="stat-chip">🧠 5 memory stores</div>
+    <div class="stat-chip">💾 Local-first</div>
   </div>
 
-  <div class="problem-grid">
-    <div class="problem-card">
-      <span class="icon">🧩</span>
-      <h3>Hundreds of interdependent tasks</h3>
-      <p>Engine, suspension, brakes, electrical, body, frame — each system depends on others. Doing them out of order is expensive. Knowing the right order requires experience.</p>
-    </div>
-    <div class="problem-card">
-      <span class="icon">🔩</span>
-      <h3>Parts you can't find locally</h3>
-      <p>CJ8 is rarer than CJ7. Israeli market adds 30–40% premium and weeks of wait. You need to know exactly what to order before you start, not after you've already torn it apart.</p>
-    </div>
-    <div class="problem-card">
-      <span class="icon">🧠</span>
-      <h3>Knowledge that lives in your head</h3>
-      <p>Every decision made, every fact discovered, every note from the last garage session — it's scattered across WhatsApp, memory, and scraps of paper. None of it is searchable or connected.</p>
-    </div>
+  <div class="hero-desc">
+    <strong>Local-first:</strong> all data lives on disk in your home directory — no cloud sync, no accounts, no subscriptions. The AI agents talk to Anthropic's API, but your entire restoration plan (tasks, parts, costs, notes, decisions, research) is stored in plain JSON files you own forever.<br><br>
+    <strong>Agentic:</strong> tell the agent what you want in plain language. It builds out phases, adds tasks, estimates Israeli market prices, saves technical procedures, flags risks, and searches the web — all automatically, without you filling in any forms.
   </div>
-</div>
+</section>
 
-<!-- ── WHAT IT IS ── -->
-<div class="band" id="what">
-  <div style="max-width:960px; margin:0 auto;">
-    <div class="section-label">The solution</div>
-    <div class="section-title">A local AI advisor that builds the plan with you</div>
-    <div class="section-body">
-      You talk to it like a mechanic friend who happens to know CJ8s inside out.
-      It builds phases and tasks, populates them with CJ8-specific steps and parts lists,
-      tracks your progress, and works quietly in the background — surfacing gaps you haven't thought of,
-      and preparing the next task the moment you finish one.
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 2 — ARCHITECTURE FLOW
+══════════════════════════════════════════════════════════════ -->
+<section id="flow">
+  <div class="section-label">How a Message Travels</div>
+  <h2>Architecture Flow</h2>
+  <p>Every message you type passes through a two-tier routing system before any AI responds. The router makes a fast decision about which agent can handle the request, minimizing cost while preserving full capability when needed.</p>
+
+  <div class="flow-wrapper">
+    <div class="flow-box" style="border-color:var(--amber)">
+      <strong style="color:var(--amber)">User types a message</strong>
     </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-box">
+      <strong>Classifier</strong>
+      <small>Pattern-matches on length, keywords, and intent</small>
+    </div>
+    <div class="flow-arrow">↓</div>
 
-    <div class="what-row" style="margin-top:0;">
-      <div class="what-text">
-        <h3>It's not a task manager.</h3>
-        <p>Every task it creates comes pre-loaded: step-by-step CJ8-specific instructions, the parts you'll need with Israeli market cost estimates, and the reason the task exists. It fills in the knowledge, not just the structure.</p>
-        <br>
-        <h3>It's not a chatbot.</h3>
-        <p>It writes to a persistent plan. When it adds a task, that task lives in your project — with steps, parts, costs, and notes — not just in the chat history. The conversation feeds the plan.</p>
-        <br>
-        <h3>It's local and private.</h3>
-        <p>Everything runs on your machine. The plan is saved to disk. The only thing that goes to the internet is your messages to Claude. No cloud backend, no accounts, no sync services.</p>
+    <div class="flow-split">
+      <div>
+        <div class="flow-split-label" style="color:var(--green)">FAST TIER</div>
+        <div class="flow-box flow-fast">
+          <strong>🐦 Haiku</strong>
+          <small>claude-haiku-4-5</small>
+          <small>No tools · 512 tokens</small>
+          <small style="color:var(--green)">~15× cheaper</small>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box" style="border-color:var(--green)">
+          <strong style="color:var(--green)">Quick Answer</strong>
+          <small>Greetings, status checks, simple questions</small>
+        </div>
       </div>
-      <div class="what-visual">
-        <div style="background:var(--surface-3); border-bottom:1px solid #DDD0B3; padding:10px 16px; font-size:11px; font-weight:600; color:var(--text-muted);">🔧 Jeep Advisor — CJ8 1989 specialist</div>
-        <div class="chat-mock">
-          <div class="chat-bubble user">Tell me about the engine — it's the AMC 258, been sitting a few years</div>
-          <div class="chat-tool">⚡ set_car_fact: engine = AMC 258 4.2L inline-6, stored</div>
-          <div class="chat-tool">⚡ search_web: AMC 258 revival checklist after long storage</div>
-          <div class="chat-tool">⚡ add_phase: "Engine Revival" · add_task: "Compression Test" + steps + parts</div>
-          <div class="chat-bubble agent">The 258 is a solid engine but after a few years sitting, your first move is a compression test before you spend anything else. I've created a phase for it with the tasks in order — starting with compression and oil condition, then working outward. The carburetor on this year has a known idle issue; I've flagged that as a separate task. Want me to work through the fuel system next?</div>
+      <div>
+        <div class="flow-split-label" style="color:var(--blue)">FULL TIER</div>
+        <div class="flow-box flow-full">
+          <strong>🧠 Sonnet</strong>
+          <small>claude-sonnet-4-6</small>
+          <small>All 23 tools · 2048 tokens</small>
+          <small style="color:var(--blue)">Full agentic power</small>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box" style="border-color:var(--blue)">
+          <strong style="color:var(--blue)">Context Selector</strong>
+          <small>Sends only the relevant plan slice</small>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box" style="border-color:var(--blue)">
+          <strong style="color:var(--blue)">Sonnet + Cached Prompt</strong>
+          <small>Static CJ8 knowledge served from cache</small>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box" style="border-color:var(--blue)">
+          <strong style="color:var(--blue)">Agentic Loop</strong>
+          <small>Tool calls → store mutations → re-query</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">↓</div>
+    <div class="flow-box" style="border-color:var(--amber)">
+      <strong style="color:var(--amber)">UI update + Background Analysis triggers</strong>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 3 — TWO AGENTS
+══════════════════════════════════════════════════════════════ -->
+<section id="agents">
+  <div class="section-label">Who Does the Work</div>
+  <h2>Two Agents</h2>
+
+  <div class="agent-grid">
+    <!-- Fast agent -->
+    <div class="agent-card">
+      <div class="agent-header" style="background:rgba(45,122,58,0.06); border-bottom-color:rgba(45,122,58,0.3)">
+        <div class="agent-emoji">🐦</div>
+        <div class="agent-name">Fast Agent</div>
+        <div class="agent-model">claude-haiku-4-5</div>
+        <div class="agent-mode fast-accent">"Quick Answer Mode"</div>
+      </div>
+      <div class="agent-body">
+        <div class="agent-row">
+          <span class="agent-row-label">Handles</span>
+          <span class="agent-row-val">Greetings, status checks, "what's next?"</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Tools</span>
+          <span class="agent-row-val" style="color:var(--text-dim)">None</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Max tokens</span>
+          <span class="agent-row-val fast-accent">512</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">History</span>
+          <span class="agent-row-val" style="color:var(--text-dim)">No</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Cost</span>
+          <span class="agent-row-val fast-accent">~15× cheaper</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Also does</span>
+          <span class="agent-row-val">Conversation compression (every 12 msgs)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full agent -->
+    <div class="agent-card">
+      <div class="agent-header" style="background:rgba(26,111,168,0.06); border-bottom-color:rgba(26,111,168,0.3)">
+        <div class="agent-emoji">🧠</div>
+        <div class="agent-name">Full Agent</div>
+        <div class="agent-model">claude-sonnet-4-6</div>
+        <div class="agent-mode full-accent">"Planning Mode"</div>
+      </div>
+      <div class="agent-body">
+        <div class="agent-row">
+          <span class="agent-row-label">Handles</span>
+          <span class="agent-row-val">Research, planning, restructuring, all tool use</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Tools</span>
+          <span class="agent-row-val full-accent">All 23 tools + agentic loop</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Max tokens</span>
+          <span class="agent-row-val full-accent">2048</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">History</span>
+          <span class="agent-row-val">Last 12 compressed messages</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Caching</span>
+          <span class="agent-row-val full-accent">Static prompt cached (~10% cost on hits)</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-row-label">Context</span>
+          <span class="agent-row-val">Selective plan slice, not full plan</span>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ── HOW IT WORKS ── -->
-<div class="section" id="howitworks">
-  <div class="section-label">Step by step</div>
-  <div class="section-title">How a session works</div>
-  <div class="section-body">You don't fill in a form. You just talk. The AI figures out what needs doing and structures it.</div>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-dot"></div>
-      <div class="step-num">Step 1</div>
-      <h3>You describe your Jeep</h3>
-      <p>Engine condition, mileage, what you've already done, your skills, your budget, your goals. The AI records every confirmed fact and uses it to shape every recommendation from that point on. It won't suggest a full engine rebuild if you've told it the engine is fine.</p>
+  <!-- Routing Rules -->
+  <div class="routing-callout">
+    <h4>Routing Rules</h4>
+    <div class="routing-rule">
+      <span class="routing-rule-cond">Message contains image attachment</span>
+      <span class="routing-rule-dest route-full">FULL</span>
     </div>
-
-    <div class="step">
-      <div class="step-dot"></div>
-      <div class="step-num">Step 2</div>
-      <h3>The AI builds a structured plan</h3>
-      <p>It creates phases (Safety First, Engine Revival, Suspension & Axles...) and fills each with tasks. Every task it creates is immediately populated: step-by-step CJ8-specific instructions, required parts with costs in ₪, and the rationale for why this task exists at all.</p>
+    <div class="routing-rule">
+      <span class="routing-rule-cond">Message longer than 120 characters</span>
+      <span class="routing-rule-dest route-full">FULL</span>
     </div>
-
-    <div class="step">
-      <div class="step-dot"></div>
-      <div class="step-num">Step 3</div>
-      <h3>You work the plan, it tracks progress</h3>
-      <p>Mark tasks active, done, or skipped. Add notes from your garage sessions. Upload photos and get AI technical observations. The AI adjusts its recommendations as your actual situation becomes clearer.</p>
+    <div class="routing-rule">
+      <span class="routing-rule-cond">"add", "search", "explain", system names, tool keywords</span>
+      <span class="routing-rule-dest route-full">FULL</span>
     </div>
-
-    <div class="step">
-      <div class="step-dot"></div>
-      <div class="step-num">Step 4</div>
-      <h3>The AI works in the background</h3>
-      <p>Even when you're not in the chat, it's watching. When you complete a task, it automatically prepares the next ones. Every week it scans for stale work and structural gaps. Whenever the plan changes, it checks for CJ8-specific risks you might have missed.</p>
+    <div class="routing-rule">
+      <span class="routing-rule-cond">"hi", "thanks", "what's next", "status", "how" + short</span>
+      <span class="routing-rule-dest route-fast">FAST</span>
+    </div>
+    <div class="routing-rule">
+      <span class="routing-rule-cond">Message shorter than 60 characters (no tool keywords)</span>
+      <span class="routing-rule-dest route-fast">FAST</span>
+    </div>
+    <div class="routing-rule">
+      <span class="routing-rule-cond">All other messages</span>
+      <span class="routing-rule-dest route-full">FULL</span>
     </div>
   </div>
-</div>
 
-<hr>
-
-<!-- ── TOOLS ── -->
-<div class="section" id="tools">
-  <div class="section-label">The AI's capabilities</div>
-  <div class="section-title">23 tools — what the AI can actually do</div>
-  <div class="section-body">
-    Every action the AI takes maps to one of these tools. It calls them autonomously — in sequence,
-    in loops — until the work is done. You ask about the engine; it searches, records, creates phases,
-    adds tasks, populates parts, estimates costs. Without you asking for each step.
+  <!-- Mini cards -->
+  <div class="mini-cards">
+    <div class="mini-card">
+      <h4>💬 Conversation Compression</h4>
+      <p>After 12 messages, the Fast Agent compresses the oldest 8 into a summary. Nothing is lost — the full plan is always in the system prompt regardless. Saves tokens on long sessions without sacrificing memory of what's been discussed.</p>
+    </div>
+    <div class="mini-card">
+      <h4>⚡ Prompt Caching</h4>
+      <p>The static system prompt (~70% of all tokens) — CJ8 factory specs, Battlefield manual, JEEPOLOG data, supplier list, agent rules — is marked for Anthropic's cache. Cache hits cost ~10% of normal. Applies to every Full tier request after the first in a session.</p>
+    </div>
   </div>
+</section>
 
-  <div class="tool-group tg-research">
-    <div class="tool-group-header">🔍 Research <span class="tool-group-count">2 tools</span></div>
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 4 — 23 TOOLS
+══════════════════════════════════════════════════════════════ -->
+<section id="tools">
+  <div class="section-label">What the Agent Can Do</div>
+  <h2>The 23 Tools</h2>
+  <p>Every time the Full Agent responds, it can call any combination of these tools in sequence — reading the plan, modifying it, searching the web, flagging risks — before sending its reply. Each tool call is atomic and persisted immediately to disk.</p>
+
+  <!-- RESEARCH -->
+  <div class="category-panel">
+    <div class="category-header">
+      <span class="category-chip" style="color:#D4832A; border-color:#D4832A; background:rgba(212,131,42,0.08)">🔍 Research</span>
+      <span class="category-count">2 tools</span>
+    </div>
     <div class="tool-grid">
-      <div class="tool-card"><div class="tool-icon">🌐</div><div class="tool-name">search_web</div><div class="tool-desc">Fetches DuckDuckGo results for CJ8-specific parts, repair procedures, and Israeli supplier prices</div></div>
-      <div class="tool-card"><div class="tool-icon">📌</div><div class="tool-name">add_research_note</div><div class="tool-desc">Permanently saves a technical finding — linked to a topic and optionally to specific tasks</div></div>
+      <div class="tool-card" style="border-color:rgba(212,131,42,0.4)">
+        <div class="tool-emoji">🌐</div>
+        <div class="tool-name">search_web</div>
+        <div class="tool-desc">Fetches DuckDuckGo results for CJ8-specific parts, prices & procedures via server-side proxy (no CORS issues)</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(212,131,42,0.4)">
+        <div class="tool-emoji">📌</div>
+        <div class="tool-name">add_research_note</div>
+        <div class="tool-desc">Permanently saves a technical finding to the project memory with topic, finding, and source</div>
+      </div>
     </div>
   </div>
 
-  <div class="tool-group tg-profile">
-    <div class="tool-group-header">🚙 Car Profile <span class="tool-group-count">1 tool</span></div>
+  <!-- CAR PROFILE -->
+  <div class="category-panel">
+    <div class="category-header">
+      <span class="category-chip" style="color:var(--green); border-color:var(--green); background:rgba(45,122,58,0.08)">🚙 Car Profile</span>
+      <span class="category-count">1 tool</span>
+    </div>
     <div class="tool-grid">
-      <div class="tool-card"><div class="tool-icon">🔑</div><div class="tool-name">set_car_fact</div><div class="tool-desc">Records a confirmed fact about this specific Jeep: engine condition, mileage, owner skills, budget, goals. Shapes all future recommendations.</div></div>
+      <div class="tool-card" style="border-color:rgba(45,122,58,0.4)">
+        <div class="tool-emoji">🔑</div>
+        <div class="tool-name">set_car_fact</div>
+        <div class="tool-desc">Records a confirmed fact about this specific Jeep — engine condition, mileage, goals, skills, budget — used to shape every future recommendation</div>
+      </div>
     </div>
   </div>
 
-  <div class="tool-group tg-decisions">
-    <div class="tool-group-header">⚖️ Decisions <span class="tool-group-count">1 tool</span></div>
+  <!-- DECISIONS -->
+  <div class="category-panel">
+    <div class="category-header">
+      <span class="category-chip" style="color:var(--blue); border-color:var(--blue); background:rgba(26,111,168,0.08)">⚖️ Decisions</span>
+      <span class="category-count">1 tool</span>
+    </div>
     <div class="tool-grid">
-      <div class="tool-card"><div class="tool-icon">📋</div><div class="tool-name">record_decision</div><div class="tool-desc">Logs a project commitment by category: budget · safety · approach · scope · timeline · supplier. Never forgotten.</div></div>
+      <div class="tool-card" style="border-color:rgba(26,111,168,0.4)">
+        <div class="tool-emoji">📋</div>
+        <div class="tool-name">record_decision</div>
+        <div class="tool-desc">Logs a permanent project commitment by category: budget · safety · approach · scope · timeline · supplier</div>
+      </div>
     </div>
   </div>
 
-  <div class="tool-group tg-plan">
-    <div class="tool-group-header">🏗️ Plan Building <span class="tool-group-count">3 tools</span></div>
+  <!-- PLAN BUILDING -->
+  <div class="category-panel">
+    <div class="category-header">
+      <span class="category-chip" style="color:var(--orange); border-color:var(--orange); background:rgba(232,99,42,0.08)">🏗️ Plan Building</span>
+      <span class="category-count">3 tools</span>
+    </div>
     <div class="tool-grid">
-      <div class="tool-card"><div class="tool-icon">📦</div><div class="tool-name">add_phase</div><div class="tool-desc">Creates a restoration phase (e.g. "Safety First") with color, subtitle, and linked vehicle systems</div></div>
-      <div class="tool-card"><div class="tool-icon">✅</div><div class="tool-name">add_task</div><div class="tool-desc">Adds a task: name, system, phase, priority (critical/high/medium/low), cost estimate, agent rationale</div></div>
-      <div class="tool-card"><div class="tool-icon">🔗</div><div class="tool-name">set_task_dependency</div><div class="tool-desc">Declares "Task A must finish before Task B can start" — captures the mechanical ordering of work</div></div>
+      <div class="tool-card" style="border-color:rgba(232,99,42,0.4)">
+        <div class="tool-emoji">📦</div>
+        <div class="tool-name">add_phase</div>
+        <div class="tool-desc">Creates a named restoration phase with order, color, and description (e.g. "Safety First", "Engine Rebuild")</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(232,99,42,0.4)">
+        <div class="tool-emoji">✅</div>
+        <div class="tool-name">add_task</div>
+        <div class="tool-desc">Adds a task with name, system, phase, priority, cost estimate, and agent rationale explaining why it exists</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(232,99,42,0.4)">
+        <div class="tool-emoji">🔗</div>
+        <div class="tool-name">set_task_dependency</div>
+        <div class="tool-desc">Declares "Task A must finish before Task B can start" — mechanically enforced ordering constraint</div>
+      </div>
     </div>
   </div>
 
-  <div class="tool-group tg-progress">
-    <div class="tool-group-header">📊 Progress Tracking <span class="tool-group-count">4 tools</span></div>
+  <!-- PROGRESS -->
+  <div class="category-panel">
+    <div class="category-header">
+      <span class="category-chip" style="color:var(--red); border-color:var(--red); background:rgba(192,57,43,0.08)">📊 Progress</span>
+      <span class="category-count">4 tools</span>
+    </div>
     <div class="tool-grid">
-      <div class="tool-card"><div class="tool-icon">🔄</div><div class="tool-name">update_task_status</div><div class="tool-desc">Moves task: flagged → todo → active → done → skipped. Completing triggers background unblock analysis.</div></div>
-      <div class="tool-card"><div class="tool-icon">📝</div><div class="tool-name">add_task_note</div><div class="tool-desc">Appends a timestamped observation, measurement, or finding to a task's history</div></div>
-      <div class="tool-card"><div class="tool-icon">💰</div><div class="tool-name">update_task_cost</div><div class="tool-desc">Sets estimated cost in ₪ using Israeli market pricing awareness</div></div>
-      <div class="tool-card"><div class="tool-icon">🔩</div><div class="tool-name">add_part_to_task</div><div class="tool-desc">Adds a required part/material: name, estimated cost, part number. Builds the parts manifest.</div></div>
+      <div class="tool-card" style="border-color:rgba(192,57,43,0.4)">
+        <div class="tool-emoji">🔄</div>
+        <div class="tool-name">update_task_status</div>
+        <div class="tool-desc">Moves a task through the status lifecycle: flagged → todo → active → done → skipped</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(192,57,43,0.4)">
+        <div class="tool-emoji">📝</div>
+        <div class="tool-name">add_task_note</div>
+        <div class="tool-desc">Appends a timestamped observation, measurement, or finding to a specific task</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(192,57,43,0.4)">
+        <div class="tool-emoji">💰</div>
+        <div class="tool-name">update_task_cost</div>
+        <div class="tool-desc">Sets or updates the estimated cost in ₪ (Israeli Shekels) based on current market prices</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(192,57,43,0.4)">
+        <div class="tool-emoji">🔩</div>
+        <div class="tool-name">add_part_to_task</div>
+        <div class="tool-desc">Adds a required part or material with cost estimate and part number to a specific task</div>
+      </div>
     </div>
   </div>
 
-  <div class="tool-group tg-enrichment">
-    <div class="tool-group-header">📖 Content Enrichment <span class="tool-group-count">2 tools</span></div>
+  <!-- ENRICHMENT -->
+  <div class="category-panel">
+    <div class="category-header">
+      <span class="category-chip" style="color:var(--purple); border-color:var(--purple); background:rgba(107,70,193,0.08)">📖 Enrichment</span>
+      <span class="category-count">2 tools</span>
+    </div>
     <div class="tool-grid">
-      <div class="tool-card"><div class="tool-icon">📋</div><div class="tool-name">set_task_steps</div><div class="tool-desc">Saves a CJ8-specific step-by-step guide into the task — with torque specs, known gotchas, and sequencing</div></div>
-      <div class="tool-card"><div class="tool-icon">🖼️</div><div class="tool-name">annotate_file</div><div class="tool-desc">Attaches an AI technical observation to an uploaded photo or PDF</div></div>
+      <div class="tool-card" style="border-color:rgba(107,70,193,0.4)">
+        <div class="tool-emoji">📋</div>
+        <div class="tool-name">set_task_steps</div>
+        <div class="tool-desc">Saves a CJ8-specific step-by-step how-to guide directly into the task — torque specs, gotchas, and all</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(107,70,193,0.4)">
+        <div class="tool-emoji">🖼️</div>
+        <div class="tool-name">annotate_file</div>
+        <div class="tool-desc">Attaches an AI technical observation to an uploaded photo or PDF, linked to a specific task</div>
+      </div>
     </div>
   </div>
 
-  <div class="tool-group tg-intel">
-    <div class="tool-group-header">🛡️ Plan Intelligence <span class="tool-group-count">4 tools</span></div>
+  <!-- INTELLIGENCE -->
+  <div class="category-panel">
+    <div class="category-header">
+      <span class="category-chip" style="color:var(--gray); border-color:var(--gray); background:rgba(90,90,90,0.08)">🛡️ Intelligence</span>
+      <span class="category-count">10 tools</span>
+    </div>
     <div class="tool-grid">
-      <div class="tool-card"><div class="tool-icon">🚨</div><div class="tool-name">flag_gap</div><div class="tool-desc">Surfaces a missing item or risk at severity: critical / warning / suggestion</div></div>
-      <div class="tool-card"><div class="tool-icon">🗑️</div><div class="tool-name">remove_task</div><div class="tool-desc">Deletes a task and cleans up all dependency links across the plan</div></div>
-      <div class="tool-card"><div class="tool-icon">🔀</div><div class="tool-name">move_task</div><div class="tool-desc">Relocates a task to a different phase with optional repositioning</div></div>
-      <div class="tool-card"><div class="tool-icon">📖</div><div class="tool-name">get_full_plan</div><div class="tool-desc">Returns the complete plan as structured text for agent reasoning about the whole picture</div></div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">🚨</div>
+        <div class="tool-name">flag_gap</div>
+        <div class="tool-desc">Surfaces a missing item or risk with severity: critical · warning · suggestion. Used by background analysis</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">🗑️</div>
+        <div class="tool-name">remove_task</div>
+        <div class="tool-desc">Deletes a task and cleans up all its dependency references automatically</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">🔀</div>
+        <div class="tool-name">move_task</div>
+        <div class="tool-desc">Relocates a task to a different phase, updating all phase task lists</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">📖</div>
+        <div class="tool-name">get_full_plan</div>
+        <div class="tool-desc">Returns the complete plan as structured text for agent reasoning when full context is needed</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">✏️</div>
+        <div class="tool-name">update_task_name</div>
+        <div class="tool-desc">Renames a task to clarify scope or correct terminology</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">📌</div>
+        <div class="tool-name">set_task_priority</div>
+        <div class="tool-desc">Changes task priority: critical · high · medium · low</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">🏷️</div>
+        <div class="tool-name">update_phase</div>
+        <div class="tool-desc">Renames or reorders a restoration phase</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">🗂️</div>
+        <div class="tool-name">remove_phase</div>
+        <div class="tool-desc">Deletes an empty phase from the plan structure</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">💡</div>
+        <div class="tool-name">dismiss_gap</div>
+        <div class="tool-desc">Marks a flagged gap as acknowledged and no longer active</div>
+      </div>
+      <div class="tool-card" style="border-color:rgba(90,90,90,0.3)">
+        <div class="tool-emoji">🔖</div>
+        <div class="tool-name">remove_part</div>
+        <div class="tool-desc">Removes a part from a task's parts list when sourcing changes</div>
+      </div>
     </div>
   </div>
-</div>
 
-<hr>
-
-<!-- ── MEMORY ── -->
-<div class="section" id="memory">
-  <div class="section-label">What it remembers</div>
-  <div class="section-title">5 types of memory — not just a chat log</div>
-  <div class="section-body">
-    The AI doesn't just answer questions and forget. Every fact, decision, finding, and risk gets
-    stored permanently in the right place — and used the next time it matters.
+  <!-- Auto-population rule -->
+  <div class="auto-pop-box">
+    <strong>Task Auto-Population Rule:</strong> When the agent calls <code style="font-family:var(--mono); font-size:11px">add_task</code>, it MUST immediately follow with:
+    (1) <code style="font-family:var(--mono); font-size:11px">set_task_steps</code> — 3–6 CJ8-specific steps with torque specs and known gotchas,
+    (2) <code style="font-family:var(--mono); font-size:11px">add_part_to_task</code> × N — each required part with Israeli market cost estimate,
+    (3) <code style="font-family:var(--mono); font-size:11px">update_task_cost</code> — total estimate in ₪.
+    Every new task arrives fully detailed, never a stub.
   </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 5 — INTELLIGENCE LAYER
+══════════════════════════════════════════════════════════════ -->
+<section id="memory">
+  <div class="section-label">What the Agent Remembers</div>
+  <h2>The Intelligence Layer — 5 Memory Stores</h2>
+  <p>The agent doesn't rely on conversation history alone. Five persistent stores accumulate knowledge about this specific Jeep over every session, shaping every future suggestion.</p>
 
   <div class="memory-grid">
     <div class="memory-card">
-      <div class="memory-icon">🚗</div>
-      <div class="memory-name">Car Facts</div>
-      <div class="memory-desc">Specific truths about this Jeep. Grows as the AI learns. Shapes every future recommendation.</div>
+      <div class="memory-emoji">🚗</div>
+      <div class="memory-title">Car Facts</div>
+      <p class="memory-desc">Specific truths about this Jeep. Grows as the agent learns. Shapes every future recommendation. Includes: engine_condition, mileage, diy_skills, goals, budget, known_issues, and more. Set via <code style="font-family:var(--mono); font-size:11px">set_car_fact</code>.</p>
     </div>
     <div class="memory-card">
-      <div class="memory-icon">⚖️</div>
-      <div class="memory-name">Decisions</div>
-      <div class="memory-desc">Permanent record of what was agreed. Never forgotten. By category: budget, safety, approach, timeline.</div>
+      <div class="memory-emoji">⚖️</div>
+      <div class="memory-title">Decisions</div>
+      <p class="memory-desc">Permanent record of what was agreed. Organized by category: budget · safety · approach · scope · timeline · supplier. The agent refers back to these before making conflicting suggestions.</p>
     </div>
     <div class="memory-card">
-      <div class="memory-icon">🔍</div>
-      <div class="memory-name">Research</div>
-      <div class="memory-desc">Findings from web searches. Topic + finding + source. Linked to tasks where relevant.</div>
+      <div class="memory-emoji">🔍</div>
+      <div class="memory-title">Research Notes</div>
+      <p class="memory-desc">Findings from web searches and manual reading. Each note has a topic, finding, source, and optional task link. Prevents the agent from re-searching the same things across sessions.</p>
     </div>
     <div class="memory-card">
-      <div class="memory-icon">⚠️</div>
-      <div class="memory-name">Gaps</div>
-      <div class="memory-desc">Identified risks or missing work items. Severity-rated. Can be dismissed or converted to tasks.</div>
+      <div class="memory-emoji">⚠️</div>
+      <div class="memory-title">Gaps</div>
+      <p class="memory-desc">Identified risks or missing work items. Three severity levels: critical · warning · suggestion. Dismissible. Can be converted to tasks. Surfaced by background analysis automatically.</p>
     </div>
     <div class="memory-card">
-      <div class="memory-icon">🔗</div>
-      <div class="memory-name">Dependencies</div>
-      <div class="memory-desc">Mechanical ordering: which tasks must complete before others, and why.</div>
+      <div class="memory-emoji">🔗</div>
+      <div class="memory-title">Dependencies</div>
+      <p class="memory-desc">Mechanical ordering constraints. Which tasks must happen before others and why. Enforced by the UI — blocked tasks are visually distinct. Set via <code style="font-family:var(--mono); font-size:11px">set_task_dependency</code>.</p>
     </div>
   </div>
 
-  <!-- Background intelligence -->
-  <div class="section-label" style="margin-top:0;">Always watching</div>
-  <div class="section-title" style="font-size:22px; margin-bottom:12px;">3 things that happen automatically</div>
-  <div class="section-body" style="margin-bottom:32px;">Fully silent — no notifications, no interruptions. The plan just gets better.</div>
+  <!-- Task anatomy -->
+  <div class="task-anatomy">
+    <h4>Task Anatomy</h4>
+    <pre>Task: name · system · phase · priority
+  ├─ status:           flagged | todo | active | done | skipped
+  ├─ parts[]:          name · estimatedCostILS · partNumber · purchased
+  ├─ steps[]:          CJ8-specific how-to instructions (torque specs, gotchas)
+  ├─ notes[]:          timestamped observations and measurements
+  ├─ estimatedCostILS: Israeli market price estimate
+  ├─ actualCostILS:    what you actually paid (set when marking done)
+  └─ agentRationale:   why this task exists and why now</pre>
+  </div>
+</section>
 
-  <div class="bg-grid">
-    <div class="bg-card">
-      <div class="bg-head" style="background:#FDF3E0;">
-        <span class="bg-icon">🔄</span>
-        <div class="bg-title">After every plan change</div>
-        <div class="bg-sub">Gap Scanner</div>
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 6 — CONTEXT SELECTION
+══════════════════════════════════════════════════════════════ -->
+<section id="context">
+  <div class="section-label">What the Agent Sees</div>
+  <h2>Smart Context Selection</h2>
+  <p>The Full Agent doesn't receive your entire restoration plan on every message — that would be slow and expensive. A context selector decides what's relevant and sends only that slice.</p>
+
+  <div class="context-flow">
+    <pre>
+  taskId provided?  ────────────────────────→  Focused Task Detail
+       │                                         (all fields, parts, steps, notes)
+       ↓ no
+  phaseId only?  ──────────────────────────→  Full Phase View
+       │                                         (all tasks in that phase, detailed)
+       ↓ no
+  system keywords?  ───────────────────────→  System-Filtered Tasks
+       │  "engine", "brakes", "fuel", etc.       (tasks for that system only)
+       ↓ no
+  cost keywords?  ─────────────────────────→  Cost Summary by Phase
+       │  "cost", "budget", "₪", "spend"         (estimates + actuals, no steps)
+       ↓ no
+  Default  ────────────────────────────────→  Compressed Plan
+                                               (phase names + task counts + status)
+
+  ─────────────────────────────────────────────────────────────────────────
+  Always appended regardless of mode:
+    Car Profile · Recent Decisions · Active Gaps · All task/phase IDs</pre>
+  </div>
+
+  <div class="token-callout">
+    <strong>~50–80% fewer tokens per request</strong> compared to always sending the full plan. On a 50-task plan, default mode sends ~800 tokens of context vs. ~4,000 for the full plan. At Sonnet pricing, this is the single biggest cost saver in the stack.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 7 — BACKGROUND INTELLIGENCE
+══════════════════════════════════════════════════════════════ -->
+<section id="background">
+  <div class="section-label">What Runs Without You</div>
+  <h2>Background Intelligence — 3 Silent Agents</h2>
+  <p>Three analysis passes run automatically in the background — no prompting needed. Each is rate-limited and uses the cheapest effective approach. They write to the store but never produce visible chat messages.</p>
+
+  <div class="bg-agent-grid">
+    <div class="bg-agent-card">
+      <div class="bg-agent-header">
+        <div class="bg-agent-title">🔄 On Plan Change <span class="silent-badge">SILENT</span></div>
+        <div class="bg-agent-trigger">Trigger: any change · debounced 8s · max once per 10 min</div>
       </div>
-      <div class="bg-body">
-        Scans for CJ8-specific failure points with no corresponding task, missing safety items, and logical dependencies not yet captured.
-        <div class="bg-when">Rate limited to</div>
-        Once per 10 minutes, 8s debounce
-        <div class="bg-tools"><span class="bg-tool">flag_gap</span></div>
-        <div><span class="silent">🔇 Silent</span></div>
+      <div class="bg-agent-body">
+        <div class="bg-agent-row"><strong>Does:</strong> Scans for CJ8-specific gaps not yet in the plan — known failure points for this chassis, missing safety steps, mechanical dependencies that aren't captured</div>
+        <div class="bg-agent-row" style="margin-top:8px"><strong>Tools:</strong> <code style="font-family:var(--mono); font-size:11px">flag_gap</code> only. No tasks added. No chat output.</div>
+        <div class="bg-agent-row" style="margin-top:8px"><strong>Note:</strong> Browser-side only — runs while the app tab is open</div>
       </div>
     </div>
-    <div class="bg-card">
-      <div class="bg-head" style="background:#E8F5E9;">
-        <span class="bg-icon">✅</span>
-        <div class="bg-title">When you finish a task</div>
-        <div class="bg-sub">Unblock Analysis</div>
+
+    <div class="bg-agent-card">
+      <div class="bg-agent-header">
+        <div class="bg-agent-title">✅ On Task Completion <span class="silent-badge">SILENT</span></div>
+        <div class="bg-agent-trigger">Trigger: task marked 'done' · only if it unblocks dependents · 3s delay</div>
       </div>
-      <div class="bg-body">
-        Checks which tasks just became unblocked. Fills in their steps and parts if missing. Adds a note about what to watch out for based on what was just completed.
-        <div class="bg-when">Only fires if</div>
-        The completed task has dependents
-        <div class="bg-tools"><span class="bg-tool">set_task_steps</span><span class="bg-tool">add_part_to_task</span><span class="bg-tool">add_task_note</span></div>
-        <div><span class="silent">🔇 Silent</span></div>
+      <div class="bg-agent-body">
+        <div class="bg-agent-row"><strong>Does:</strong> Populates parts + steps for newly-unblocked tasks. Adds watch-out notes from the completed task's context (e.g. "now that you've done X, watch for Y on Z")</div>
+        <div class="bg-agent-row" style="margin-top:8px"><strong>Tools:</strong> <code style="font-family:var(--mono); font-size:11px">set_task_steps</code> · <code style="font-family:var(--mono); font-size:11px">add_part_to_task</code> · <code style="font-family:var(--mono); font-size:11px">add_task_note</code></div>
+        <div class="bg-agent-row" style="margin-top:8px"><strong>Note:</strong> Only fires if dependent tasks exist and are unblocked by this completion</div>
       </div>
     </div>
-    <div class="bg-card">
-      <div class="bg-head" style="background:#E3F2FD;">
-        <span class="bg-icon">📅</span>
-        <div class="bg-title">Once a week on load</div>
-        <div class="bg-sub">Health Check</div>
+
+    <div class="bg-agent-card">
+      <div class="bg-agent-header">
+        <div class="bg-agent-title">📅 Weekly Health Check <span class="silent-badge">SILENT</span></div>
+        <div class="bg-agent-trigger">Trigger: app load · max once per week · tracked in localStorage</div>
       </div>
-      <div class="bg-body">
-        Flags "active" tasks with no recent notes (stale/forgotten). Flags phases overloaded with tasks. Flags missing restoration phases like interior or safety inspection.
-        <div class="bg-when">Runs at most</div>
-        Once per week, on app open
-        <div class="bg-tools"><span class="bg-tool">flag_gap</span><span class="bg-tool">add_task_note</span></div>
-        <div><span class="silent">🔇 Silent</span></div>
+      <div class="bg-agent-body">
+        <div class="bg-agent-row"><strong>Does:</strong> Flags "active" tasks with no recent notes (stale). Flags overloaded phases (&gt;10 tasks). Flags missing restoration phases that a CJ8 should have.</div>
+        <div class="bg-agent-row" style="margin-top:8px"><strong>Tools:</strong> <code style="font-family:var(--mono); font-size:11px">flag_gap</code> · <code style="font-family:var(--mono); font-size:11px">add_task_note</code></div>
+        <div class="bg-agent-row" style="margin-top:8px"><strong>Note:</strong> Runs on page load — fires even if you haven't used the app in a week</div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<hr>
+<hr class="divider">
 
-<!-- ── ARCHITECTURE ── -->
-<div class="section" id="arch">
-  <div class="section-label">Under the hood</div>
-  <div class="section-title">How every message is handled</div>
-  <div class="section-body">Not every question needs the same power. The system routes each message to the right model automatically — saving cost on simple questions, using full capability for complex ones.</div>
-
-  <!-- Two models -->
-  <div class="models-row">
-    <div class="model-card haiku">
-      <div class="model-head">
-        <div class="model-emoji">🐦</div>
-        <div>
-          <div class="model-name">Fast Agent <span class="badge-fast">FAST</span></div>
-          <div class="model-id">claude-haiku-4-5</div>
-        </div>
-      </div>
-      <div class="model-body">
-        <div class="model-row"><div class="model-row-label">Handles</div><div class="model-row-val">Greetings, status checks, "what's next?"</div></div>
-        <div class="model-row"><div class="model-row-label">Tools</div><div class="model-row-val">None</div></div>
-        <div class="model-row"><div class="model-row-label">Max tokens</div><div class="model-row-val">512</div></div>
-        <div class="model-row"><div class="model-row-label">Cost</div><div class="model-row-val" style="color:var(--green)">~15× cheaper than Sonnet</div></div>
-      </div>
-    </div>
-    <div class="model-card sonnet">
-      <div class="model-head">
-        <div class="model-emoji">🧠</div>
-        <div>
-          <div class="model-name">Full Agent <span class="badge-full">FULL</span></div>
-          <div class="model-id">claude-sonnet-4-6</div>
-        </div>
-      </div>
-      <div class="model-body">
-        <div class="model-row"><div class="model-row-label">Handles</div><div class="model-row-val">Planning, research, restructuring, building</div></div>
-        <div class="model-row"><div class="model-row-label">Tools</div><div class="model-row-val">All 23 · agentic loop</div></div>
-        <div class="model-row"><div class="model-row-label">Max tokens</div><div class="model-row-val">2,048</div></div>
-        <div class="model-row"><div class="model-row-label">Prompt cache</div><div class="model-row-val" style="color:var(--amber)">~10% cost on cache hits</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Flow diagram -->
-  <div class="arch-wrap">
-    <div class="arch-box dark">💬 &nbsp;User sends a message</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-box amber"><strong>Classifier</strong> <span style="font-size:11px; font-weight:400; color:var(--text-muted)"> — image? length? keywords?</span></div>
-    <div class="arch-arrow" style="font-size:13px; padding:8px 0; color:var(--border-strong)">↙ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↘</div>
-    <div class="arch-split">
-      <div class="arch-branch">
-        <div class="arch-label-fast">⚡ Fast Track</div>
-        <div class="arch-arrow" style="font-size:16px">↓</div>
-        <div class="arch-box green" style="min-width:0; width:100%; font-size:12px;"><strong>Haiku</strong><br><span class="arch-note">No tools · 512 tokens</span></div>
-        <div class="arch-arrow" style="font-size:16px">↓</div>
-        <div class="arch-box" style="min-width:0; width:100%; font-size:12px; background:var(--surface-2);">✅ Quick answer</div>
-      </div>
-      <div class="arch-or">or</div>
-      <div class="arch-branch">
-        <div class="arch-label-full">🧠 Full Track</div>
-        <div class="arch-arrow" style="font-size:16px">↓</div>
-        <div class="arch-box amber" style="min-width:0; width:100%; font-size:12px;"><strong>Context Selector</strong><br><span class="arch-note">Only relevant plan slice</span></div>
-        <div class="arch-arrow" style="font-size:16px">↓</div>
-        <div class="arch-box blue" style="min-width:0; width:100%; font-size:12px;"><strong>Sonnet</strong> + cached prompt<br><span class="arch-note">All 23 tools · 2048 tokens</span></div>
-        <div class="arch-arrow" style="font-size:16px">↓</div>
-        <div class="arch-box purple" style="min-width:0; width:100%; font-size:12px;"><strong>Agentic Loop</strong><br><span class="arch-note">Tools → store → loop until done</span></div>
-      </div>
-    </div>
-    <div style="display:flex; flex-direction:column; align-items:center; gap:0; width:100%; max-width:680px;">
-      <div class="arch-arrow" style="font-size:16px">↓</div>
-      <div class="arch-box" style="min-width:320px; font-size:12px; background:var(--surface-2); text-align:center;">
-        📲 UI updates · Background analysis may fire silently
-      </div>
-    </div>
-  </div>
-
-  <!-- Context selection -->
-  <div style="margin-top:48px;">
-    <div class="section-label">Token efficiency</div>
-    <div class="section-title" style="font-size:22px; margin-bottom:12px;">Smart context selection</div>
-    <div class="section-body" style="margin-bottom:24px;">The agent doesn't get the whole plan on every message. A selector picks only what's relevant — reducing tokens by 50–80% per request.</div>
-
-    <div class="context-table">
-      <div class="context-row">
-        <div class="context-trigger">Viewing a task<small>taskId provided</small></div>
-        <div class="context-result"><strong>Full task detail</strong> — steps, parts, notes, cost, blockers, sibling tasks</div>
-      </div>
-      <div class="context-row">
-        <div class="context-trigger">Browsing a phase<small>phaseId provided</small></div>
-        <div class="context-result"><strong>Phase view</strong> — all tasks in that phase with dependencies and completion %</div>
-      </div>
-      <div class="context-row">
-        <div class="context-trigger">System keyword<small>"engine", "brakes", "axle"…</small></div>
-        <div class="context-result"><strong>System-filtered tasks</strong> — only tasks matching that vehicle system (12 systems covered)</div>
-      </div>
-      <div class="context-row">
-        <div class="context-trigger">Cost question<small>"budget", "cost", "₪"</small></div>
-        <div class="context-result"><strong>Cost summary</strong> — estimated vs. actual spend by phase</div>
-      </div>
-      <div class="context-row">
-        <div class="context-trigger">Everything else<small>default</small></div>
-        <div class="context-result"><strong>Compressed plan</strong> — phase names + progress + task statuses. No steps or parts.</div>
-      </div>
-      <div class="context-always">
-        <strong>Always appended:</strong> &nbsp;Car profile · Recent decisions · Active gaps · All IDs
-      </div>
-    </div>
-  </div>
-</div>
-
-<hr>
-
-<!-- ── STORAGE ── -->
-<div class="section" id="storage">
-  <div class="section-label">Data</div>
-  <div class="section-title">Where everything lives</div>
-  <div class="section-body">All data is local. The Vite dev server doubles as the backend — a Node.js plugin adds 5 API routes that read and write files on disk. localStorage is a sync backup. IndexedDB holds photos and PDFs.</div>
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 8 — DATA & STORAGE
+══════════════════════════════════════════════════════════════ -->
+<section id="storage">
+  <div class="section-label">Where Everything Lives</div>
+  <h2>Data &amp; Storage Architecture</h2>
 
   <div class="storage-grid">
-    <div class="storage-card">
-      <div class="storage-head">💾 Disk Files <span style="margin-left:auto; font-size:10px; color:var(--text-dim); font-weight:400;">via Vite server plugin</span></div>
-      <div class="storage-body">
-        <div class="file-tree">
-          data/<br>
-          &nbsp;&nbsp;project.json<span class="comment"> &nbsp;&nbsp;&nbsp;← full Zustand state</span><br>
-          &nbsp;&nbsp;changelog.ndjson<span class="comment"> ← append-only log</span><br>
-          &nbsp;&nbsp;snapshots/<span class="comment"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← before bulk changes</span><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;2026-03-14T15-52.json<br>
-          &nbsp;&nbsp;files/<span class="comment"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← .gitignore'd</span>
+    <div class="file-tree">
+      <h4>Disk Layout (via Vite plugin)</h4>
+      <pre>data/
+  project.json         ← Full Zustand state
+                         (written on every change)
+  changelog.ndjson     ← Append-only event log
+                         (every change, forever)
+  snapshots/           ← Auto-saved before bulk
+    2026-03-14T15-52-26.json    agent changes
+    2026-03-13T09-11-04.json
+    ...</pre>
+    </div>
+
+    <div class="storage-layers">
+      <div class="storage-layer">
+        <div class="storage-layer-icon">💾</div>
+        <div>
+          <div class="storage-layer-name">Disk JSON</div>
+          <div class="storage-layer-desc">The real persistent record. <code style="font-family:var(--mono); font-size:10px">POST /api/project</code> on every change. Survives browser wipes, cache clears, reinstalls. The canonical source of truth.</div>
+        </div>
+      </div>
+      <div class="storage-layer">
+        <div class="storage-layer-icon">🔵</div>
+        <div>
+          <div class="storage-layer-name">localStorage</div>
+          <div class="storage-layer-desc">Instant sync backup. Written synchronously. Read on load as fallback if disk is unavailable. Also stores: conversation history, weekly health check timestamp, UI preferences.</div>
+        </div>
+      </div>
+      <div class="storage-layer">
+        <div class="storage-layer-icon">🗄️</div>
+        <div>
+          <div class="storage-layer-name">IndexedDB</div>
+          <div class="storage-layer-desc">Binary file data — photos, PDFs. Never stored in JSON. Metadata (filename, taskId, annotation) lives in Zustand state; the raw bytes live here.</div>
+        </div>
+      </div>
+      <div class="storage-layer">
+        <div class="storage-layer-icon">⚡</div>
+        <div>
+          <div class="storage-layer-name">Zustand</div>
+          <div class="storage-layer-desc">In-memory reactive state. Source of truth at runtime. All UI reads from here. Mutations write to both localStorage and disk asynchronously.</div>
         </div>
       </div>
     </div>
-    <div class="storage-card">
-      <div class="storage-head">📡 API Routes</div>
-      <div class="storage-body">
-        <div class="api-grid">
-          <code>GET /api/project</code><span>Read project.json</span>
-          <code>POST /api/project</code><span>Write project.json</span>
-          <code>POST /api/changelog</code><span>Append to changelog</span>
-          <code>GET /api/snapshots</code><span>List snapshots</span>
-          <code>POST /api/snapshots</code><span>Write new snapshot</span>
-        </div>
-      </div>
+  </div>
+
+  <div class="card-sm">
+    <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:10px; font-family:var(--mono)">Changelog Event Types</div>
+    <div class="changelog-chips">
+      <span class="changelog-chip">task_status</span>
+      <span class="changelog-chip">task_added</span>
+      <span class="changelog-chip">task_completed</span>
+      <span class="changelog-chip">note_added</span>
+      <span class="changelog-chip">cost_updated</span>
+      <span class="changelog-chip">decision</span>
+      <span class="changelog-chip">snapshot</span>
+      <span class="changelog-chip">agent_bulk_change</span>
+      <span class="changelog-chip">history_compressed</span>
+      <span class="changelog-chip">fast_query</span>
+      <span class="changelog-chip">proactive_analysis</span>
     </div>
   </div>
+</section>
 
-  <div style="background:var(--surface); border:2px solid var(--border); border-radius:8px; padding:16px 20px; box-shadow:var(--shadow);">
-    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); margin-bottom:10px;">Changelog — every change is logged</div>
-    <div class="cl-chips">
-      <span class="cl-chip">task_status</span><span class="cl-chip">task_added</span><span class="cl-chip">task_completed</span><span class="cl-chip">note_added</span><span class="cl-chip">cost_updated</span><span class="cl-chip">decision</span><span class="cl-chip">snapshot</span><span class="cl-chip">agent_bulk_change</span><span class="cl-chip">history_compressed</span><span class="cl-chip">fast_query</span><span class="cl-chip">proactive_analysis</span>
-    </div>
-  </div>
-</div>
+<hr class="divider">
 
-<hr>
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 9 — TECH STACK
+══════════════════════════════════════════════════════════════ -->
+<section id="stack">
+  <div class="section-label">What It's Built With</div>
+  <h2>Tech Stack</h2>
 
-<!-- ── STACK ── -->
-<div class="section" id="stack">
-  <div class="section-label">Tech stack</div>
-  <div class="section-title">What it's built with</div>
-  <div class="section-body">All local. No cloud backend. The Anthropic SDK runs in-browser with a local API key.</div>
+  <table class="stack-table">
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Technology</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>UI</td>
+        <td>React 18 + TypeScript</td>
+      </tr>
+      <tr>
+        <td>State</td>
+        <td>Zustand (persist middleware, custom dual-write storage adapter)</td>
+      </tr>
+      <tr>
+        <td>Routing</td>
+        <td>None — single-page app, view-switched via state</td>
+      </tr>
+      <tr>
+        <td>AI Fast Tier</td>
+        <td>claude-haiku-4-5 (Anthropic SDK, browser-side, no tools)</td>
+      </tr>
+      <tr>
+        <td>AI Full Tier</td>
+        <td>claude-sonnet-4-6 (prompt caching, agentic loop, 23 tools)</td>
+      </tr>
+      <tr>
+        <td>Dev Server</td>
+        <td>Vite + custom Node.js fs middleware (5 API routes: project, changelog, snapshots, search)</td>
+      </tr>
+      <tr>
+        <td>Search</td>
+        <td>DuckDuckGo Instant Answers API via server-side Node.js proxy (no CORS, no API key)</td>
+      </tr>
+      <tr>
+        <td>Animations</td>
+        <td>Framer Motion</td>
+      </tr>
+      <tr>
+        <td>File Storage</td>
+        <td>IndexedDB (binary) + disk JSON (metadata)</td>
+      </tr>
+      <tr>
+        <td>Fonts</td>
+        <td>Space Grotesk + Space Mono (Google Fonts)</td>
+      </tr>
+      <tr>
+        <td>Auto-Start</td>
+        <td>macOS launchd plist (RunAtLoad + KeepAlive, auto-restarts on crash)</td>
+      </tr>
+      <tr>
+        <td>Embedded Knowledge</td>
+        <td>Battlefield Repairs Manual + JEEPOLOG Hebrew manuals (OCR + distilled into static system prompt)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
 
-  <div class="stack-grid">
-    <div class="stack-card"><div class="stack-layer">UI</div><div class="stack-name">React 18 + TypeScript</div><div class="stack-desc">Component-based. Framer Motion for animations. Single page, view-switched.</div></div>
-    <div class="stack-card"><div class="stack-layer">State</div><div class="stack-name">Zustand</div><div class="stack-desc">Persist middleware with custom dual-write adapter (disk + localStorage simultaneously).</div></div>
-    <div class="stack-card"><div class="stack-layer">AI Fast Tier</div><div class="stack-name">claude-haiku-4-5</div><div class="stack-desc">Simple questions, compression. ~15× cheaper than Sonnet.</div></div>
-    <div class="stack-card"><div class="stack-layer">AI Full Tier</div><div class="stack-name">claude-sonnet-4-6</div><div class="stack-desc">Planning, tools, agentic loop. Static prompt cached at ~10% cost on hits.</div></div>
-    <div class="stack-card"><div class="stack-layer">Dev Server</div><div class="stack-name">Vite + Node.js Middleware</div><div class="stack-desc">Custom <code>configureServer</code> hook adds 5 fs-backed API routes. No separate process.</div></div>
-    <div class="stack-card"><div class="stack-layer">Files</div><div class="stack-name">IndexedDB + Disk JSON</div><div class="stack-desc">Binary blobs (photos, PDFs) in IndexedDB. File metadata in Zustand + disk.</div></div>
-    <div class="stack-card"><div class="stack-layer">AI SDK</div><div class="stack-name">@anthropic-ai/sdk</div><div class="stack-desc">Browser streaming with local <code>VITE_ANTHROPIC_API_KEY</code>.</div></div>
-    <div class="stack-card"><div class="stack-layer">Fonts</div><div class="stack-name">Space Grotesk + Space Mono</div><div class="stack-desc">Chunky geometric UI font. Monospace for tool names, code, and chips.</div></div>
-  </div>
-
-  <div style="margin-top:24px; padding:14px 18px; background:var(--surface); border:2px solid var(--border); border-radius:8px; font-size:12px; color:var(--text-muted); box-shadow:var(--shadow); line-height:1.9;">
-    <strong style="color:var(--text); display:block; margin-bottom:6px;">Key source files</strong>
-    <code>src/ai/agentClient.ts</code> · <code>src/ai/contextSelector.ts</code> · <code>src/ai/systemPrompt.ts</code> · <code>src/ai/agentTools.ts</code> · <code>src/ai/agentBackground.ts</code> · <code>src/store/useRenovationStore.ts</code> · <code>vite.config.ts</code>
-  </div>
-</div>
-
-<div style="height:80px;"></div>
-
+</div><!-- /page -->
 </body>
 </html>
