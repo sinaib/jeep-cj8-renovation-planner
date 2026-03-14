@@ -1,0 +1,77 @@
+:root {
+  --bg: #111214;
+  --surface: #1A1C1E;
+  --surface-2: #22252A;
+  --surface-3: #2A2E35;
+  --border: #2E3238;
+  --border-light: #3A3F48;
+
+  --olive: #4A5C3A;
+  --olive-light: #5D7349;
+  --olive-dim: #3A4A2D;
+  --amber: #D4832A;
+  --amber-light: #E8952F;
+  --amber-dim: #7A4A15;
+
+  --red: #C0392B;
+  --red-light: #E74C3C;
+  --green: #27AE60;
+  --green-light: #2ECC71;
+  --blue: #2980B9;
+
+  --text: #F0EDE8;
+  --text-muted: #8A8F98;
+  --text-dim: #5A5F68;
+
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --font-mono: 'JetBrains Mono', 'Fira Mono', 'SF Mono', Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+input, textarea { font: inherit; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* Status colors */
+.status-todo { color: var(--text-muted); }
+.status-active { color: var(--amber); }
+.status-done { color: var(--green); }
+.status-flagged { color: var(--red); }
+.status-skipped { color: var(--text-dim); }
+
+/* Priority colors */
+.priority-critical { color: var(--red-light); }
+.priority-high { color: var(--amber); }
+.priority-medium { color: var(--text); }
+.priority-low { color: var(--text-muted); }
+
+/* Mono numbers */
+.mono { font-family: var(--font-mono); }
+.cost { font-family: var(--font-mono); color: var(--amber); }
+
+/* Utility */
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
