@@ -3,6 +3,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRenovationStore } from '../../store/useRenovationStore';
 import { sendAgentMessage } from '../../ai/agentClient';
 
+function parseApiError(err: string): string {
+  try {
+    const jsonStart = err.indexOf('{');
+    if (jsonStart !== -1) {
+      const parsed = JSON.parse(err.slice(jsonStart));
+      const msg: string = parsed?.error?.message ?? parsed?.message ?? err;
+      if (msg.toLowerCase().includes('credit balance')) {
+        return 'Insufficient API credits. Go to console.anthropic.com → Billing to add credits.';
+      }
+      if (msg.toLowerCase().includes('authentication')) {
+        return 'Invalid API key. Check VITE_ANTHROPIC_API_KEY in .env.local.';
+      }
+      return msg;
+    }
+  } catch {}
+  return err;
+}
+
 interface AgentDrawerProps {
   open: boolean;
   onClose: () => void;
@@ -59,7 +77,7 @@ export function AgentDrawer({ open, onClose }: AgentDrawerProps) {
         setToolActivity([]);
       },
       onError: (error) => {
-        updateLastAgentMessage(`Error: ${error}`);
+        updateLastAgentMessage(`⚠️ ${parseApiError(error)}`);
         setToolActivity([]);
       },
     });
@@ -150,8 +168,8 @@ export function AgentDrawer({ open, onClose }: AgentDrawerProps) {
                     maxWidth: '85%',
                     padding: '10px 14px',
                     borderRadius: msg.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                    background: msg.role === 'user' ? 'var(--olive-dim)' : 'var(--surface-2)',
-                    border: `1px solid ${msg.role === 'user' ? 'var(--olive)' : 'var(--border)'}`,
+                    background: msg.role === 'user' ? 'var(--amber-bg)' : 'var(--surface-2)',
+                    border: `1px solid ${msg.role === 'user' ? 'var(--amber-dim)' : 'var(--border)'}`,
                     fontSize: 13, lineHeight: 1.5,
                   }}>
                     {msg.content || (msg.role === 'assistant' && streaming ? (

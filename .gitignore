@@ -16,6 +16,10 @@ dist-ssr
 .env.local
 .env*.local
 
+# Project data — keep project.json, changelog.ndjson, snapshots/ in git
+# but exclude binary files (photos/PDFs — too large for git)
+data/files/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

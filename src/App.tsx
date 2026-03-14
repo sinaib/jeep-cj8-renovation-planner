@@ -1,62 +1,90 @@
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useRef, useMemo } from 'react';
 import { useRenovationStore } from './store/useRenovationStore';
 import { TopBar } from './components/layout/TopBar';
-import { PlanSidebar } from './components/layout/PlanSidebar';
-import { AgentDrawer } from './components/agent/AgentDrawer';
-import { TaskDetailPanel } from './components/tasks/TaskDetailPanel';
+import { JourneyStrip } from './components/layout/JourneyStrip';
+import { PlanContent, type PlanContentHandle } from './components/plan/PlanContent';
+import { TaskDetailView } from './components/tasks/TaskDetailView';
+import { AgentBar } from './components/agent/AgentBar';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { OnboardingScreen } from './components/onboarding/OnboardingScreen';
-import { HomeView } from './views/HomeView';
-import { PhaseView } from './views/PhaseView';
-import { PlanView } from './components/plan/PlanView';
-import { ManualLibrary } from './components/manuals/ManualLibrary';
+import { ErrorBoundary } from './components/shared/ErrorBoundary';
+import type { Task } from './types';
 import './styles/globals.css';
 
 function AppShell() {
-  const [agentOpen, setAgentOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const planRef = useRef<PlanContentHandle>(null);
+
+  const rawPhases = useRenovationStore((s) => s.phases);
+  const phases = useMemo(() => rawPhases, [rawPhases]);
+
+  // Current phase for the selected task (for context injection)
+  const selectedPhase = useMemo(
+    () => selectedTask ? (phases.find((p) => p.id === selectedTask.phaseId) ?? null) : null,
+    [selectedTask, phases]
+  );
+
+  const handleScrollToPhase = (phaseId: string) => {
+    setSelectedTask(null);
+    setTimeout(() => planRef.current?.scrollToPhase(phaseId), 50);
+  };
+
+  const activePhaseId = planRef.current?.getActivePhaseId() ?? null;
 
   return (
-    <>
-      <TopBar
-        onAgentOpen={() => setAgentOpen(true)}
-        onSettingsOpen={() => setSettingsOpen(true)}
+    <div style={{
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'var(--bg)',
+      overflow: 'hidden',
+    }}>
+      {/* Top bar */}
+      <TopBar onSettingsOpen={() => setSettingsOpen(true)} />
+
+      {/* Journey strip */}
+      <JourneyStrip
+        scrollToPhase={handleScrollToPhase}
+        activePhaseId={activePhaseId}
       />
 
-      <div style={{ display: 'flex', height: '100vh', paddingTop: 52 }}>
-        {/* Always-visible plan sidebar */}
-        <PlanSidebar />
-
-        {/* Main scrollable content */}
-        <main style={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
-          <Routes>
-            <Route path="/" element={<HomeView />} />
-            <Route path="/plan" element={<PlanView />} />
-            <Route path="/phase/:phaseId" element={<PhaseView />} />
-            <Route path="/manuals" element={<ManualLibrary />} />
-          </Routes>
-        </main>
+      {/* Main content area — scrollable */}
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+        {selectedTask ? (
+          <TaskDetailView
+            task={selectedTask}
+            onBack={() => setSelectedTask(null)}
+          />
+        ) : (
+          <PlanContent
+            ref={planRef}
+            onSelectTask={setSelectedTask}
+          />
+        )}
       </div>
 
-      {/* Overlay panels */}
-      <TaskDetailPanel />
-      <AgentDrawer open={agentOpen} onClose={() => setAgentOpen(false)} />
+      {/* Agent bar — always at bottom, receives current task context */}
+      <AgentBar
+        currentTask={selectedTask}
+        currentPhase={selectedPhase}
+        contextHint={selectedTask ? `Ask about "${selectedTask.name}"...` : undefined}
+      />
+
+      {/* Modals */}
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </>
+    </div>
   );
 }
 
 export default function App() {
   const appState = useRenovationStore((s) => s.appState);
 
-  return (
-    <BrowserRouter>
-      {appState === 'onboarding' ? (
-        <OnboardingScreen />
-      ) : (
-        <AppShell />
-      )}
-    </BrowserRouter>
+  return appState === 'onboarding' ? (
+    <OnboardingScreen />
+  ) : (
+    <ErrorBoundary>
+      <AppShell />
+    </ErrorBoundary>
   );
 }

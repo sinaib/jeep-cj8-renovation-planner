@@ -3,8 +3,8 @@ import { JourneyMap } from '../components/dashboard/JourneyMap';
 import { useRenovationStore } from '../store/useRenovationStore';
 
 export function HomeView() {
-  const totalCost = useRenovationStore.getState().getTotalCostEstimated();
-  const spentCost = useRenovationStore.getState().getTotalCostSpent();
+  const totalCost = useRenovationStore((s) => s.getTotalCostEstimated());
+  const spentCost = useRenovationStore((s) => s.getTotalCostSpent());
 
   return (
     <div style={{ padding: '24px 24px 80px', maxWidth: 640, margin: '0 auto' }}>

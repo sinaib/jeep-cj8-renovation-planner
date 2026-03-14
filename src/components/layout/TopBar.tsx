@@ -1,137 +1,179 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useRenovationStore } from '../../store/useRenovationStore';
 
 interface TopBarProps {
   onSettingsOpen: () => void;
-  onAgentOpen: () => void;
 }
 
-export function TopBar({ onSettingsOpen, onAgentOpen }: TopBarProps) {
-  const location = useLocation();
+export function TopBar({ onSettingsOpen }: TopBarProps) {
   const pct = useRenovationStore((s) => s.getOverallCompletionPercent());
   const totalTasks = useRenovationStore((s) => Object.keys(s.tasks).length);
   const doneTasks = useRenovationStore((s) =>
     Object.values(s.tasks).filter((t) => t.status === 'done').length
   );
-  const gaps = useRenovationStore((s) => s.getActiveGaps());
-  const appState = useRenovationStore((s) => s.appState);
+  const rawGaps = useRenovationStore((s) => s.gaps);
+  const criticalGaps = useMemo(
+    () => rawGaps.filter((g) => !g.dismissed && g.severity === 'critical').length,
+    [rawGaps]
+  );
   const streaming = useRenovationStore((s) => s.agentStreaming);
-
-  const navLinks = [
-    { to: '/', label: 'Map' },
-    { to: '/plan', label: 'Plan' },
-    { to: '/manuals', label: 'Manuals' },
-  ];
+  const phases = useRenovationStore((s) => s.phases);
+  const totalCost = useRenovationStore((s) => s.getTotalCostEstimated());
 
   return (
-    <header style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: 'var(--surface)', borderBottom: '1px solid var(--border)',
-      height: 52,
+    <div style={{
+      background: 'var(--surface)',
+      borderBottom: '1px solid var(--border)',
+      flexShrink: 0,
+      position: 'relative',
     }}>
       <div style={{
-        display: 'flex', alignItems: 'center', height: '100%',
-        padding: '0 16px', gap: 16,
+        display: 'flex',
+        alignItems: 'center',
+        height: 48,
+        padding: '0 16px',
+        gap: 14,
       }}>
-        {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <span style={{ fontSize: 20 }}>🚙</span>
-          <span style={{ fontWeight: 700, letterSpacing: '0.05em', color: 'var(--amber)', fontSize: 13 }}>
-            CJ8 PLANNER
-          </span>
-        </Link>
+        {/* Vehicle identity */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 16 }}>🚙</span>
+          <div>
+            <div style={{
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.06em',
+              color: 'var(--amber)',
+            }}>
+              CJ8 SCRAMBLER 1989
+            </div>
+            <div style={{ fontSize: 9, color: 'var(--text-dim)', letterSpacing: '0.04em' }}>
+              RESTORATION PLAN
+            </div>
+          </div>
+        </div>
 
-        {/* Nav */}
-        {appState !== 'onboarding' && (
-          <nav style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
-            {navLinks.map(({ to, label }) => {
-              const active = location.pathname === to;
-              return (
-                <Link key={to} to={to} style={{
-                  padding: '4px 10px', borderRadius: 'var(--radius)',
-                  fontSize: 12, fontWeight: 500, letterSpacing: '0.04em',
-                  color: active ? 'var(--amber)' : 'var(--text-muted)',
-                  background: active ? 'var(--amber-dim)' : 'transparent',
-                  transition: 'all 0.15s',
-                }}>
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
-        )}
+        <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
 
-        <div style={{ flex: 1 }} />
-
-        {/* Progress pill */}
-        {appState !== 'onboarding' && totalTasks > 0 && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: 'var(--surface-2)', padding: '4px 12px',
-            borderRadius: 20, border: '1px solid var(--border)',
-          }}>
-            <div style={{ width: 80, height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+        {/* Progress summary */}
+        {totalTasks > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* Bar */}
+            <div style={{
+              width: 100,
+              height: 4,
+              background: 'var(--surface-2)',
+              borderRadius: 2,
+              overflow: 'hidden',
+            }}>
               <motion.div
-                style={{ height: '100%', background: 'var(--green)', borderRadius: 2 }}
+                style={{
+                  height: '100%',
+                  background: 'linear-gradient(90deg, var(--olive), var(--green))',
+                  borderRadius: 2,
+                }}
                 animate={{ width: `${pct}%` }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15 }}
               />
             </div>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            <span style={{
+              fontSize: 11,
+              color: 'var(--text-muted)',
+              fontFamily: 'var(--font-mono)',
+            }}>
               {doneTasks}/{totalTasks}
+            </span>
+            <span style={{
+              fontSize: 11,
+              color: 'var(--text-dim)',
+              fontFamily: 'var(--font-mono)',
+            }}>
+              {pct}%
             </span>
           </div>
         )}
 
-        {/* Gap badge */}
-        {gaps.length > 0 && appState !== 'onboarding' && (
-          <div style={{
-            background: 'var(--red)', color: 'white',
-            borderRadius: 20, padding: '3px 8px', fontSize: 11, fontWeight: 600,
+        {/* Phase count */}
+        {phases.length > 0 && (
+          <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>
+            {phases.length} phase{phases.length !== 1 ? 's' : ''}
+          </span>
+        )}
+
+        {/* Total cost estimate */}
+        {totalCost > 0 && (
+          <span style={{
+            fontSize: 11,
+            color: 'var(--text-dim)',
+            fontFamily: 'var(--font-mono)',
           }}>
-            {gaps.filter(g => g.severity === 'critical').length > 0 ? '⚠' : '!'} {gaps.length} gap{gaps.length !== 1 ? 's' : ''}
+            ~₪{totalCost.toLocaleString()}
+          </span>
+        )}
+
+        <div style={{ flex: 1 }} />
+
+        {/* Critical gaps badge */}
+        {criticalGaps > 0 && (
+          <div style={{
+            background: 'var(--red)',
+            color: 'white',
+            borderRadius: 20,
+            padding: '2px 8px',
+            fontSize: 10,
+            fontWeight: 600,
+          }}>
+            ⚠ {criticalGaps} critical
           </div>
         )}
 
-        {/* Agent button */}
-        <button
-          onClick={onAgentOpen}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '5px 12px', borderRadius: 'var(--radius)',
-            background: streaming ? 'var(--amber-dim)' : 'var(--olive-dim)',
-            border: `1px solid ${streaming ? 'var(--amber)' : 'var(--olive)'}`,
-            color: streaming ? 'var(--amber)' : 'var(--text)',
-            fontSize: 12, fontWeight: 500,
-            transition: 'all 0.15s',
-          }}
-        >
-          <span>{streaming ? '⚡' : '🔧'}</span>
-          <span>{streaming ? 'Thinking...' : 'Agent'}</span>
-        </button>
+        {/* Streaming indicator */}
+        {streaming && (
+          <motion.div
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ repeat: Infinity, duration: 1.2 }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              fontSize: 11, color: 'var(--amber)',
+            }}
+          >
+            <span>●</span>
+            <span>advisor thinking</span>
+          </motion.div>
+        )}
 
         {/* Settings */}
         <button
           onClick={onSettingsOpen}
-          style={{ color: 'var(--text-muted)', fontSize: 16, padding: 4 }}
-          title="Settings"
+          style={{
+            color: 'var(--text-dim)',
+            fontSize: 14,
+            padding: '4px 6px',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            borderRadius: 4,
+            transition: 'color 0.15s',
+          }}
+          title="Settings / Export"
         >
           ⚙
         </button>
       </div>
 
-      {/* Thin progress line at very bottom of header */}
-      {appState !== 'onboarding' && (
+      {/* Progress line at the bottom of the bar */}
+      {totalTasks > 0 && (
         <motion.div
           style={{
-            position: 'absolute', bottom: 0, left: 0, height: 2,
+            position: 'absolute',
+            bottom: 0, left: 0,
+            height: 2,
             background: 'linear-gradient(90deg, var(--olive), var(--amber))',
           }}
           animate={{ width: `${pct}%` }}
           transition={{ type: 'spring', stiffness: 40, damping: 15 }}
         />
       )}
-    </header>
+    </div>
   );
 }

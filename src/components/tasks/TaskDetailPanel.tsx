@@ -29,6 +29,7 @@ export function TaskDetailPanel() {
   const setTaskStatus = useRenovationStore((s) => s.setTaskStatus);
   const addTaskNote = useRenovationStore((s) => s.addTaskNote);
   const markPartPurchased = useRenovationStore((s) => s.markPartPurchased);
+  const taskDependencies = useRenovationStore((s) => s.taskDependencies);
 
   const [noteInput, setNoteInput] = useState('');
   const [completing, setCompleting] = useState(false);
@@ -36,6 +37,21 @@ export function TaskDetailPanel() {
 
   const task = activeTaskId ? tasks[activeTaskId] : null;
   const phase = task ? phases.find((p) => p.id === task.phaseId) : null;
+
+  // Dependencies for this task
+  const blockingDeps = task
+    ? taskDependencies.filter((d) => d.taskId === task.id)
+    : [];
+  const blockingTasks = blockingDeps
+    .map((d) => ({ dep: d, task: tasks[d.dependsOnTaskId] }))
+    .filter((x) => x.task);
+
+  const dependentDeps = task
+    ? taskDependencies.filter((d) => d.dependsOnTaskId === task.id)
+    : [];
+  const dependentTasks = dependentDeps
+    .map((d) => ({ dep: d, task: tasks[d.taskId] }))
+    .filter((x) => x.task);
 
   const handleComplete = async () => {
     if (!task) return;
@@ -322,6 +338,73 @@ export function TaskDetailPanel() {
                       </span>
                     </a>
                   ))}
+                </div>
+              )}
+
+              {/* Dependencies */}
+              {(blockingTasks.length > 0 || dependentTasks.length > 0) && (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-dim)', letterSpacing: '0.08em', marginBottom: 8 }}>
+                    DEPENDENCIES
+                  </div>
+                  {blockingTasks.length > 0 && (
+                    <div style={{ marginBottom: 8 }}>
+                      <div style={{ fontSize: 10, color: 'var(--text-dim)', marginBottom: 4 }}>Must complete first:</div>
+                      {blockingTasks.map(({ dep, task: bt }) => (
+                        <button
+                          key={dep.dependsOnTaskId}
+                          onClick={() => setActiveTask(bt.id)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 8,
+                            width: '100%', padding: '6px 10px', borderRadius: 'var(--radius)',
+                            background: 'var(--surface-2)', border: '1px solid var(--border)',
+                            marginBottom: 4, textAlign: 'left', cursor: 'pointer',
+                          }}
+                        >
+                          <span style={{
+                            fontSize: 10,
+                            color: bt.status === 'done' ? 'var(--green)' : 'var(--amber)',
+                          }}>
+                            {bt.status === 'done' ? '✓' : '→'}
+                          </span>
+                          <span style={{ flex: 1, fontSize: 11, color: 'var(--text-muted)' }}>{bt.name}</span>
+                          <span style={{
+                            fontSize: 9, padding: '1px 5px', borderRadius: 8,
+                            background: bt.status === 'done' ? 'rgba(39,174,96,0.12)' : 'var(--surface)',
+                            color: bt.status === 'done' ? 'var(--green)' : 'var(--text-dim)',
+                          }}>{bt.status}</span>
+                        </button>
+                      ))}
+                      {blockingTasks.some(({ task: bt }) => bt.status !== 'done' && bt.status !== 'skipped') && (
+                        <div style={{ fontSize: 10, color: 'var(--amber)', marginTop: 2 }}>
+                          ⚠ This task is blocked until the above are done
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {dependentTasks.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 10, color: 'var(--text-dim)', marginBottom: 4 }}>Unlocks these tasks:</div>
+                      {dependentTasks.map(({ dep, task: dt }) => (
+                        <button
+                          key={dep.taskId}
+                          onClick={() => setActiveTask(dt.id)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 8,
+                            width: '100%', padding: '6px 10px', borderRadius: 'var(--radius)',
+                            background: 'var(--surface-2)', border: '1px solid var(--border)',
+                            marginBottom: 4, textAlign: 'left', cursor: 'pointer',
+                          }}
+                        >
+                          <span style={{ fontSize: 10, color: 'var(--text-dim)' }}>⇒</span>
+                          <span style={{ flex: 1, fontSize: 11, color: 'var(--text-muted)' }}>{dt.name}</span>
+                          <span style={{ fontSize: 9, color: 'var(--text-dim)', fontStyle: 'italic', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {dep.reason}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

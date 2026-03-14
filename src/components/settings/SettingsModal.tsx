@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRenovationStore } from '../../store/useRenovationStore';
+import { saveSnapshot } from '../../store/changelog';
 
 interface SettingsModalProps {
   open: boolean;
@@ -14,6 +15,18 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
   const appState = useRenovationStore((s) => s.appState);
   const finishOnboarding = useRenovationStore((s) => s.finishOnboarding);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [snapshotSaving, setSnapshotSaving] = useState(false);
+  const [snapshotDone, setSnapshotDone] = useState('');
+
+  const handleSnapshot = async () => {
+    setSnapshotSaving(true);
+    setSnapshotDone('');
+    const json = exportProgress();
+    const file = await saveSnapshot(json);
+    setSnapshotSaving(false);
+    setSnapshotDone(file ? `Saved: ${file}` : 'Saved ✓');
+    setTimeout(() => setSnapshotDone(''), 3000);
+  };
 
   const handleExport = () => {
     const json = exportProgress();
@@ -79,31 +92,46 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {/* Save progress */}
+              {/* Persistence */}
               <div>
                 <div style={{ fontSize: 11, color: 'var(--text-dim)', letterSpacing: '0.08em', fontWeight: 600, marginBottom: 8 }}>
-                  PROGRESS
+                  PERSISTENCE
                 </div>
+                {/* Snapshot */}
+                <button
+                  onClick={handleSnapshot}
+                  disabled={snapshotSaving}
+                  style={{
+                    width: '100%', padding: '10px', borderRadius: 'var(--radius)',
+                    background: 'var(--amber-bg)', border: '2px solid var(--amber-dim)',
+                    color: 'var(--amber)', fontSize: 12, fontWeight: 700,
+                    marginBottom: 8, cursor: snapshotSaving ? 'default' : 'pointer',
+                    boxShadow: 'var(--shadow-lift)',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  {snapshotSaving ? '⏳ Saving...' : snapshotDone || '📸 Save Plan Snapshot'}
+                </button>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
                     onClick={handleExport}
                     style={{
                       flex: 1, padding: '10px', borderRadius: 'var(--radius)',
-                      background: 'var(--olive-dim)', border: '1px solid var(--olive)',
-                      color: 'var(--text)', fontSize: 12, fontWeight: 500,
+                      background: 'var(--surface-2)', border: '1.5px solid var(--border-strong)',
+                      color: 'var(--text-muted)', fontSize: 12, fontWeight: 500,
                     }}
                   >
-                    ↓ Save Progress
+                    ↓ Export JSON
                   </button>
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     style={{
                       flex: 1, padding: '10px', borderRadius: 'var(--radius)',
-                      background: 'var(--surface-2)', border: '1px solid var(--border)',
-                      color: 'var(--text)', fontSize: 12, fontWeight: 500,
+                      background: 'var(--surface-2)', border: '1.5px solid var(--border)',
+                      color: 'var(--text-muted)', fontSize: 12, fontWeight: 500,
                     }}
                   >
-                    ↑ Load Progress
+                    ↑ Import JSON
                   </button>
                   <input
                     ref={fileInputRef}
@@ -114,7 +142,8 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                   />
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 6 }}>
-                  Progress auto-saves to localStorage. Export for backup.
+                  Auto-saves to <code style={{ fontFamily: 'var(--font-mono)', fontSize: 10 }}>data/project.json</code> on every change.
+                  Snapshots go to <code style={{ fontFamily: 'var(--font-mono)', fontSize: 10 }}>data/snapshots/</code>.
                 </div>
               </div>
 

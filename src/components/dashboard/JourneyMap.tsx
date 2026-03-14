@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useRenovationStore } from '../../store/useRenovationStore';
 
 export function JourneyMap() {
-  const phases = useRenovationStore((s) => [...s.phases].sort((a, b) => a.order - b.order));
+  const rawPhases = useRenovationStore((s) => s.phases);
+  const phases = useMemo(() => [...rawPhases].sort((a, b) => a.order - b.order), [rawPhases]);
   const getPhaseCompletionPercent = useRenovationStore((s) => s.getPhaseCompletionPercent);
   const getTasksForPhase = useRenovationStore((s) => s.getTasksForPhase);
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ export function JourneyMap() {
         const tasks = getTasksForPhase(phase.id);
         const done = tasks.filter((t) => t.status === 'done').length;
         const isDone = pct === 100;
-        const isActive = !isDone && (index === 0 || getPhaseCompletionPercent(phases[index - 1]?.id ?? '') === 100 || true);
+        const isActive = !isDone && (index === 0 || getPhaseCompletionPercent(phases[index - 1]?.id ?? '') === 100);
         const isLeft = index % 2 === 0;
 
         return (

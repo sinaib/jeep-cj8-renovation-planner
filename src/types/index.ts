@@ -35,6 +35,9 @@ export interface Task {
   addedBy: 'agent' | 'user';
   agentRationale?: string;
   completedAt?: string;
+  dependsOnTaskIds?: string[];
+  steps?: string[];    // Persisted step-by-step guide — set by enrichment or agent
+  guide?: string;      // Technical overview for this specific job
 }
 
 export interface Phase {
@@ -70,6 +73,61 @@ export interface AgentMessage {
   timestamp: string;
 }
 
+// ─── New intelligence layer ───────────────────────────────────────────────
+
+/** A project decision that was explicitly made and should be remembered */
+export interface Decision {
+  id: string;
+  category: 'priority' | 'budget' | 'approach' | 'scope' | 'timeline' | 'supplier' | 'safety' | 'other';
+  summary: string;       // One-line: "Will do all work DIY"
+  rationale?: string;    // Why this decision was made
+  madeAt: string;        // ISO timestamp
+  madeBy: 'user' | 'agent';
+}
+
+/** A fact about this specific car and project context, built up over conversation */
+export interface CarFact {
+  id: string;
+  key: string;           // e.g. "engine_condition", "mileage", "goals", "budget", "skills"
+  value: string;         // The actual fact
+  confirmedBy: 'user' | 'agent' | 'inspection';
+  updatedAt: string;
+}
+
+/** A research finding from web search or agent knowledge, stored for ongoing reference */
+export interface ResearchNote {
+  id: string;
+  topic: string;         // "AMC 258 common head gasket failure"
+  finding: string;       // The actual insight/data
+  source?: string;       // URL or "agent knowledge" or manual reference
+  relevantTaskIds?: string[];
+  addedAt: string;
+}
+
+/** Explicit dependency: taskId cannot be started until dependsOnTaskId is done */
+export interface TaskDependency {
+  taskId: string;
+  dependsOnTaskId: string;
+  reason: string;
+}
+
+// ─── File system ─────────────────────────────────────────────────────────────
+
+/** Lightweight metadata stored in Zustand (no binary data) */
+export interface FileMeta {
+  id: string;
+  taskId?: string;
+  phaseId?: string;
+  name: string;
+  type: 'image' | 'pdf' | 'other';
+  createdAt: string;
+  size: number;           // bytes
+  caption?: string;       // user label (kept in sync with IndexedDB record)
+  analysisNote?: string;  // AI observation (kept in sync with IndexedDB record)
+}
+
+// ─── Legacy types kept for manual/briefing features ──────────────────────
+
 export interface VehicleSystem {
   id: string;
   name: string;
@@ -90,6 +148,7 @@ export interface Manual {
 
 export interface TaskBriefing {
   overview: string;
+  steps: string[];
   toolsNeeded: string[];
   commonMistakes: string[];
   estimatedTime: string;
