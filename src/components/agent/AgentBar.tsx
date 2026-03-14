@@ -56,8 +56,10 @@ export interface AgentBarHandle {
   sendPrompt: (text: string) => void;
 }
 
-export const AgentBar = forwardRef<AgentBarHandle, AgentBarProps>(
-  ({ contextHint, currentTask, currentPhase }, ref) => {
+function AgentBarInner(
+  { contextHint, currentTask, currentPhase }: AgentBarProps,
+  ref: React.ForwardedRef<AgentBarHandle>
+) {
   const agentHistory = useRenovationStore((s) => s.agentHistory);
   const streaming = useRenovationStore((s) => s.agentStreaming);
   const addAgentMessage = useRenovationStore((s) => s.addAgentMessage);
@@ -547,5 +549,7 @@ export const AgentBar = forwardRef<AgentBarHandle, AgentBarProps>(
       </div>
     </div>
   );
-  }
-);
+}
+
+export const AgentBar = forwardRef(AgentBarInner);
+AgentBar.displayName = 'AgentBar';

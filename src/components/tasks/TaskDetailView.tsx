@@ -25,7 +25,7 @@ const STATUS_OPTIONS: { value: TaskStatus; label: string; color: string }[] = [
 const DIFFICULTY_LABEL = ['', 'Very Easy', 'Easy', 'Moderate', 'Hard', 'Expert'];
 
 export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
-  const updateTaskStatus = useRenovationStore((s) => s.updateTaskStatus);
+  const updateTaskStatus = useRenovationStore((s) => s.setTaskStatus);
   const addTaskNote = useRenovationStore((s) => s.addTaskNote);
   const markPartPurchased = useRenovationStore((s) => s.markPartPurchased);
   const updateTaskCost = useRenovationStore((s) => s.updateTaskCost);

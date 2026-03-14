@@ -569,26 +569,25 @@ export const useRenovationStore = create<RenovationStore>()(
     }),
     {
       name: 'jeep-renovation-planner',
+      version: 2,
       storage: createJSONStorage(() => fileBackedStorage),
-      onRehydrateStorage: () => (state) => {
-        // Deduplicate phases by name (keep first occurrence, merge taskIds from duplicates)
-        if (!state) return;
-        const seen = new Map<string, Phase>();
-        for (const phase of state.phases) {
-          const key = phase.name.trim().toLowerCase();
-          if (seen.has(key)) {
-            // Merge taskIds into the first occurrence
-            const existing = seen.get(key)!;
-            const merged = [...new Set([...existing.taskIds, ...phase.taskIds])];
-            seen.set(key, { ...existing, taskIds: merged });
-          } else {
-            seen.set(key, phase);
+      migrate: (persistedState: unknown) => {
+        // v2 migration: deduplicate phases by name, merging taskIds from duplicates
+        const s = persistedState as { phases?: Phase[] };
+        if (s.phases && s.phases.length > 0) {
+          const seen = new Map<string, Phase>();
+          for (const phase of s.phases) {
+            const key = phase.name.trim().toLowerCase();
+            if (seen.has(key)) {
+              const existing = seen.get(key)!;
+              seen.set(key, { ...existing, taskIds: [...new Set([...existing.taskIds, ...phase.taskIds])] });
+            } else {
+              seen.set(key, phase);
+            }
           }
+          s.phases = [...seen.values()];
         }
-        const deduped = [...seen.values()];
-        if (deduped.length !== state.phases.length) {
-          state.phases = deduped;
-        }
+        return s;
       },
       partialize: (state) => ({
         appState: state.appState,
