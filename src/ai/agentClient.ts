@@ -83,7 +83,7 @@ const FULL_PATTERNS = [
   /\b(part number|supplier|buy|order|israel|shipping|price)\b/i,
 ];
 
-function classifyQuery(message: string, hasImage: boolean): 'fast' | 'full' {
+export function classifyQuery(message: string, hasImage: boolean): 'fast' | 'full' {
   if (hasImage) return 'full';
   if (message.length > 120) return 'full';
   if (FAST_PATTERNS.some((p) => p.test(message.trim()))) return 'fast';

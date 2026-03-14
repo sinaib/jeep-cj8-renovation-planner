@@ -141,6 +141,17 @@ async function runWeeklyHealthCheck() {
   }
 }
 
+// ─── Test helpers ─────────────────────────────────────────────────────────────
+// Resets module-level timer state so unit tests can run in isolation.
+// Never called in production code.
+export function __resetTimersForTesting__(): void {
+  lastRunAt = 0;
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = null;
+  if (completionAnalysisTimer) clearTimeout(completionAnalysisTimer);
+  completionAnalysisTimer = null;
+}
+
 // ─── Silent callbacks (used by all background calls) ─────────────────────────
 
 const SILENT_CALLBACKS = {
