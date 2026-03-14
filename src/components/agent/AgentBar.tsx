@@ -57,7 +57,7 @@ export interface AgentBarHandle {
 }
 
 export const AgentBar = forwardRef<AgentBarHandle, AgentBarProps>(
-function AgentBar({ contextHint, currentTask, currentPhase }, ref) {
+  ({ contextHint, currentTask, currentPhase }, ref) => {
   const agentHistory = useRenovationStore((s) => s.agentHistory);
   const streaming = useRenovationStore((s) => s.agentStreaming);
   const addAgentMessage = useRenovationStore((s) => s.addAgentMessage);
@@ -547,4 +547,5 @@ function AgentBar({ contextHint, currentTask, currentPhase }, ref) {
       </div>
     </div>
   );
-});
+  }
+);
