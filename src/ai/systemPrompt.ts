@@ -137,6 +137,132 @@ Epoxy guidelines: JB Weld and similar two-part metal-filled epoxies — full cur
 
 Thread repair without tap/die: clean damaged threads with a wire brush, nail, or scribe. A hardened nut threaded on backward chases and realigns damaged threads.
 
+### JEEPOLOG CJ8 Manual — Specifications & Procedures (Hebrew Military Maintenance Manual)
+Source: Israeli military/civilian CJ8 maintenance manual, Hebrew. OCR-extracted and translated. These are CJ8-specific numbers — use them over generic specs when they differ.
+
+**FLUID SPECIFICATIONS & CAPACITIES (CJ8-SPECIFIC)**
+- Engine oil: 4.8L, SAE 10W-30 (military 2000 equivalent)
+- Fuel tank: 57.0L
+- Cooling system: 10.0L — 50% antifreeze, 50% water
+- Front axle (Dana 30): 1.18L SAE 90W (military 4090 = standard 90W gear oil)
+- Rear axle (AMC-20 or Dana 44): 2.3L SAE 90W gear oil
+- Transfer case (Dana 300): 1.9L SAE 90W gear oil
+- Transmission: SAE 90W gear oil (World Class T5: use ATF Dexron III only — 90W damages Teflon synchros)
+- Brake fluid: DOT 4 (military 9040 equivalent) — see critical warning below
+- Front wheel bearings: EP #2 lithium-soap grease (military 053)
+- Chassis grease (U-joints, slip yokes, steering joints): lithium-base chassis grease (military 040)
+- Tire pressure road: 28 PSI front / 55 PSI rear. Sand/offroad: minimum 15 PSI.
+
+**MAINTENANCE INTERVALS**
+- Engine oil change: every 5,000 km
+- Oil filter: every other oil change (every 10,000 km)
+- Brake fluid level check: every 5,000 km or 3 months
+- Differential fluid level check (front + rear): every 5,000 km
+- Transfer case fluid: check every 5,000 km
+- All grease fittings (chassis, driveshafts, steering knuckles, drag link ends): every 5,000 km
+- Front wheel bearings: inspect, clean, regrease at every brake pad replacement
+- Rear wheel bearings: same as front — at brake replacement
+- Air filter element: inspect every maintenance interval, replace every 20,000 km
+- Fuel filter: every 20,000 km
+- Spark plugs, distributor cap, rotor, HV leads: inspect at every service, replace as needed
+- Ignition timing and carburetor mixture: check and adjust every 5,000 km
+- Valve clearances: check/adjust at every major service (crankcase ventilation valve check included)
+- Drive belts: visual inspection every weekly service, tension/replace as needed
+- After any water crossing above hub height: disassemble brakes and steering knuckles, inspect for water contamination, regrease everything.
+
+**TORQUE SPECIFICATIONS (VERIFIED CJ8-SPECIFIC)**
+All in Nm (ft-lb in parentheses):
+
+Wheels & Brakes:
+- Wheel nuts (routine check): 88–108 Nm (65–80 ft-lb); torque to 102 Nm (75 ft-lb) on installation
+- Brake anchor plate to axle housing: 122–149 Nm (90–110 ft-lb)
+- Front brake caliper anchor bracket bolts: 41–47 Nm (30–35 ft-lb)
+- Handbrake cable clamp bolts (5/16-18): 11–16 Nm (8–12 ft-lb)
+- Master cylinder to booster nuts: 34 Nm (25 ft-lb)
+- Brake light switch activates at 9.5–16mm pedal travel; pedal free play before booster: 1.58–6.35mm
+
+Axle & Suspension:
+- Front spring eye bolts: 136 Nm (100 ft-lb)
+- Rear U-bolt nuts (1/2-20): 75 Nm (55 ft-lb); (9/16-18): 136 Nm (100 ft-lb)
+- Rear spring shackle bolts: 33 Nm (24 ft-lb)
+- Shock absorber mounting: 61 Nm (45 ft-lb)
+- Driveshaft U-joint strap clamp bolts: 20 Nm (15 ft-lb)
+- Pinion yoke nut (Dana 30 front / Dana 44/AMC-20 rear): 285 Nm (210 ft-lb) — new nut every removal
+- Differential bearing cap bolts (Dana 30/44): 118 Nm (87 ft-lb)
+- Ring gear bolts: 74 Nm (55 ft-lb) — install two 180° apart first, torque evenly, then remainder
+- Transfer case yoke nuts: 163–203 Nm (120–150 ft-lb)
+
+Steering:
+- Steering wheel nut: 41 Nm (30 ft-lb) — IMPORTANT: some shafts have metric thread (identified by groove machined into shaft end). Verify before installing nut.
+- Steering knuckle upper pivot nut (Dana 30): 136 Nm (100 ft-lb) with new cotter pin
+- Steering knuckle lower pivot lock nut: 108 Nm (80 ft-lb) — do NOT reuse lower pivot lock nut
+- Steering tie rod end nuts: 61 Nm (45 ft-lb) with new cotter pins
+- Pitman arm drag link: 68 Nm (50 ft-lb) with cotter pin
+- Steering intermediate shaft clamp bolts: 54–75 Nm (40–55 ft-lb)
+
+**BRAKE SPECIFICATIONS**
+Front disc (if equipped):
+- Minimum rotor thickness: 20.7mm (0.815") — do not machine below this
+- Rotor diameter: 297mm (11.7")
+- Maximum radial runout: 0.25mm (0.010")
+- Maximum lateral runout: 0.12mm (0.005")
+- Maximum thickness variation: 0.02mm (0.001")
+- Riveted pad minimum: 0.79mm (1/32") above rivet head
+- Bonded pad minimum: 1.58mm (1/16")
+- CRITICAL: Must machine both rotor faces simultaneously — single-face machining creates a tapered rotor causing brake pedal pulsation.
+
+Rear drum:
+- Maximum drum internal diameter: 255mm (10.06") — condemn if exceeded
+- Drum size: 44.45mm × 254mm (1.75" × 10")
+- Master cylinder piston bore: 25.8mm (1.016")
+
+**DIFFERENTIAL SPECIFICATIONS (DANA 30 FRONT / DANA 44 & AMC-20 REAR)**
+Ring/pinion ratio: 13 teeth pinion / 43 teeth ring = 3.31:1 (stamped on tag on housing bolts)
+Standard pinion depth: 57.15mm (2.250") from pinion face to axle centerline
+Backlash — Dana 30: 0.12–0.22mm (0.005–0.009"); Dana 44: 0.12–0.25mm (0.005–0.010")
+Differential bearing preload: add 0.10mm shim per side (0.20mm total) beyond zero-clearance
+Side gear-to-case clearance: 0–0.15mm (0–0.006") — if exceeded, replace differential case
+Case runout (ring gear mounting face): maximum 0.05mm (0.002")
+Pinion bearing preload (drag torque): new bearings 2–5 Nm (20–40 in-lb); used bearings 1–2 Nm (10–20 in-lb)
+Housing spread during carrier installation: maximum 0.5mm (0.020") — exceeding this permanently deforms housing
+Driveshaft slip yoke running drag: 18–24 Nm (13–18 ft-lb) as measured while rotating
+
+**ELECTRICAL (STARTER/ALTERNATOR REBUILD)**
+Starter:
+- Field coil solder: 500–600W iron, rosin-core solder
+- Field coil retaining bolts: use Loctite 222 on each bolt
+- One-way clutch: must spin freely clockwise, lock counter-clockwise — do not wash in solvent
+- Ring gear wear pattern: typically at 3 locations, ~50mm arc each. Inspect full circumference before replacing starter drive.
+
+Alternator:
+- Rotor slip ring runout: maximum 0.051mm (0.002")
+- Polarization after rebuild: connect F+ terminal to battery positive, F- to battery negative, hold 2–3 seconds
+- Stator test: AC terminal-to-ground = no continuity (open); AC terminal-to-AC terminal = continuity (closed). If either fails, replace stator.
+- Do NOT immerse stator in solvent — clean with unleaded-fuel-dampened cloth only.
+
+**CARBURETOR / ENGINE FAULT TABLE (translated from Hebrew diagnostic chart)**
+Symptom → Most likely cause → Remedy:
+- Noisy lifters/valve train → Low oil supply or sludge → Check oil level and pressure; clean passages
+- Rough idle → Idle speed not set; leaking intake manifold; dirty idle circuit; stuck fast-idle cam; bad distributor cap → Adjust idle; check vacuum; clean idle circuit; adjust choke
+- Hard cold start → Float level wrong; dirty needle/seat; stuck float; weak fuel pump; bad ignition timing; wrong spark plug gap → Adjust float; clean needle; replace pump; set timing
+- Unstable idle / engine stalls → Idle speed too low; timing off; fast-idle cam not adjusted; crankcase vent valve stuck; intake air leak; float level wrong; bad cap/rotor → Adjust idle to 550 RPM (engine warm, A/C off); set timing
+- Poor performance at low speed → Dirty idle circuit; clogged air filter; bad ignition timing; stuck accelerator pump → Clean or replace as needed
+- Poor performance at high speed → Timing off; advance mechanism broken; low fuel delivery; wrong spark plugs; restricted exhaust; dirty main jet; clogged air filter → Check and correct
+- Low power → Valves not sealing; bad hydraulic lifters; weak valve springs; worn cam lobes; air leak at manifold; poor carb adjustment; weak fuel pump; bad head gasket; wrong timing; bad plug wires; worn distributor rotor → Compression test first; check vacuum
+- Backfire into intake → Bad ignition timing; weak accelerator pump discharge → Set timing; check pump stroke
+- Detonation/pinging → Timing too advanced; broken mechanical advance; dirty combustion chambers (carbon deposits); high compression from wrong fuel (use minimum 95 RON) → Set timing; clean chambers; use correct fuel octane
+- Engine runs on after shutoff → Idle speed too high (adjust to 550 RPM) → Adjust idle
+- Black exhaust smoke → Rich mixture; clogged air filter; stuck choke; high float level → Check all fuel system components
+
+**CRITICAL WARNINGS FROM HEBREW MANUAL**
+1. **Brake fluid contamination:** Never use gasoline, kerosene, alcohol, engine oil, ATF, or any mineral-oil-based fluid to clean brake components. These destroy ALL rubber seals. If contamination occurs: drain and flush entire hydraulic system with fresh brake fluid only.
+2. **Pinion nut over-torque:** If pinion nut was over-tightened, do NOT loosen and re-torque. The crush sleeve is now invalid. Replace crush sleeve AND nut; start the preload procedure from scratch.
+3. **Ring/pinion matching:** Always replace as a matched pair. Never mix pairs with different stamped numbers. Pairs coded ±9 or beyond are factory rejects — return them.
+4. **Differential housing spread:** Never spread axle housing more than 0.5mm during carrier installation — permanently deforms the housing.
+5. **Front wheel bearing (Dana 30):** No provision for re-greasing the inner bearing after assembly. Pack fully with grease before installation.
+6. **Steering column:** Never strike the steering shaft end with a hammer. Never lean on the column. Use only correct-length mounting bolts — oversized bolts prevent column from collapsing in a crash.
+7. **Brake booster:** Replace as a complete unit. Never disassemble internally. Use only the pushrod supplied with the new unit — wrong rod length changes pedal height.
+
 ## Saving knowledge into tasks — CRITICAL
 
 Every task is a living document. Your job is to make tasks rich, not just named.
