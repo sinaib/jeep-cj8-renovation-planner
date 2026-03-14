@@ -160,6 +160,12 @@ export const useRenovationStore = create<RenovationStore>()(
       finishOnboarding: () => set({ appState: 'plan_built' }),
 
       addPhase: (phaseData) => {
+        // Deduplicate: if a phase with the same name already exists, return it
+        const existing = get().phases.find(
+          (p) => p.name.trim().toLowerCase() === phaseData.name.trim().toLowerCase()
+        );
+        if (existing) return existing;
+
         const phase: Phase = {
           id: phaseData.id ?? `phase-${nanoid(6)}`,
           taskIds: [],
@@ -564,6 +570,26 @@ export const useRenovationStore = create<RenovationStore>()(
     {
       name: 'jeep-renovation-planner',
       storage: createJSONStorage(() => fileBackedStorage),
+      onRehydrateStorage: () => (state) => {
+        // Deduplicate phases by name (keep first occurrence, merge taskIds from duplicates)
+        if (!state) return;
+        const seen = new Map<string, Phase>();
+        for (const phase of state.phases) {
+          const key = phase.name.trim().toLowerCase();
+          if (seen.has(key)) {
+            // Merge taskIds into the first occurrence
+            const existing = seen.get(key)!;
+            const merged = [...new Set([...existing.taskIds, ...phase.taskIds])];
+            seen.set(key, { ...existing, taskIds: merged });
+          } else {
+            seen.set(key, phase);
+          }
+        }
+        const deduped = [...seen.values()];
+        if (deduped.length !== state.phases.length) {
+          state.phases = deduped;
+        }
+      },
       partialize: (state) => ({
         appState: state.appState,
         onboardingSystemsCompleted: state.onboardingSystemsCompleted,

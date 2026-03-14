@@ -49,3 +49,5 @@
 {"t":"2026-03-14T15:53:55.256Z","type":"task_added","summary":"Added 'Strip frame completely bare — remove all brackets, axles, and hardware'","taskId":"task-DHQTFzeu","addedBy":"agent"}
 {"t":"2026-03-14T16:19:23.887Z","type":"proactive_analysis","summary":"Weekly plan health check triggered"}
 {"t":"2026-03-14T17:27:10.947Z","type":"task_status","summary":"'Inspect body tub floor and firewall for rust' todo → active","taskId":"task-pcQuBL7k","prev":"todo","next":"active"}
+{"t":"2026-03-14T20:25:55.911Z","type":"task_status","summary":"'Inspect body tub floor and firewall for rust' active → done","taskId":"task-pcQuBL7k","prev":"active","next":"done"}
+{"t":"2026-03-14T20:49:12.911Z","type":"task_status","summary":"'Inventory all removed parts and new parts waiting to install' todo → active","taskId":"task-d6-G-C8O","prev":"todo","next":"active"}
