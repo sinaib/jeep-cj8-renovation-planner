@@ -16,6 +16,17 @@ export const AGENT_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: 'search_jeepland',
+    description: 'Search jeepland.co.il — Israel\'s premier Jeep parts shop (ב. ינוביץ, Tel Aviv). Returns real Israeli-market prices in ₪ including VAT. Use this whenever you need to find a part that may be available locally: brake components, suspension, engine parts, electrical, body hardware, and more. The store carries CJ-era parts and stocks models 77-91. Use before quoting a price estimate so the number reflects actual local availability. Search in English (the product descriptions are bilingual).',
+    input_schema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'English keyword search — e.g. "brake master cylinder", "leaf spring", "AMC 258 head gasket", "wheel cylinder". The store uses English for part descriptions.' },
+      },
+      required: ['query'],
+    },
+  },
+  {
     name: 'add_research_note',
     description: 'Store a research finding that is relevant to this project. Use after web searches or when drawing on specific technical knowledge that should be remembered and referenced later.',
     input_schema: {
@@ -272,6 +283,23 @@ export async function executeToolCall(
         return data.result || `No results found for "${query}".`;
       } catch {
         return `Search unavailable for "${query}" — drawing on built-in CJ8 knowledge.`;
+      }
+    }
+
+    case 'search_jeepland': {
+      // Routes through /api/jeepland — server-side scraper for jeepland.co.il
+      // (ב. ינוביץ, Israel's premier Jeep parts shop). Returns real ₪ prices.
+      const query = toolInput.query as string;
+      try {
+        const response = await fetch(
+          `/api/jeepland?q=${encodeURIComponent(query)}`,
+          { signal: AbortSignal.timeout(15000) }
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json() as { result: string };
+        return data.result || `No parts found on jeepland.co.il for "${query}".`;
+      } catch {
+        return `jeepland.co.il unavailable for "${query}" — try searching manually at https://www.jeepland.co.il/search?q=${encodeURIComponent(query)}`;
       }
     }
 
