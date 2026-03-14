@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { nanoid } from 'nanoid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRenovationStore } from '../../store/useRenovationStore';
 import { sendAgentMessage, type PendingImage } from '../../ai/agentClient';
 import { saveFile, type ProjectFile } from '../../store/fileStore';
+import { PromptChips } from './PromptChips';
 import type { Task, Phase, FileMeta } from '../../types';
 
 function parseApiError(err: string): string {
@@ -51,7 +52,12 @@ interface AgentBarProps {
   currentPhase?: Phase | null;
 }
 
-export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarProps) {
+export interface AgentBarHandle {
+  sendPrompt: (text: string) => void;
+}
+
+export const AgentBar = forwardRef<AgentBarHandle, AgentBarProps>(
+function AgentBar({ contextHint, currentTask, currentPhase }, ref) {
   const agentHistory = useRenovationStore((s) => s.agentHistory);
   const streaming = useRenovationStore((s) => s.agentStreaming);
   const addAgentMessage = useRenovationStore((s) => s.addAgentMessage);
@@ -66,6 +72,11 @@ export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const isSubmitting = useRef(false);
+
+  // Stable ref for the external handle — updated after handleChipSend is defined
+  const sendPromptRef = useRef<(text: string) => void>(() => {});
+  useImperativeHandle(ref, () => ({ sendPrompt: (text) => sendPromptRef.current(text) }));
 
   useEffect(() => {
     if (expanded) {
@@ -112,7 +123,8 @@ export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarPro
 
   const handleSend = async () => {
     const text = input.trim();
-    if ((!text && !pendingImage) || streaming) return;
+    if ((!text && !pendingImage) || streaming || isSubmitting.current) return;
+    isSubmitting.current = true;
     setInput('');
     setToolActivity([]);
     if (!expanded) setExpanded(true);
@@ -172,10 +184,12 @@ export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarPro
       onDone: (fullText, toolCalls) => {
         updateLastAgentMessage(fullText, toolCalls);
         setToolActivity([]);
+        isSubmitting.current = false;
       },
       onError: (error) => {
         updateLastAgentMessage(`⚠️ ${parseApiError(error)}`);
         setToolActivity([]);
+        isSubmitting.current = false;
       },
     }, imageCopy ?? undefined, {
       taskId: currentTask?.id,
@@ -195,6 +209,53 @@ export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarPro
 
   const displayMessages = agentHistory.filter((m) => m.content.trim() !== '');
   const placeholder = contextHint ?? 'Ask your advisor...';
+
+  const handleChipSend = (prompt: string) => {
+    setInput(prompt);
+    // Defer to next tick so input state updates before handleSend reads it
+    setTimeout(() => {
+      setInput('');
+      if (streaming || isSubmitting.current) return;
+      isSubmitting.current = true;
+      if (!expanded) setExpanded(true);
+      const contextPrefix = currentTask
+        ? `[Viewing task: "${currentTask.name}" | task ID: ${currentTask.id} | phase: "${currentPhase?.name ?? currentTask.phaseId}" | system: ${currentTask.systemId}]\n`
+        : '';
+      addAgentMessage({ role: 'user', content: prompt });
+      addAgentMessage({ role: 'assistant', content: '' });
+      sendAgentMessage(contextPrefix + prompt, {
+        onToken: (token) => {
+          const last = useRenovationStore.getState().agentHistory.slice(-1)[0];
+          updateLastAgentMessage((last?.content ?? '') + token);
+        },
+        onToolCall: (toolName, inp) => {
+          setToolActivity((prev) => [...prev, formatToolLabel(toolName, inp)]);
+        },
+        onToolResult: (toolName, result) => {
+          const last = useRenovationStore.getState().agentHistory.slice(-1)[0];
+          updateLastAgentMessage(last?.content ?? '', [
+            ...(last?.toolCalls ?? []),
+            { name: toolName, input: {}, result },
+          ]);
+        },
+        onDone: (fullText, toolCalls) => {
+          updateLastAgentMessage(fullText, toolCalls);
+          setToolActivity([]);
+          isSubmitting.current = false;
+        },
+        onError: (error) => {
+          updateLastAgentMessage(`⚠️ ${parseApiError(error)}`);
+          setToolActivity([]);
+          isSubmitting.current = false;
+        },
+      }, undefined, { taskId: currentTask?.id, phaseId: currentPhase?.id });
+    }, 0);
+  };
+
+  // Keep the external ref updated with the latest handleChipSend
+  sendPromptRef.current = handleChipSend;
+
+  const chipContext = currentTask ? 'task' : 'plan';
 
   return (
     <div style={{
@@ -361,6 +422,16 @@ export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarPro
         )}
       </AnimatePresence>
 
+      {/* Prompt chips */}
+      {!streaming && (
+        <PromptChips
+          context={chipContext}
+          currentTask={currentTask}
+          currentPhase={currentPhase}
+          onSend={handleChipSend}
+        />
+      )}
+
       {/* Input row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px' }}>
         {/* Hidden file input for images */}
@@ -476,4 +547,4 @@ export function AgentBar({ contextHint, currentTask, currentPhase }: AgentBarPro
       </div>
     </div>
   );
-}
+});

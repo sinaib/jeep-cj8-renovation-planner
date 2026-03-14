@@ -11,6 +11,8 @@ export interface Part {
   partNumber?: string;
   supplier?: string;
   purchased: boolean;
+  url?: string;           // link to product page (jeepland, aliexpress, etc.)
+  addedBy?: 'agent' | 'user';  // distinguish manual vs agent-added
 }
 
 export interface ManualRef {

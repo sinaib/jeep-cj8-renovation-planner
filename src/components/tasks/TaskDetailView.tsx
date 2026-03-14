@@ -45,6 +45,19 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
   );
   const [editingCost, setEditingCost] = useState(false);
 
+  // Add-part form
+  const addPartToTask = useRenovationStore((s) => s.addPartToTask);
+  const [showAddPartForm, setShowAddPartForm] = useState(false);
+  const [addPartName, setAddPartName] = useState('');
+  const [addPartCost, setAddPartCost] = useState('');
+  const [addPartUrl, setAddPartUrl] = useState('');
+
+  // Advisor suggestions — track which have been added to plan
+  const [addedSuggestionNames, setAddedSuggestionNames] = useState<Set<string>>(new Set());
+
+  // Auto-regen guard — fire once per task open if steps are placeholder
+  const hasAutoRegenned = useRef(false);
+
   // ── Files ────────────────────────────────────────────────────────────────
   const addFileToIndex = useRenovationStore((s) => s.addFileToIndex);
   const removeFileFromIndex = useRenovationStore((s) => s.removeFileFromIndex);
@@ -174,6 +187,20 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liveTask.id]);
 
+  // Auto-regen if persisted steps are placeholder content
+  useEffect(() => {
+    if (briefingLoading || hasAutoRegenned.current) return;
+    if (!briefing) return;
+    const isPlaceholder = briefing.steps.some(
+      (s) => s.includes('Consult the CJ8 manual') || s.includes('Gather required tools before starting')
+    );
+    if (isPlaceholder) {
+      hasAutoRegenned.current = true;
+      fetchBriefing(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [briefing?.steps, briefingLoading]);
+
   const handleStatusClick = (status: TaskStatus) => {
     updateTaskStatus(liveTask.id, status);
   };
@@ -190,6 +217,23 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
     const val = parseFloat(costInput);
     if (!isNaN(val)) updateTaskCost(liveTask.id, val);
     setEditingCost(false);
+  };
+
+  const handleAddPart = () => {
+    const name = addPartName.trim();
+    if (!name) return;
+    const cost = addPartCost ? parseFloat(addPartCost) : undefined;
+    const url = addPartUrl.trim() || undefined;
+    addPartToTask(liveTask.id, name, cost, undefined, url, 'user');
+    setAddPartName('');
+    setAddPartCost('');
+    setAddPartUrl('');
+    setShowAddPartForm(false);
+  };
+
+  const handleAddSuggestion = (partName: string, estimatedCostILS?: number, partNumber?: string) => {
+    addPartToTask(liveTask.id, partName, estimatedCostILS, partNumber, undefined, 'agent');
+    setAddedSuggestionNames((prev) => new Set([...prev, partName]));
   };
 
   const totalBriefingCost = briefing?.partSuggestions.reduce(
@@ -492,11 +536,19 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
                           color: part.purchased ? 'var(--text-dim)' : 'var(--text)',
                           textDecoration: part.purchased ? 'line-through' : 'none',
                         }}>
-                          {part.name}
+                          {part.url ? (
+                            <a href={part.url} target="_blank" rel="noopener noreferrer"
+                              style={{ color: 'inherit', textDecoration: 'underline' }}>
+                              {part.name}
+                            </a>
+                          ) : part.name}
                           {part.partNumber && (
                             <span style={{ color: 'var(--text-dim)', marginLeft: 8, fontFamily: 'var(--font-mono)', fontSize: 10 }}>
                               #{part.partNumber}
                             </span>
+                          )}
+                          {part.url && (
+                            <span style={{ marginLeft: 6, fontSize: 10 }}>🔗</span>
                           )}
                         </span>
                         {part.estimatedCostILS != null && (
@@ -509,15 +561,27 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
                         )}
                       </div>
                     ))}
-                    {totalTaskPartsCost > 0 && (
-                      <div style={{
-                        textAlign: 'right', fontSize: 11,
-                        color: 'var(--text-muted)', fontFamily: 'var(--font-mono)',
-                        paddingRight: 4,
-                      }}>
-                        Total: ₪{totalTaskPartsCost.toLocaleString()}
-                      </div>
-                    )}
+                    {(() => {
+                      const purchasedCost = liveTask.parts.filter((p) => p.purchased).reduce((sum, p) => sum + (p.estimatedCostILS ?? 0), 0);
+                      const allPurchased = liveTask.parts.every((p) => p.purchased);
+                      const anyPurchased = liveTask.parts.some((p) => p.purchased);
+                      if (totalTaskPartsCost === 0) return null;
+                      if (allPurchased) return (
+                        <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--green)', fontFamily: 'var(--font-mono)', paddingRight: 4 }}>
+                          ✓ All parts purchased — ₪{totalTaskPartsCost.toLocaleString()}
+                        </div>
+                      );
+                      if (anyPurchased) return (
+                        <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', paddingRight: 4 }}>
+                          ₪{purchasedCost.toLocaleString()} of ₪{totalTaskPartsCost.toLocaleString()} purchased
+                        </div>
+                      );
+                      return (
+                        <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', paddingRight: 4 }}>
+                          Total: ₪{totalTaskPartsCost.toLocaleString()}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               )}
@@ -529,14 +593,17 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
                     {liveTask.parts.length > 0 ? 'ADVISOR SUGGESTIONS' : 'SUGGESTED PARTS'}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {briefing.partSuggestions.map((part, i) => (
+                    {briefing.partSuggestions.map((part, i) => {
+                      const alreadyAdded = addedSuggestionNames.has(part.name) ||
+                        liveTask.parts.some((p) => p.name === part.name);
+                      return (
                       <div key={i} style={{
                         display: 'flex', alignItems: 'center', gap: 10,
                         padding: '8px 12px',
                         background: 'var(--surface)',
                         border: '1px solid var(--border)',
                         borderRadius: 8,
-                        opacity: 0.8,
+                        opacity: alreadyAdded ? 0.5 : 0.8,
                       }}>
                         <span style={{
                           flex: 1, fontSize: 12, color: 'var(--text-muted)',
@@ -556,8 +623,32 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
                             ~₪{part.estimatedCostILS.toLocaleString()}
                           </span>
                         )}
+                        {!alreadyAdded && (
+                          <button
+                            onClick={() => handleAddSuggestion(part.name, part.estimatedCostILS, part.partNumber)}
+                            title="Add to my parts list"
+                            style={{
+                              flexShrink: 0,
+                              width: 22, height: 22,
+                              borderRadius: '50%',
+                              border: '1px solid var(--border)',
+                              background: 'var(--surface-2)',
+                              color: 'var(--text-muted)',
+                              fontSize: 14,
+                              lineHeight: 1,
+                              cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            }}
+                          >
+                            +
+                          </button>
+                        )}
+                        {alreadyAdded && (
+                          <span style={{ flexShrink: 0, fontSize: 11, color: 'var(--green)' }}>✓</span>
+                        )}
                       </div>
-                    ))}
+                    );
+                    })}
                     {totalBriefingCost > 0 && (
                       <div style={{
                         textAlign: 'right', fontSize: 11,
@@ -571,9 +662,103 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
                 </div>
               )}
 
-              {liveTask.parts.length === 0 && briefing.partSuggestions.length === 0 && (
-                <div style={{ fontSize: 12, color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                  No parts listed. Ask the advisor to add parts to this task.
+              {/* Manual add-part form */}
+              {showAddPartForm ? (
+                <div style={{
+                  marginTop: 12,
+                  padding: '12px 14px',
+                  background: 'var(--surface-2)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 8,
+                  display: 'flex', flexDirection: 'column', gap: 8,
+                }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-dim)', letterSpacing: '0.08em', fontWeight: 600 }}>
+                    ADD PART
+                  </div>
+                  <input
+                    placeholder="Part name *"
+                    value={addPartName}
+                    onChange={(e) => setAddPartName(e.target.value)}
+                    autoFocus
+                    style={{
+                      background: 'var(--surface)', border: '1px solid var(--border)',
+                      borderRadius: 6, color: 'var(--text)', fontSize: 12,
+                      padding: '7px 10px', outline: 'none',
+                    }}
+                  />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input
+                      placeholder="Cost ₪ (optional)"
+                      type="number"
+                      min="0"
+                      value={addPartCost}
+                      onChange={(e) => setAddPartCost(e.target.value)}
+                      style={{
+                        flex: 1,
+                        background: 'var(--surface)', border: '1px solid var(--border)',
+                        borderRadius: 6, color: 'var(--text)', fontSize: 12,
+                        padding: '7px 10px', outline: 'none',
+                      }}
+                    />
+                    <input
+                      placeholder="Link (optional)"
+                      value={addPartUrl}
+                      onChange={(e) => setAddPartUrl(e.target.value)}
+                      style={{
+                        flex: 2,
+                        background: 'var(--surface)', border: '1px solid var(--border)',
+                        borderRadius: 6, color: 'var(--text)', fontSize: 12,
+                        padding: '7px 10px', outline: 'none',
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      onClick={handleAddPart}
+                      disabled={!addPartName.trim()}
+                      style={{
+                        padding: '6px 16px',
+                        background: 'var(--amber)', color: 'var(--bg)',
+                        borderRadius: 6, border: 'none',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        opacity: addPartName.trim() ? 1 : 0.5,
+                      }}
+                    >
+                      Add
+                    </button>
+                    <button
+                      onClick={() => { setShowAddPartForm(false); setAddPartName(''); setAddPartCost(''); setAddPartUrl(''); }}
+                      style={{
+                        padding: '6px 14px',
+                        background: 'transparent', color: 'var(--text-muted)',
+                        borderRadius: 6, border: '1px solid var(--border)',
+                        fontSize: 12, cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowAddPartForm(true)}
+                  style={{
+                    marginTop: 8,
+                    width: '100%', padding: '8px',
+                    background: 'transparent',
+                    border: '1px dashed var(--border)',
+                    borderRadius: 8,
+                    color: 'var(--text-dim)',
+                    fontSize: 12, cursor: 'pointer',
+                  }}
+                >
+                  + Add part manually
+                </button>
+              )}
+
+              {liveTask.parts.length === 0 && briefing.partSuggestions.length === 0 && !showAddPartForm && (
+                <div style={{ fontSize: 12, color: 'var(--text-dim)', fontStyle: 'italic', marginTop: 4 }}>
+                  No parts listed yet.
                 </div>
               )}
             </Section>

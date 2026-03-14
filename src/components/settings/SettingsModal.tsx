@@ -84,6 +84,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
               zIndex: 300, background: 'var(--surface)',
               borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)',
               padding: 24, width: 360, boxShadow: 'var(--shadow-lg)',
+              maxHeight: '85vh', overflowY: 'auto',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -146,6 +147,22 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                   Snapshots go to <code style={{ fontFamily: 'var(--font-mono)', fontSize: 10 }}>data/snapshots/</code>.
                 </div>
               </div>
+
+              {/* Prompt guide link */}
+              <a
+                href="/user-guide.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'block', textAlign: 'center',
+                  padding: '9px', borderRadius: 'var(--radius)',
+                  background: 'var(--surface-2)', border: '1px solid var(--border)',
+                  color: 'var(--amber)', fontSize: 12, textDecoration: 'none',
+                  fontWeight: 600,
+                }}
+              >
+                📖 View prompt guide →
+              </a>
 
               {/* API key info */}
               <div style={{ padding: '12px', borderRadius: 'var(--radius)', background: 'var(--surface-2)', border: '1px solid var(--border)' }}>

@@ -4,9 +4,10 @@ import { useRenovationStore } from '../../store/useRenovationStore';
 
 interface TopBarProps {
   onSettingsOpen: () => void;
+  onCriticalClick?: () => void;
 }
 
-export function TopBar({ onSettingsOpen }: TopBarProps) {
+export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
   const pct = useRenovationStore((s) => s.getOverallCompletionPercent());
   const totalTasks = useRenovationStore((s) => Object.keys(s.tasks).length);
   const doneTasks = useRenovationStore((s) =>
@@ -115,16 +116,22 @@ export function TopBar({ onSettingsOpen }: TopBarProps) {
 
         {/* Critical gaps badge */}
         {criticalGaps > 0 && (
-          <div style={{
-            background: 'var(--red)',
-            color: 'white',
-            borderRadius: 20,
-            padding: '2px 8px',
-            fontSize: 10,
-            fontWeight: 600,
-          }}>
+          <button
+            onClick={onCriticalClick}
+            title="Jump to critical tasks"
+            style={{
+              background: 'var(--red)',
+              color: 'white',
+              borderRadius: 20,
+              padding: '2px 8px',
+              fontSize: 10,
+              fontWeight: 600,
+              border: 'none',
+              cursor: onCriticalClick ? 'pointer' : 'default',
+            }}
+          >
             ⚠ {criticalGaps} critical
-          </div>
+          </button>
         )}
 
         {/* Streaming indicator */}

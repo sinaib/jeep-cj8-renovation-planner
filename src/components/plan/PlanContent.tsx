@@ -10,6 +10,7 @@ export interface PlanContentHandle {
 
 interface PlanContentProps {
   onSelectTask: (task: Task) => void;
+  onMapPhase?: (phaseName: string) => void;
 }
 
 const STATUS_DOT: Record<string, { color: string; symbol: string }> = {
@@ -37,7 +38,7 @@ const PRIORITY_ORDER: Record<string, number> = {
 type ViewMode = 'plan' | 'work' | 'journey';
 
 export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
-  ({ onSelectTask }, ref) => {
+  ({ onSelectTask, onMapPhase }, ref) => {
     const rawPhases = useRenovationStore((s) => s.phases);
     const tasks = useRenovationStore((s) => s.tasks);
     const taskDependencies = useRenovationStore((s) => s.taskDependencies);
@@ -296,8 +297,28 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                           style={{ overflow: 'hidden' }}
                         >
                           {phaseTasks.length === 0 ? (
-                            <div style={{ padding: '10px 20px 14px 55px', fontSize: 12, color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                              No tasks yet — the advisor will add them as you discuss this phase
+                            <div style={{ padding: '10px 20px 14px 55px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              <div style={{ fontSize: 12, color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                                No tasks yet for this phase.
+                              </div>
+                              {onMapPhase && (
+                                <button
+                                  onClick={() => onMapPhase(phase.name)}
+                                  style={{
+                                    alignSelf: 'flex-start',
+                                    padding: '5px 12px',
+                                    borderRadius: 20,
+                                    border: '1px solid var(--amber-dim)',
+                                    background: 'var(--amber-bg)',
+                                    color: 'var(--amber)',
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  🔧 Map out {phase.name} tasks
+                                </button>
+                              )}
                             </div>
                           ) : (
                             phaseTasks.map((task) => {

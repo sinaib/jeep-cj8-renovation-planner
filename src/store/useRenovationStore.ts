@@ -75,7 +75,7 @@ interface RenovationActions {
   setTaskStatus: (taskId: string, status: TaskStatus) => void;
   addTaskNote: (taskId: string, note: string) => void;
   updateTaskCost: (taskId: string, costILS: number) => void;
-  addPartToTask: (taskId: string, partName: string, estimatedCostILS?: number, partNumber?: string) => void;
+  addPartToTask: (taskId: string, partName: string, estimatedCostILS?: number, partNumber?: string, url?: string, addedBy?: 'agent' | 'user') => void;
   markPartPurchased: (taskId: string, partId: string) => void;
   removeTask: (taskId: string) => void;
   moveTask: (taskId: string, newPhaseId: string, newOrder?: number) => void;
@@ -284,11 +284,11 @@ export const useRenovationStore = create<RenovationStore>()(
         });
       },
 
-      addPartToTask: (taskId, partName, estimatedCostILS, partNumber) =>
+      addPartToTask: (taskId, partName, estimatedCostILS, partNumber, url?, addedBy?: 'agent' | 'user') =>
         set((s) => {
           const task = s.tasks[taskId];
           if (!task) return s;
-          const part = { id: nanoid(6), name: partName, estimatedCostILS, partNumber, purchased: false };
+          const part = { id: nanoid(6), name: partName, estimatedCostILS, partNumber, purchased: false, url, addedBy };
           return { tasks: { ...s.tasks, [taskId]: { ...task, parts: [...task.parts, part] } } };
         }),
 

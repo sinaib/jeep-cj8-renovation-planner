@@ -4,7 +4,7 @@ import { TopBar } from './components/layout/TopBar';
 import { JourneyStrip } from './components/layout/JourneyStrip';
 import { PlanContent, type PlanContentHandle } from './components/plan/PlanContent';
 import { TaskDetailView } from './components/tasks/TaskDetailView';
-import { AgentBar } from './components/agent/AgentBar';
+import { AgentBar, type AgentBarHandle } from './components/agent/AgentBar';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { OnboardingScreen } from './components/onboarding/OnboardingScreen';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
@@ -16,9 +16,11 @@ function AppShell() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const planRef = useRef<PlanContentHandle>(null);
+  const agentBarRef = useRef<AgentBarHandle>(null);
 
   const rawPhases = useRenovationStore((s) => s.phases);
   const phases = useMemo(() => rawPhases, [rawPhases]);
+  const allTasks = useRenovationStore((s) => s.tasks);
 
   // Current phase for the selected task (for context injection)
   const selectedPhase = useMemo(
@@ -29,6 +31,21 @@ function AppShell() {
   const handleScrollToPhase = (phaseId: string) => {
     setSelectedTask(null);
     setTimeout(() => planRef.current?.scrollToPhase(phaseId), 50);
+  };
+
+  const handleMapPhase = (phaseName: string) => {
+    agentBarRef.current?.sendPrompt(
+      `Map out all the tasks I'll need for "${phaseName}" on my CJ8 Scrambler renovation`
+    );
+  };
+
+  const handleCriticalClick = () => {
+    const criticalTask = Object.values(allTasks).find(
+      (t) => t.priority === 'critical' && t.status !== 'done' && t.status !== 'skipped'
+    );
+    if (criticalTask) {
+      handleScrollToPhase(criticalTask.phaseId);
+    }
   };
 
   const activePhaseId = planRef.current?.getActivePhaseId() ?? null;
@@ -42,7 +59,7 @@ function AppShell() {
       overflow: 'hidden',
     }}>
       {/* Top bar */}
-      <TopBar onSettingsOpen={() => setSettingsOpen(true)} />
+      <TopBar onSettingsOpen={() => setSettingsOpen(true)} onCriticalClick={handleCriticalClick} />
 
       {/* Journey strip */}
       <JourneyStrip
@@ -61,12 +78,14 @@ function AppShell() {
           <PlanContent
             ref={planRef}
             onSelectTask={setSelectedTask}
+            onMapPhase={handleMapPhase}
           />
         )}
       </div>
 
       {/* Agent bar — always at bottom, receives current task context */}
       <AgentBar
+        ref={agentBarRef}
         currentTask={selectedTask}
         currentPhase={selectedPhase}
         contextHint={selectedTask ? `Ask about "${selectedTask.name}"...` : undefined}

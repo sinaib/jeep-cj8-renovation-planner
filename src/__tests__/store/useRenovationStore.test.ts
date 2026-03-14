@@ -231,6 +231,38 @@ describe('Task mutations', () => {
     expect(p1.id).not.toBe(p2.id);
   });
 
+  it('addPartToTask stores url field when provided', () => {
+    const phase = seedPhase();
+    const task = seedTask(phase.id);
+    store().addPartToTask(task.id, 'Wheel cylinder', 180, undefined, 'https://jeepland.co.il/product/123');
+    const part = store().tasks[task.id].parts[0];
+    expect(part.url).toBe('https://jeepland.co.il/product/123');
+  });
+
+  it('addPartToTask stores addedBy field when provided', () => {
+    const phase = seedPhase();
+    const task = seedTask(phase.id);
+    store().addPartToTask(task.id, 'Gasket set', 220, undefined, undefined, 'user');
+    const part = store().tasks[task.id].parts[0];
+    expect(part.addedBy).toBe('user');
+  });
+
+  it('addPartToTask without url keeps url as undefined', () => {
+    const phase = seedPhase();
+    const task = seedTask(phase.id);
+    store().addPartToTask(task.id, 'Oil filter');
+    const part = store().tasks[task.id].parts[0];
+    expect(part.url).toBeUndefined();
+  });
+
+  it('addPartToTask with agent addedBy stores correctly', () => {
+    const phase = seedPhase();
+    const task = seedTask(phase.id);
+    store().addPartToTask(task.id, 'Water pump', 650, undefined, undefined, 'agent');
+    const part = store().tasks[task.id].parts[0];
+    expect(part.addedBy).toBe('agent');
+  });
+
   it('markPartPurchased sets purchased=true on the correct part', () => {
     const phase = seedPhase();
     const task = seedTask(phase.id);
