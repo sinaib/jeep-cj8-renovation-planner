@@ -6,9 +6,9 @@ import { PlanContent, type PlanContentHandle } from './components/plan/PlanConte
 import { TaskDetailView } from './components/tasks/TaskDetailView';
 import { AgentBar, type AgentBarHandle } from './components/agent/AgentBar';
 import { SettingsModal } from './components/settings/SettingsModal';
-import { OnboardingScreen } from './components/onboarding/OnboardingScreen';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
 import { maybeRunWeeklyCheck } from './ai/agentBackground';
+import { buildSeedData } from './data/seed';
 import type { Task } from './types';
 import './styles/globals.css';
 
@@ -107,17 +107,32 @@ function AppShell() {
 }
 
 export default function App() {
+  const phases = useRenovationStore((s) => s.phases);
+
+  // Seed store from plan.ts when empty or when old-format data lacks our plan IDs
+  useEffect(() => {
+    const hasOurPlan = phases.some((p) => p.id === 'phase-1' || p.id === 'phase-2');
+    if (phases.length === 0 || !hasOurPlan) {
+      const { phases: seedPhases, tasks: seedTasks, taskDependencies, decisions } = buildSeedData();
+      useRenovationStore.setState({
+        appState: 'plan_built',
+        phases: seedPhases,
+        tasks: seedTasks,
+        taskDependencies,
+        decisions,
+      });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const appState = useRenovationStore((s) => s.appState);
 
   useEffect(() => {
-    if (appState !== 'onboarding') {
+    if (appState === 'plan_built' || appState === 'in_progress') {
       maybeRunWeeklyCheck();
     }
   }, [appState]);
 
-  return appState === 'onboarding' ? (
-    <OnboardingScreen />
-  ) : (
+  return (
     <ErrorBoundary>
       <AppShell />
     </ErrorBoundary>
