@@ -23,29 +23,6 @@ function parseApiError(err: string): string {
   return err;
 }
 
-function formatToolLabel(toolName: string, input: Record<string, unknown>): string {
-  switch (toolName) {
-    case 'add_task':            return `Adding task: "${input.name}"`;
-    case 'add_phase':           return `Adding phase: "${input.name}"`;
-    case 'update_task_status':  return `Status → ${input.status}`;
-    case 'add_task_note':       return `Adding note`;
-    case 'update_task_cost':    return `Cost: ₪${input.costILS}`;
-    case 'add_part_to_task':    return `Part: "${input.partName}"`;
-    case 'flag_gap':            return `Gap flagged [${input.severity}]`;
-    case 'remove_task':         return `Removing task`;
-    case 'move_task':           return `Moving task`;
-    case 'get_full_plan':       return `Reading plan`;
-    case 'search_web':          return `Searching: "${String(input.query ?? '').slice(0, 40)}"`;
-    case 'set_car_fact':        return `Car fact: ${input.key} = ${input.value}`;
-    case 'record_decision':     return `Decision recorded`;
-    case 'add_research_note':   return `Research: ${String(input.topic ?? '').slice(0, 40)}`;
-    case 'set_task_dependency': return `Dependency set`;
-    case 'set_task_steps':      return `Guide saved (${(input.steps as string[])?.length ?? 0} steps)`;
-    case 'annotate_file':       return `File annotated`;
-    default: return toolName;
-  }
-}
-
 interface AgentBarProps {
   contextHint?: string;
   currentTask?: Task | null;
@@ -66,38 +43,92 @@ function AgentBarInner(
   const updateLastAgentMessage = useRenovationStore((s) => s.updateLastAgentMessage);
   const addFileToIndex = useRenovationStore((s) => s.addFileToIndex);
 
-  const [expanded, setExpanded] = useState(false);
   const [input, setInput] = useState('');
   const [toolActivity, setToolActivity] = useState<string[]>([]);
   const [pendingImage, setPendingImage] = useState<PendingImage & { previewUrl: string } | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const isSubmitting = useRef(false);
 
-  // Stable ref for the external handle — updated after handleChipSend is defined
   const sendPromptRef = useRef<(text: string) => void>(() => {});
   useImperativeHandle(ref, () => ({ sendPrompt: (text) => sendPromptRef.current(text) }));
 
-  useEffect(() => {
-    if (expanded) {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
-        inputRef.current?.focus();
-      }, 100);
-    }
-  }, [expanded]);
+  // Smart tool labels using live store state
+  const makeToolLabel = (toolName: string, input: Record<string, unknown>): string => {
+    const { phases, tasks } = useRenovationStore.getState();
+    const phaseCount = phases.length;
+    const taskCount = Object.keys(tasks).length;
 
-  useEffect(() => {
-    if (expanded) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    switch (toolName) {
+      case 'get_full_plan':
+        return `Reviewing your ${phaseCount}-phase restoration plan (${taskCount} tasks)`;
+      case 'add_task': {
+        const phaseName = phases.find((p) => p.id === input.phaseId)?.name ?? (input.phaseId as string);
+        return `Adding "${input.name}" → ${phaseName}`;
+      }
+      case 'add_phase':
+        return `Creating phase: "${input.name}"`;
+      case 'update_task_status': {
+        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
+        return `Marking "${taskName}" as ${input.status}`;
+      }
+      case 'add_task_note': {
+        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
+        return `Adding note to "${taskName}"`;
+      }
+      case 'update_task_cost': {
+        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
+        return `Cost for "${taskName}": ₪${input.costILS}`;
+      }
+      case 'add_part_to_task': {
+        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
+        return `Part "${input.partName}" → ${taskName}`;
+      }
+      case 'flag_gap':
+        return `Gap flagged [${input.severity}]: ${String(input.description ?? '').slice(0, 50)}`;
+      case 'remove_task': {
+        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
+        return `Removing "${taskName}"`;
+      }
+      case 'move_task': {
+        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
+        const destPhase = phases.find((p) => p.id === input.toPhaseId)?.name ?? input.toPhaseId;
+        return `Moving "${taskName}" → ${destPhase}`;
+      }
+      case 'search_web':
+        return `Searching: "${String(input.query ?? '').slice(0, 50)}"`;
+      case 'set_car_fact':
+        return `Car fact: ${input.key} = ${input.value}`;
+      case 'record_decision':
+        return `Decision: ${String(input.summary ?? '').slice(0, 60)}`;
+      case 'add_research_note':
+        return `Research: ${String(input.topic ?? '').slice(0, 50)}`;
+      case 'set_task_dependency': {
+        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
+        const depName = tasks[input.dependsOnTaskId as string]?.name ?? input.dependsOnTaskId;
+        return `${taskName} depends on ${depName}`;
+      }
+      case 'set_task_steps':
+        return `Guide saved (${(input.steps as string[])?.length ?? 0} steps)`;
+      case 'annotate_file':
+        return `File annotated`;
+      default:
+        return toolName;
     }
-  }, [agentHistory, toolActivity, expanded]);
+  };
 
+  // Scroll to bottom when messages change
   useEffect(() => {
-    if (streaming) setExpanded(true);
-  }, [streaming]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [agentHistory, toolActivity]);
+
+  // Focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   // Clear pending image when task changes
   useEffect(() => {
@@ -119,7 +150,6 @@ function AgentBarInner(
       });
     };
     reader.readAsDataURL(file);
-    // Reset input so the same file can be re-selected
     if (imageInputRef.current) imageInputRef.current.value = '';
   };
 
@@ -129,19 +159,16 @@ function AgentBarInner(
     isSubmitting.current = true;
     setInput('');
     setToolActivity([]);
-    if (!expanded) setExpanded(true);
 
     const contextPrefix = currentTask
       ? `[Viewing task: "${currentTask.name}" | task ID: ${currentTask.id} | phase: "${currentPhase?.name ?? currentTask.phaseId}" | system: ${currentTask.systemId}]\n`
       : '';
     const messageToSend = contextPrefix + (text || (pendingImage ? '(See attached image)' : ''));
 
-    // Display message in chat — show image indicator if attached
     const displayText = text + (pendingImage ? (text ? ' 📎' : '📎 photo') : '');
     addAgentMessage({ role: 'user', content: displayText });
     addAgentMessage({ role: 'assistant', content: '' });
 
-    // Save the image to IndexedDB attached to the current task (if applicable)
     const imageCopy = pendingImage;
     setPendingImage(null);
 
@@ -174,7 +201,7 @@ function AgentBarInner(
         updateLastAgentMessage((last?.content ?? '') + token);
       },
       onToolCall: (toolName, inp) => {
-        setToolActivity((prev) => [...prev, formatToolLabel(toolName, inp)]);
+        setToolActivity((prev) => [...prev, makeToolLabel(toolName, inp)]);
       },
       onToolResult: (toolName, result) => {
         const last = useRenovationStore.getState().agentHistory.slice(-1)[0];
@@ -204,22 +231,15 @@ function AgentBarInner(
       e.preventDefault();
       handleSend();
     }
-    if (e.key === 'Escape') {
-      setExpanded(false);
-    }
   };
 
   const displayMessages = agentHistory.filter((m) => m.content.trim() !== '');
-  const placeholder = contextHint ?? 'Ask your advisor...';
+  const placeholder = contextHint ?? 'Ask your restoration advisor...';
 
   const handleChipSend = (prompt: string) => {
-    setInput(prompt);
-    // Defer to next tick so input state updates before handleSend reads it
     setTimeout(() => {
-      setInput('');
       if (streaming || isSubmitting.current) return;
       isSubmitting.current = true;
-      if (!expanded) setExpanded(true);
       const contextPrefix = currentTask
         ? `[Viewing task: "${currentTask.name}" | task ID: ${currentTask.id} | phase: "${currentPhase?.name ?? currentTask.phaseId}" | system: ${currentTask.systemId}]\n`
         : '';
@@ -231,7 +251,7 @@ function AgentBarInner(
           updateLastAgentMessage((last?.content ?? '') + token);
         },
         onToolCall: (toolName, inp) => {
-          setToolActivity((prev) => [...prev, formatToolLabel(toolName, inp)]);
+          setToolActivity((prev) => [...prev, makeToolLabel(toolName, inp)]);
         },
         onToolResult: (toolName, result) => {
           const last = useRenovationStore.getState().agentHistory.slice(-1)[0];
@@ -254,131 +274,144 @@ function AgentBarInner(
     }, 0);
   };
 
-  // Keep the external ref updated with the latest handleChipSend
   sendPromptRef.current = handleChipSend;
 
   const chipContext = currentTask ? 'task' : 'plan';
 
   return (
     <div style={{
-      flexShrink: 0,
-      borderTop: '1px solid var(--border)',
-      background: 'var(--surface)',
+      flex: '0 0 45%',
       display: 'flex',
       flexDirection: 'column',
+      background: 'var(--surface)',
+      height: '100%',
+      overflow: 'hidden',
+      borderLeft: '1px solid var(--border)',
     }}>
-      {/* Expanded chat history */}
-      <AnimatePresence initial={false}>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: '40vh' }}
-            exit={{ height: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 35 }}
-            style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+      {/* Panel header */}
+      <div style={{
+        padding: '14px 16px 10px',
+        borderBottom: '1px solid var(--border)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        flexShrink: 0,
+      }}>
+        <span style={{ fontSize: 14 }}>🔧</span>
+        <span style={{
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          color: 'var(--amber)',
+        }}>
+          RESTORATION ADVISOR
+        </span>
+        {streaming && (
+          <motion.span
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ repeat: Infinity, duration: 1 }}
+            style={{ fontSize: 10, color: 'var(--amber)', marginLeft: 'auto' }}
           >
-            {/* Header */}
+            ● thinking
+          </motion.span>
+        )}
+      </div>
+
+      {/* Message history */}
+      <div
+        ref={messagesContainerRef}
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '12px 14px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+        }}
+      >
+        {/* Empty state */}
+        {displayMessages.length === 0 && toolActivity.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '48px 20px', color: 'var(--text-dim)' }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🔧</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+              Your restoration advisor
+            </div>
+            <div style={{ fontSize: 12, lineHeight: 1.6 }}>
+              Ask anything about your CJ8 build — parts, tasks, timelines, technical questions.
+            </div>
+          </div>
+        )}
+
+        {displayMessages.map((msg) => (
+          <div key={msg.id} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
             <div style={{
-              display: 'flex', alignItems: 'center',
-              padding: '8px 16px',
-              borderBottom: '1px solid var(--border)',
-              flexShrink: 0,
+              maxWidth: '85%',
+              padding: '9px 13px',
+              borderRadius: msg.role === 'user' ? '12px 12px 3px 12px' : '12px 12px 12px 3px',
+              background: msg.role === 'user' ? 'var(--amber-bg)' : 'var(--surface-2)',
+              border: `1px solid ${msg.role === 'user' ? 'var(--amber-dim)' : 'var(--border)'}`,
+              fontSize: 13,
+              lineHeight: 1.5,
+              color: 'var(--text)',
+              whiteSpace: 'pre-wrap',
             }}>
-              <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>
-                🔧 JEEP ADVISOR
-              </span>
-              {streaming && (
+              {msg.content || (msg.role === 'assistant' && streaming ? (
                 <motion.span
                   animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ repeat: Infinity, duration: 1 }}
-                  style={{ marginLeft: 10, fontSize: 10, color: 'var(--amber)' }}
+                  transition={{ repeat: Infinity, duration: 0.8 }}
+                  style={{ color: 'var(--text-dim)' }}
                 >
-                  ● thinking
+                  ●●●
                 </motion.span>
-              )}
-              <div style={{ flex: 1 }} />
-              <button
-                onClick={() => setExpanded(false)}
-                style={{ color: 'var(--text-dim)', fontSize: 16, padding: '2px 6px', border: 'none', background: 'none', cursor: 'pointer' }}
-              >
-                ↓
-              </button>
-            </div>
+              ) : '')}
 
-            {/* Messages */}
+              {msg.toolCalls && msg.toolCalls.length > 0 && (
+                <div style={{
+                  marginTop: 8, paddingTop: 6,
+                  borderTop: '1px solid var(--border)',
+                  display: 'flex', flexDirection: 'column', gap: 1,
+                }}>
+                  {msg.toolCalls.map((tc, i) => (
+                    <div key={i} style={{ fontSize: 10, color: 'var(--amber)', fontFamily: 'var(--font-mono)' }}>
+                      ✓ {makeToolLabel(tc.name, tc.input as Record<string, unknown>)}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Live tool activity */}
+        {toolActivity.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
             <div style={{
-              flex: 1, overflowY: 'auto',
-              padding: '12px 16px',
-              display: 'flex', flexDirection: 'column', gap: 10,
+              padding: '7px 11px',
+              borderRadius: 10,
+              background: 'var(--surface-3, var(--surface-2))',
+              border: '1px solid var(--border)',
+              fontSize: 10,
+              color: 'var(--amber)',
+              fontFamily: 'var(--font-mono)',
+              display: 'flex', flexDirection: 'column', gap: 1,
             }}>
-              {displayMessages.length === 0 && (
-                <div style={{ textAlign: 'center', marginTop: 20, color: 'var(--text-dim)', fontSize: 12 }}>
-                  Your conversation will appear here
-                </div>
-              )}
-
-              {displayMessages.map((msg) => (
-                <div key={msg.id} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                  <div style={{
-                    maxWidth: '80%',
-                    padding: '9px 13px',
-                    borderRadius: msg.role === 'user' ? '12px 12px 3px 12px' : '12px 12px 12px 3px',
-                    background: msg.role === 'user' ? 'var(--amber-bg)' : 'var(--surface-2)',
-                    border: `1px solid ${msg.role === 'user' ? 'var(--amber-dim)' : 'var(--border)'}`,
-                    fontSize: 13,
-                    lineHeight: 1.5,
-                    color: 'var(--text)',
-                    whiteSpace: 'pre-wrap',
-                  }}>
-                    {msg.content || (msg.role === 'assistant' && streaming ? (
-                      <motion.span
-                        animate={{ opacity: [1, 0.3, 1] }}
-                        transition={{ repeat: Infinity, duration: 0.8 }}
-                        style={{ color: 'var(--text-dim)' }}
-                      >
-                        ●●●
-                      </motion.span>
-                    ) : '')}
-
-                    {msg.toolCalls && msg.toolCalls.length > 0 && (
-                      <div style={{
-                        marginTop: 8, paddingTop: 6,
-                        borderTop: '1px solid var(--border)',
-                        display: 'flex', flexDirection: 'column', gap: 1,
-                      }}>
-                        {msg.toolCalls.map((tc, i) => (
-                          <div key={i} style={{ fontSize: 10, color: 'var(--amber)', fontFamily: 'var(--font-mono)' }}>
-                            ✓ {formatToolLabel(tc.name, tc.input as Record<string, unknown>)}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {toolActivity.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                  <div style={{
-                    padding: '7px 11px',
-                    borderRadius: 10,
-                    background: 'var(--surface-3)',
-                    border: '1px solid var(--border)',
-                    fontSize: 10,
-                    color: 'var(--amber)',
-                    fontFamily: 'var(--font-mono)',
-                    display: 'flex', flexDirection: 'column', gap: 1,
-                  }}>
-                    {toolActivity.map((a, i) => <div key={i}>⚡ {a}</div>)}
-                  </div>
-                </div>
-              )}
-
-              <div ref={messagesEndRef} />
+              {toolActivity.map((a, i) => <div key={i}>⚡ {a}</div>)}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Prompt chips — only when idle and no conversation */}
+      {!streaming && displayMessages.length === 0 && (
+        <PromptChips
+          context={chipContext}
+          currentTask={currentTask}
+          currentPhase={currentPhase}
+          onSend={handleChipSend}
+        />
+      )}
 
       {/* Pending image preview */}
       <AnimatePresence>
@@ -392,6 +425,7 @@ function AgentBarInner(
               display: 'flex',
               alignItems: 'center',
               gap: 8,
+              flexShrink: 0,
             }}
           >
             <img
@@ -424,19 +458,12 @@ function AgentBarInner(
         )}
       </AnimatePresence>
 
-      {/* Prompt chips */}
-      {!streaming && (
-        <PromptChips
-          context={chipContext}
-          currentTask={currentTask}
-          currentPhase={currentPhase}
-          onSend={handleChipSend}
-        />
-      )}
-
-      {/* Input row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px' }}>
-        {/* Hidden file input for images */}
+      {/* Input row — always at bottom */}
+      <div style={{
+        flexShrink: 0,
+        borderTop: '1px solid var(--border)',
+        padding: '10px 14px',
+      }}>
         <input
           ref={imageInputRef}
           type="file"
@@ -445,28 +472,7 @@ function AgentBarInner(
           style={{ display: 'none' }}
         />
 
-        {/* Toggle button */}
-        <button
-          onClick={() => setExpanded((p) => !p)}
-          title={expanded ? 'Collapse' : 'Show conversation'}
-          style={{
-            flexShrink: 0,
-            width: 28, height: 28,
-            borderRadius: 6,
-            border: '1px solid var(--border)',
-            background: expanded ? 'var(--amber-dim)' : 'transparent',
-            color: expanded ? 'var(--amber)' : 'var(--text-dim)',
-            fontSize: 10,
-            cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          {expanded ? '↓' : '🔧'}
-        </button>
-
-        {/* Input area */}
         <div style={{
-          flex: 1,
           display: 'flex',
           alignItems: 'flex-end',
           gap: 6,
@@ -476,7 +482,6 @@ function AgentBarInner(
           padding: '7px 8px',
           transition: 'border-color 0.15s',
         }}>
-          {/* Paperclip — only when on a task */}
           {currentTask && (
             <button
               onClick={() => imageInputRef.current?.click()}
@@ -503,7 +508,6 @@ function AgentBarInner(
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            onFocus={() => setExpanded(true)}
             placeholder={streaming ? 'Advisor is thinking...' : placeholder}
             disabled={streaming}
             rows={1}

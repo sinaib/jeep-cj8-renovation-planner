@@ -18,7 +18,6 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
     () => rawGaps.filter((g) => !g.dismissed && g.severity === 'critical').length,
     [rawGaps]
   );
-  const streaming = useRenovationStore((s) => s.agentStreaming);
   const phases = useRenovationStore((s) => s.phases);
   const totalCost = useRenovationStore((s) => s.getTotalCostEstimated());
 
@@ -32,53 +31,54 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        height: 48,
-        padding: '0 16px',
-        gap: 14,
+        height: 60,
+        padding: '0 18px',
+        gap: 16,
       }}>
         {/* Vehicle identity */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 16 }}>🚙</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 24 }}>🚙</span>
           <div>
             <div style={{
-              fontSize: 12,
-              fontWeight: 700,
+              fontSize: 15,
+              fontWeight: 800,
               letterSpacing: '0.06em',
               color: 'var(--amber)',
+              lineHeight: 1.1,
             }}>
               CJ8 SCRAMBLER 1989
             </div>
-            <div style={{ fontSize: 9, color: 'var(--text-dim)', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: 10, color: 'var(--text-dim)', letterSpacing: '0.06em' }}>
               RESTORATION PLAN
             </div>
           </div>
         </div>
 
-        <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
+        <div style={{ width: 1, height: 28, background: 'var(--border)' }} />
 
-        {/* Progress summary */}
+        {/* Progress bar */}
         {totalTasks > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Bar */}
             <div style={{
-              width: 100,
-              height: 4,
+              width: 140,
+              height: 6,
               background: 'var(--surface-2)',
-              borderRadius: 2,
+              borderRadius: 3,
               overflow: 'hidden',
+              border: '1px solid var(--border)',
             }}>
               <motion.div
                 style={{
                   height: '100%',
                   background: 'linear-gradient(90deg, var(--olive), var(--green))',
-                  borderRadius: 2,
+                  borderRadius: 3,
                 }}
                 animate={{ width: `${pct}%` }}
                 transition={{ type: 'spring', stiffness: 60, damping: 15 }}
               />
             </div>
             <span style={{
-              fontSize: 11,
+              fontSize: 12,
               color: 'var(--text-muted)',
               fontFamily: 'var(--font-mono)',
             }}>
@@ -94,18 +94,29 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
           </div>
         )}
 
-        {/* Phase count */}
+        {/* Stat pills */}
         {phases.length > 0 && (
-          <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>
+          <span style={{
+            fontSize: 11,
+            color: 'var(--text-dim)',
+            background: 'var(--surface-2)',
+            border: '1px solid var(--border)',
+            borderRadius: 12,
+            padding: '2px 8px',
+            fontFamily: 'var(--font-mono)',
+          }}>
             {phases.length} phase{phases.length !== 1 ? 's' : ''}
           </span>
         )}
 
-        {/* Total cost estimate */}
         {totalCost > 0 && (
           <span style={{
             fontSize: 11,
             color: 'var(--text-dim)',
+            background: 'var(--surface-2)',
+            border: '1px solid var(--border)',
+            borderRadius: 12,
+            padding: '2px 8px',
             fontFamily: 'var(--font-mono)',
           }}>
             ~₪{totalCost.toLocaleString()}
@@ -123,30 +134,16 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
               background: 'var(--red)',
               color: 'white',
               borderRadius: 20,
-              padding: '2px 8px',
-              fontSize: 10,
-              fontWeight: 600,
+              padding: '4px 12px',
+              fontSize: 11,
+              fontWeight: 700,
               border: 'none',
               cursor: onCriticalClick ? 'pointer' : 'default',
+              boxShadow: '0 0 8px rgba(220,50,50,0.4)',
             }}
           >
             ⚠ {criticalGaps} critical
           </button>
-        )}
-
-        {/* Streaming indicator */}
-        {streaming && (
-          <motion.div
-            animate={{ opacity: [1, 0.4, 1] }}
-            transition={{ repeat: Infinity, duration: 1.2 }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              fontSize: 11, color: 'var(--amber)',
-            }}
-          >
-            <span>●</span>
-            <span>advisor thinking</span>
-          </motion.div>
         )}
 
         {/* Settings */}
@@ -154,7 +151,7 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
           onClick={onSettingsOpen}
           style={{
             color: 'var(--text-dim)',
-            fontSize: 14,
+            fontSize: 16,
             padding: '4px 6px',
             border: 'none',
             background: 'none',
@@ -174,7 +171,7 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
           style={{
             position: 'absolute',
             bottom: 0, left: 0,
-            height: 2,
+            height: 3,
             background: 'linear-gradient(90deg, var(--olive), var(--amber))',
           }}
           animate={{ width: `${pct}%` }}

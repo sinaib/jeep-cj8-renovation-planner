@@ -27,9 +27,8 @@ export function JourneyStrip({ scrollToPhase, activePhaseId }: JourneyStripProps
     }}>
       <div style={{
         display: 'flex',
-        alignItems: 'center',
-        padding: '10px 20px',
-        gap: 0,
+        gap: 6,
+        padding: '10px 14px',
         minWidth: 'max-content',
       }}>
         {phases.map((phase, i) => {
@@ -46,68 +45,46 @@ export function JourneyStrip({ scrollToPhase, activePhaseId }: JourneyStripProps
             ? 'var(--amber)'
             : 'var(--border)';
 
-          const labelColor = isComplete
-            ? 'var(--green)'
-            : hasActive || isCurrent
-            ? 'var(--amber)'
-            : 'var(--text-dim)';
-
           return (
-            <div key={phase.id} style={{ display: 'flex', alignItems: 'center' }}>
-              {i > 0 && (
-                <div style={{
-                  width: 28,
-                  height: 1,
-                  background: isComplete ? 'var(--green)' : 'var(--border)',
-                  flexShrink: 0,
-                }} />
-              )}
-              <button
-                onClick={() => scrollToPhase(phase.id)}
-                title={`${phase.name}${total > 0 ? ` (${done}/${total})` : ''}`}
+            <button
+              key={phase.id}
+              onClick={() => scrollToPhase(phase.id)}
+              title={`${phase.name}${total > 0 ? ` — ${done}/${total} done` : ''}`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '5px 10px',
+                borderRadius: 20,
+                border: `1px solid ${isCurrent ? 'var(--amber)' : isComplete ? 'var(--green)' : 'var(--border)'}`,
+                background: isCurrent ? 'var(--amber-bg)' : 'transparent',
+                color: isCurrent ? 'var(--amber)' : isComplete ? 'var(--green)' : 'var(--text-dim)',
+                fontSize: 11,
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              <motion.span
+                animate={hasActive || isCurrent ? { scale: [1, 1.4, 1] } : {}}
+                transition={{ repeat: Infinity, duration: 2.5 }}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '2px 6px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  borderRadius: 6,
-                  transition: 'background 0.15s',
+                  display: 'inline-block',
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: dotColor,
+                  flexShrink: 0,
                 }}
-              >
-                <motion.div
-                  animate={hasActive || isCurrent ? {
-                    scale: [1, 1.3, 1],
-                    boxShadow: ['0 0 0px var(--amber)', '0 0 8px var(--amber)', '0 0 0px var(--amber)'],
-                  } : {}}
-                  transition={{ repeat: Infinity, duration: 2.5 }}
-                  style={{
-                    width: 9,
-                    height: 9,
-                    borderRadius: '50%',
-                    background: dotColor,
-                    flexShrink: 0,
-                  }}
-                />
-                <span style={{
-                  fontSize: 9,
-                  color: labelColor,
-                  fontFamily: 'var(--font-mono)',
-                  letterSpacing: '0.04em',
-                  maxWidth: 56,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  textAlign: 'center',
-                  lineHeight: 1.2,
-                }}>
-                  {phase.name.length > 8 ? phase.name.split(' ').slice(0, 2).join(' ') : phase.name}
+              />
+              <span>Ph.{i + 1}</span>
+              {total > 0 && (
+                <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', opacity: 0.7 }}>
+                  {done}/{total}
                 </span>
-              </button>
-            </div>
+              )}
+            </button>
           );
         })}
       </div>

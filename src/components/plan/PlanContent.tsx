@@ -112,7 +112,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
           return { task, blockedBy, phase };
         })
         .sort((a, b) => {
-          // Sort by priority, then by phase order
           const pDiff = (PRIORITY_ORDER[a.task.priority] ?? 3) - (PRIORITY_ORDER[b.task.priority] ?? 3);
           if (pDiff !== 0) return pDiff;
           const aPhaseOrder = a.phase?.order ?? 99;
@@ -126,7 +125,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
       return Object.values(tasks)
         .filter((t) => t.status === 'done')
         .sort((a, b) => {
-          // Sort by completedAt descending (newest first)
           const aTime = a.completedAt ? new Date(a.completedAt).getTime() : 0;
           const bTime = b.completedAt ? new Date(b.completedAt).getTime() : 0;
           return bTime - aTime;
@@ -147,15 +145,15 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
       return (
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', height: '100%', gap: 12,
+          justifyContent: 'center', height: '100%', gap: 16,
           color: 'var(--text-dim)',
         }}>
-          <div style={{ fontSize: 36 }}>🚙</div>
-          <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>
+          <div style={{ fontSize: 48 }}>🚙</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
             Your plan is being built
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            Chat with the advisor below to get started
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
+            Ask the advisor to map out your restoration phases and tasks
           </div>
         </div>
       );
@@ -203,7 +201,7 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
         {/* Scrollable content area */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
 
-          {/* ─── PLAN view ─────────────────────────────────────────────── */}
+          {/* ─── PLAN view — phase cards ────────────────────────────────── */}
           {viewMode === 'plan' && (
             <div style={{ paddingBottom: 40 }}>
               {phases.map((phase) => {
@@ -219,7 +217,7 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                   ? 'var(--green)'
                   : hasActive || isCurrent
                   ? 'var(--amber)'
-                  : 'var(--border)';
+                  : phase.color ?? 'var(--border)';
 
                 return (
                   <div
@@ -228,144 +226,213 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                       if (el) phaseRefs.current.set(phase.id, el);
                       else phaseRefs.current.delete(phase.id);
                     }}
-                    style={{ borderBottom: '1px solid var(--border)' }}
+                    style={{
+                      margin: '12px 14px',
+                      background: 'var(--surface)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-xl, 12px)',
+                      boxShadow: 'var(--shadow, 0 2px 8px rgba(0,0,0,0.2))',
+                      overflow: 'hidden',
+                    }}
                   >
-                    {/* Phase header */}
+                    {/* Phase card header — clickable */}
                     <button
                       onClick={() => togglePhase(phase.id)}
                       style={{
                         width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '14px 20px',
-                        background: isCurrent && !isComplete ? 'rgba(212,131,42,0.04)' : 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
                         textAlign: 'left',
-                        transition: 'background 0.15s',
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
                       }}
                     >
-                      <motion.span
-                        animate={{ rotate: isExpanded ? 90 : 0 }}
-                        transition={{ duration: 0.15 }}
-                        style={{ color: phaseAccentColor, fontSize: 10, flexShrink: 0 }}
-                      >
-                        ▶
-                      </motion.span>
-                      <div style={{ width: 3, height: 32, borderRadius: 2, background: phaseAccentColor, flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                          <span style={{
-                            fontSize: 13, fontWeight: 600,
+                      {/* Colored top band */}
+                      <div style={{
+                        height: 6,
+                        background: phaseAccentColor,
+                        borderRadius: '12px 12px 0 0',
+                      }} />
+
+                      {/* Header body */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 14,
+                        padding: '16px 18px 14px',
+                      }}>
+                        <motion.span
+                          animate={{ rotate: isExpanded ? 90 : 0 }}
+                          transition={{ duration: 0.15 }}
+                          style={{
+                            color: phaseAccentColor,
+                            fontSize: 11,
+                            flexShrink: 0,
+                            display: 'inline-block',
+                          }}
+                        >
+                          ▶
+                        </motion.span>
+
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            fontSize: 16,
+                            fontWeight: 700,
                             color: isComplete ? 'var(--text-muted)' : 'var(--text)',
                             textDecoration: isComplete ? 'line-through' : 'none',
+                            lineHeight: 1.2,
+                            marginBottom: phase.subtitle ? 3 : 0,
                           }}>
                             {phase.name}
-                          </span>
+                          </div>
                           {phase.subtitle && (
-                            <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>{phase.subtitle}</span>
+                            <div style={{ fontSize: 12, color: 'var(--text-dim)', lineHeight: 1.3 }}>
+                              {phase.subtitle}
+                            </div>
                           )}
                         </div>
-                      </div>
-                      {total > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                          <div style={{ width: 48, height: 3, background: 'var(--surface-2)', borderRadius: 2, overflow: 'hidden' }}>
+
+                        {/* Progress bar + fraction */}
+                        {total > 0 && (
+                          <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-end',
+                            gap: 4,
+                            flexShrink: 0,
+                          }}>
                             <div style={{
-                              width: `${(done / total) * 100}%`,
-                              height: '100%',
-                              background: isComplete ? 'var(--green)' : 'var(--amber)',
-                              borderRadius: 2,
-                              transition: 'width 0.4s',
-                            }} />
+                              width: 72,
+                              height: 5,
+                              background: 'var(--surface-2)',
+                              borderRadius: 3,
+                              overflow: 'hidden',
+                            }}>
+                              <motion.div
+                                style={{
+                                  height: '100%',
+                                  background: isComplete ? 'var(--green)' : 'var(--amber)',
+                                  borderRadius: 3,
+                                }}
+                                animate={{ width: `${(done / total) * 100}%` }}
+                                transition={{ type: 'spring', stiffness: 60, damping: 15 }}
+                              />
+                            </div>
+                            <span style={{
+                              fontSize: 11,
+                              color: 'var(--text-dim)',
+                              fontFamily: 'var(--font-mono)',
+                            }}>
+                              {done}/{total}
+                            </span>
                           </div>
-                          <span style={{ fontSize: 10, color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', minWidth: 28 }}>
-                            {done}/{total}
-                          </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </button>
 
-                    {/* Task list */}
+                    {/* Task list — inside card */}
                     <AnimatePresence initial={false}>
                       {isExpanded && (
                         <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2, ease: 'easeInOut' }}
+                          initial={{ height: 0 }}
+                          animate={{ height: 'auto' }}
+                          exit={{ height: 0 }}
+                          transition={{ duration: 0.2 }}
                           style={{ overflow: 'hidden' }}
                         >
-                          {phaseTasks.length === 0 ? (
-                            <div style={{ padding: '10px 20px 14px 55px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                              <div style={{ fontSize: 12, color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                                No tasks yet for this phase.
+                          <div style={{ borderTop: '1px solid var(--border)' }}>
+                            {phaseTasks.length === 0 ? (
+                              <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                <div style={{ fontSize: 13, color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                                  No tasks yet for this phase.
+                                </div>
+                                {onMapPhase && (
+                                  <button
+                                    onClick={() => onMapPhase(phase.name)}
+                                    style={{
+                                      alignSelf: 'flex-start',
+                                      padding: '6px 14px',
+                                      borderRadius: 20,
+                                      border: '1px solid var(--amber-dim)',
+                                      background: 'var(--amber-bg)',
+                                      color: 'var(--amber)',
+                                      fontSize: 12,
+                                      fontWeight: 600,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    🔧 Map out {phase.name} tasks
+                                  </button>
+                                )}
                               </div>
-                              {onMapPhase && (
-                                <button
-                                  onClick={() => onMapPhase(phase.name)}
-                                  style={{
-                                    alignSelf: 'flex-start',
-                                    padding: '5px 12px',
-                                    borderRadius: 20,
-                                    border: '1px solid var(--amber-dim)',
-                                    background: 'var(--amber-bg)',
-                                    color: 'var(--amber)',
-                                    fontSize: 11,
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                  }}
-                                >
-                                  🔧 Map out {phase.name} tasks
-                                </button>
-                              )}
-                            </div>
-                          ) : (
-                            phaseTasks.map((task) => {
-                              const dot = STATUS_DOT[task.status] ?? STATUS_DOT.todo;
-                              const isDone = task.status === 'done';
-                              const isActive = task.status === 'active';
-                              return (
-                                <motion.button
-                                  key={task.id}
-                                  onClick={() => onSelectTask(task)}
-                                  layout
-                                  style={{
-                                    width: '100%',
-                                    display: 'flex', alignItems: 'center', gap: 12,
-                                    padding: '10px 20px 10px 52px',
-                                    background: isActive ? 'rgba(212,131,42,0.06)' : 'transparent',
-                                    border: 'none',
-                                    borderTop: '1px solid rgba(255,255,255,0.03)',
-                                    cursor: 'pointer', textAlign: 'left',
-                                    transition: 'background 0.1s',
-                                  }}
-                                  whileHover={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
-                                >
-                                  <span style={{ color: dot.color, fontSize: 12, flexShrink: 0, width: 14, textAlign: 'center' }}>
-                                    {dot.symbol}
-                                  </span>
-                                  <span style={{
-                                    flex: 1, fontSize: 13,
-                                    color: isDone ? 'var(--text-dim)' : 'var(--text)',
-                                    textDecoration: isDone ? 'line-through' : 'none',
-                                    lineHeight: 1.4,
-                                  }}>
-                                    {task.name}
-                                  </span>
-                                  <span style={{ fontSize: 9, color: PRIORITY_COLOR[task.priority], fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', flexShrink: 0 }}>
-                                    {task.priority.toUpperCase()}
-                                  </span>
-                                  {task.estimatedCostILS != null && (
-                                    <span style={{ fontSize: 10, color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', flexShrink: 0 }}>
-                                      ₪{task.estimatedCostILS.toLocaleString()}
+                            ) : (
+                              phaseTasks.map((task, idx) => {
+                                const dot = STATUS_DOT[task.status] ?? STATUS_DOT.todo;
+                                const isDone = task.status === 'done';
+                                const isActive = task.status === 'active';
+                                return (
+                                  <motion.button
+                                    key={task.id}
+                                    onClick={() => onSelectTask(task)}
+                                    layout
+                                    style={{
+                                      width: '100%',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 12,
+                                      padding: '13px 18px',
+                                      background: isActive ? 'rgba(212,131,42,0.05)' : 'transparent',
+                                      border: 'none',
+                                      borderBottom: idx < phaseTasks.length - 1 ? '1px solid var(--border)' : 'none',
+                                      cursor: 'pointer',
+                                      textAlign: 'left',
+                                    }}
+                                    whileHover={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
+                                  >
+                                    <span style={{
+                                      color: dot.color,
+                                      fontSize: 14,
+                                      width: 18,
+                                      textAlign: 'center',
+                                      flexShrink: 0,
+                                    }}>
+                                      {dot.symbol}
                                     </span>
-                                  )}
-                                  <span style={{ color: 'var(--text-dim)', fontSize: 10, flexShrink: 0 }}>›</span>
-                                </motion.button>
-                              );
-                            })
-                          )}
+                                    <span style={{
+                                      flex: 1,
+                                      fontSize: 14,
+                                      color: isDone ? 'var(--text-dim)' : 'var(--text)',
+                                      textDecoration: isDone ? 'line-through' : 'none',
+                                      lineHeight: 1.4,
+                                    }}>
+                                      {task.name}
+                                    </span>
+                                    <span style={{
+                                      fontSize: 10,
+                                      color: PRIORITY_COLOR[task.priority],
+                                      fontFamily: 'var(--font-mono)',
+                                      letterSpacing: '0.08em',
+                                      flexShrink: 0,
+                                      fontWeight: 700,
+                                    }}>
+                                      {task.priority.toUpperCase()}
+                                    </span>
+                                    {task.estimatedCostILS != null && (
+                                      <span style={{
+                                        fontSize: 11,
+                                        color: 'var(--text-dim)',
+                                        fontFamily: 'var(--font-mono)',
+                                        flexShrink: 0,
+                                      }}>
+                                        ₪{task.estimatedCostILS.toLocaleString()}
+                                      </span>
+                                    )}
+                                    <span style={{ color: 'var(--text-dim)', fontSize: 11, flexShrink: 0 }}>›</span>
+                                  </motion.button>
+                                );
+                              })
+                            )}
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -419,13 +486,11 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                         onClick={() => !isBlocked && onSelectTask(task)}
                         whileHover={!isBlocked ? { borderColor: 'var(--amber)', transition: { duration: 0.1 } } : {}}
                       >
-                        {/* Priority dot */}
                         <span style={{
                           width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
                           background: PRIORITY_COLOR[task.priority],
                         }} />
 
-                        {/* Task info */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 13, color: isBlocked ? 'var(--text-dim)' : 'var(--text)', lineHeight: 1.3 }}>
                             {task.name}
@@ -453,14 +518,12 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                           </div>
                         </div>
 
-                        {/* Cost */}
                         {task.estimatedCostILS != null && (
                           <span style={{ fontSize: 10, color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', flexShrink: 0 }}>
                             ₪{task.estimatedCostILS.toLocaleString()}
                           </span>
                         )}
 
-                        {/* Quick actions */}
                         {!isBlocked && (
                           <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                             {!isActive && (
@@ -527,7 +590,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                 </div>
               ) : (
                 <>
-                  {/* Key decisions */}
                   {journeyDecisions.length > 0 && (
                     <div style={{
                       padding: '10px 14px',
@@ -547,7 +609,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                     </div>
                   )}
 
-                  {/* Timeline entries */}
                   {journeyEntries.map(({ task, phase, files }) => (
                     <motion.div
                       key={task.id}
@@ -564,7 +625,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                       }}
                       onClick={() => onSelectTask(task)}
                     >
-                      {/* Header */}
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500, lineHeight: 1.3 }}>
@@ -584,7 +644,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                           </div>
                         </div>
 
-                        {/* Cost */}
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
                           {task.actualCostILS != null ? (
                             <>
@@ -605,7 +664,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                         </div>
                       </div>
 
-                      {/* Notes excerpt */}
                       {task.notes && (
                         <div style={{
                           fontSize: 11, color: 'var(--text-muted)',
@@ -619,7 +677,6 @@ export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
                         </div>
                       )}
 
-                      {/* Photo thumbnails */}
                       {files.length > 0 && (
                         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                           {files.slice(0, 6).map((f) => (

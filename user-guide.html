@@ -5,1027 +5,1073 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jeep CJ8 Planner — How to Use It</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #F4EDD6;
+  --bg: #F6EDD8;
   --surface: #FFFDF7;
   --surface-2: #FBF5E6;
   --surface-3: #F0E8D0;
   --border: #DDD0B3;
-  --border-strong: #B8A07A;
-  --amber: #D4832A;
-  --amber-light: #E8952F;
-  --amber-dim: #F5C47A;
+  --border-light: #E8DFC8;
+  --amber: #C4731A;
+  --amber-light: #D4832A;
+  --amber-dim: #E8B87A;
   --amber-bg: #FDF3E0;
-  --orange: #E8632A;
-  --red: #C0392B;
+  --amber-deep: #7A4410;
   --green: #2D7A3A;
-  --blue: #1A6FA8;
-  --purple: #6B46C1;
-  --gray: #5A5A5A;
+  --green-light: #3D9A4C;
+  --green-bg: #EAF4EC;
+  --red: #B83030;
+  --red-bg: #FAEAEA;
+  --blue: #1A5FA8;
+  --blue-bg: #EAF0FA;
+  --purple: #6B3AC1;
+  --olive: #6A7A1A;
   --text: #1C1510;
   --text-muted: #5C4A38;
   --text-dim: #9C8270;
-  --shadow: 3px 3px 0 rgba(28,21,16,0.12);
-  --shadow-lg: 5px 5px 0 rgba(28,21,16,0.15);
   --font: 'Space Grotesk', -apple-system, sans-serif;
   --mono: 'Space Mono', monospace;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --shadow: 0 2px 8px rgba(28,21,16,0.1);
 }
+
+html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  font-size: 15px;
 }
 
 /* ── NAV ── */
-.nav {
+nav {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(244,237,214,0.96);
-  backdrop-filter: blur(8px);
-  border-bottom: 2px solid var(--border);
-  padding: 10px 24px;
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  background: rgba(246,237,216,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex; align-items: center; gap: 0; height: 52px;
 }
-.nav-brand { font-weight: 700; font-size: 15px; color: var(--amber); white-space: nowrap; }
-.nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+.nav-brand {
+  font-size: 13px; font-weight: 800; letter-spacing: 0.08em;
+  color: var(--amber); white-space: nowrap; margin-right: 28px;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-links {
+  display: flex; gap: 2px; flex: 1; overflow-x: auto;
+}
 .nav-links a {
-  font-size: 12px; font-weight: 500; color: var(--text-muted);
-  text-decoration: none; padding: 4px 10px;
-  border: 1.5px solid transparent; border-radius: 6px;
-  transition: all 0.15s;
+  color: var(--text-dim); text-decoration: none; font-size: 12px;
+  font-weight: 500; padding: 6px 12px; border-radius: 6px;
+  white-space: nowrap; transition: all 0.15s; letter-spacing: 0.02em;
 }
-.nav-links a:hover { border-color: var(--border); background: var(--surface); color: var(--text); }
+.nav-links a:hover { color: var(--amber); background: var(--amber-bg); }
+.nav-side { margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
+.nav-side a {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--text-dim); text-decoration: none; padding: 5px 10px;
+  border: 1px solid var(--border); border-radius: 6px; transition: all 0.15s;
+}
+.nav-side a:hover { color: var(--amber); border-color: var(--amber-dim); }
 
 /* ── LAYOUT ── */
-.page { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+.page { max-width: 900px; margin: 0 auto; padding: 0 28px 80px; }
 
 /* ── HERO ── */
-.hero { text-align: center; padding: 48px 24px 40px; }
-.hero-tag {
-  display: inline-block; font-family: var(--mono); font-size: 11px;
-  background: var(--amber-bg); color: var(--amber); border: 1.5px solid var(--amber-dim);
-  border-radius: 20px; padding: 4px 14px; margin-bottom: 20px; letter-spacing: 0.06em;
+.hero {
+  padding: 72px 0 56px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 64px;
 }
-.hero h1 { font-size: clamp(26px, 5vw, 40px); font-weight: 700; line-height: 1.15; margin-bottom: 16px; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--amber);
+  background: var(--amber-bg); border: 1px solid var(--amber-dim);
+  border-radius: 20px; padding: 4px 12px; margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(28px, 5vw, 48px); font-weight: 800;
+  line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 16px;
+}
 .hero h1 span { color: var(--amber); }
 .hero-sub {
-  font-size: 16px; color: var(--text-muted); max-width: 580px; margin: 0 auto 28px;
+  font-size: 17px; color: var(--text-muted); max-width: 580px;
+  line-height: 1.65; margin-bottom: 36px;
 }
-.hero-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-.chip {
-  font-family: var(--mono); font-size: 12px; font-weight: 700;
-  padding: 6px 14px; border-radius: 20px;
-  border: 2px solid; box-shadow: var(--shadow);
+.hero-promise {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
 }
-.chip-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-dim); }
-.chip-green { background: #E8F5EC; color: var(--green); border-color: #9ECFAC; }
-.chip-blue  { background: #E8F2FA; color: var(--blue); border-color: #9AC5E8; }
+.hero-promise-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.hero-promise-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.hero-promise-text { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+.hero-promise-text strong { display: block; color: var(--text); font-weight: 700; font-size: 14px; margin-bottom: 2px; }
 
-/* ── SECTION ── */
-.section { margin-bottom: 56px; }
-.section-header {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
-  padding-bottom: 12px; border-bottom: 2px solid var(--border);
+/* ── SECTIONS ── */
+section { margin-bottom: 72px; }
+.section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  color: var(--amber); text-transform: uppercase; margin-bottom: 10px;
 }
-.section-num {
-  font-family: var(--mono); font-size: 11px; font-weight: 700;
-  background: var(--amber); color: white; border-radius: 6px;
-  padding: 3px 8px; flex-shrink: 0;
+h2 {
+  font-size: 24px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;
 }
-.section-title { font-size: 20px; font-weight: 700; }
-.section-desc { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+.section-intro {
+  font-size: 15px; color: var(--text-muted); margin-bottom: 36px;
+  max-width: 640px; line-height: 1.7;
+}
 
-/* ── PROMPT EXAMPLES ── */
-.prompt-block {
-  background: var(--surface); border: 2px solid var(--border);
-  border-left: 4px solid var(--amber); border-radius: 8px;
-  padding: 16px 18px; margin: 12px 0;
-  box-shadow: var(--shadow);
-  font-family: var(--mono); font-size: 13px; line-height: 1.7;
-  color: var(--text);
+/* ── STEP LIST ── */
+.steps {
+  display: flex; flex-direction: column; gap: 0;
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
 }
-.prompt-label {
-  font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-  color: var(--amber); text-transform: uppercase; margin-bottom: 8px;
+.step {
+  display: flex; gap: 20px; padding: 24px 24px 24px 20px;
+  border-bottom: 1px solid var(--border-light); background: var(--surface);
+  transition: background 0.15s;
 }
-.prompt-good { border-left-color: var(--green); }
-.prompt-good .prompt-label { color: var(--green); }
-.prompt-tip { border-left-color: var(--blue); }
-.prompt-tip .prompt-label { color: var(--blue); }
-
-/* ── FLOW STEPS ── */
-.flow { display: flex; flex-direction: column; gap: 0; }
-.flow-step {
-  display: flex; gap: 16px; position: relative;
-  padding-bottom: 28px;
-}
-.flow-step:last-child { padding-bottom: 0; }
-.flow-step::before {
-  content: ''; position: absolute; left: 19px; top: 40px; bottom: 0;
-  width: 2px; background: var(--border);
-}
-.flow-step:last-child::before { display: none; }
-.flow-dot {
-  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+.step:last-child { border-bottom: none; }
+.step:hover { background: var(--surface-2); }
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--amber); color: white;
+  font-size: 12px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; border: 2px solid var(--border); background: var(--surface);
-  box-shadow: var(--shadow); z-index: 1;
+  flex-shrink: 0; margin-top: 2px;
 }
-.flow-body { flex: 1; padding-top: 8px; }
-.flow-body h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.flow-body p { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+.step-content { flex: 1; }
+.step-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.step-example {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 12px; color: var(--text-muted);
+  font-style: italic; line-height: 1.5;
+}
+.step-example strong { color: var(--amber); font-style: normal; font-family: var(--mono); font-size: 11px; }
 
-/* ── CARD GRID ── */
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
-.card {
-  background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
-  padding: 16px 18px; box-shadow: var(--shadow);
+/* ── INTERFACE MAP ── */
+.interface-zones {
+  display: flex; flex-direction: column; gap: 16px;
 }
-.card-icon { font-size: 24px; margin-bottom: 10px; }
-.card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-.card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.zone {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.zone-header {
+  padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+  background: var(--surface-2); border-bottom: 1px solid var(--border);
+}
+.zone-icon { font-size: 18px; }
+.zone-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.zone-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--amber); background: var(--amber-bg);
+  border: 1px solid var(--amber-dim); border-radius: 10px;
+  padding: 2px 8px; margin-left: auto;
+}
+.zone-body { padding: 18px 20px; }
+.zone-feature {
+  display: flex; gap: 10px; margin-bottom: 12px;
+  font-size: 13px; color: var(--text-muted); line-height: 1.5;
+}
+.zone-feature:last-child { margin-bottom: 0; }
+.zone-feature-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
 
-/* ── PROMPT TABLE ── */
-.prompt-table { width: 100%; border-collapse: collapse; }
-.prompt-table tr { border-bottom: 1px solid var(--border); }
-.prompt-table tr:last-child { border-bottom: none; }
-.prompt-table td { padding: 12px 14px; font-size: 13px; vertical-align: top; }
-.prompt-table td:first-child {
-  font-family: var(--mono); font-size: 12px; color: var(--amber);
-  white-space: nowrap; width: 120px; font-weight: 700;
+/* ── VIEWS ── */
+.views-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
 }
-.prompt-table td:last-child { color: var(--text-muted); }
-.prompt-table-wrap {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
+@media (max-width: 600px) { .views-grid { grid-template-columns: 1fr; } }
+.view-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 10px;
+}
+.view-name {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; color: var(--amber);
+}
+.view-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.view-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; flex: 1; }
+.view-use {
+  font-size: 12px; color: var(--text-dim); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;
+  font-style: italic; line-height: 1.5;
+}
+
+/* ── CONVERSATION EXAMPLES ── */
+.convo { display: flex; flex-direction: column; gap: 0; }
+.convo-turn {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.convo-turn:last-child { border-bottom: none; }
+.convo-role {
+  width: 72px; min-width: 72px; padding: 14px 14px 14px 0;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text-dim); text-transform: uppercase;
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding-top: 16px;
+}
+.convo-role.user { color: var(--amber); }
+.convo-role.advisor { color: var(--blue); }
+.convo-body {
+  flex: 1; padding: 14px 0;
+  border-left: 2px solid var(--border-light);
+  padding-left: 16px;
+}
+.convo-text {
+  font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 8px;
+}
+.convo-text em { color: var(--text-muted); font-style: normal; }
+.convo-tools {
+  display: flex; flex-direction: column; gap: 2px; margin-top: 8px;
+  padding-top: 8px; border-top: 1px solid var(--border-light);
+}
+.convo-tool {
+  font-size: 11px; color: var(--amber); font-family: var(--mono); line-height: 1.4;
+}
+.convo-example {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 32px;
+}
+.convo-example-label {
+  padding: 10px 18px; background: var(--surface-2); border-bottom: 1px solid var(--border);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-dim);
+  text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+}
+
+/* ── STATUS + PRIORITY ── */
+.status-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.status-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px;
+}
+.status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.status-name { font-weight: 600; color: var(--text); }
+.status-desc { font-size: 12px; color: var(--text-dim); }
+
+/* ── TIPS ── */
+.tips-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.tip-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+}
+.tip-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.tip-icon { font-size: 18px; }
+.tip-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.tip-body { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+.tip-example {
+  margin-top: 8px; font-size: 12px; color: var(--text-dim); font-style: italic;
+  background: var(--bg); border-radius: 6px; padding: 7px 10px;
+  border: 1px solid var(--border-light); line-height: 1.5;
 }
 
 /* ── CALLOUT ── */
 .callout {
-  display: flex; gap: 14px; align-items: flex-start;
-  background: var(--amber-bg); border: 2px solid var(--amber-dim);
-  border-radius: 10px; padding: 16px 18px; margin: 16px 0;
-  box-shadow: var(--shadow);
+  background: var(--amber-bg); border: 1px solid var(--amber-dim);
+  border-left: 3px solid var(--amber); border-radius: var(--radius);
+  padding: 14px 18px; font-size: 13px; color: var(--text-muted);
+  line-height: 1.6; margin-top: 16px;
 }
-.callout-icon { font-size: 22px; flex-shrink: 0; }
-.callout-body { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
-.callout-body strong { color: var(--text); }
-
-.callout-blue {
-  background: #E8F2FA; border-color: #9AC5E8;
+.callout strong { color: var(--amber); }
+.callout-info {
+  background: var(--blue-bg); border: 1px solid #A0C4E8;
+  border-left: 3px solid var(--blue);
 }
-.callout-green {
-  background: #E8F5EC; border-color: #9ECFAC;
+.callout-info strong { color: var(--blue); }
+.callout-success {
+  background: var(--green-bg); border: 1px solid #A0CCA8;
+  border-left: 3px solid var(--green);
 }
-
-/* ── DIVIDER ── */
-.divider { border: none; border-top: 2px solid var(--border); margin: 40px 0; }
-
-/* ── DO / DON'T ── */
-.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-@media (max-width: 560px) { .do-dont { grid-template-columns: 1fr; } }
-.do-panel {
-  border-radius: 10px; padding: 16px; border: 2px solid;
-  box-shadow: var(--shadow);
-}
-.do-panel.do { background: #E8F5EC; border-color: #9ECFAC; }
-.do-panel.dont { background: #FDECEA; border-color: #F0A8A0; }
-.do-panel h5 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 10px; }
-.do-panel.do h5 { color: var(--green); }
-.do-panel.dont h5 { color: var(--red); }
-.do-panel ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
-.do-panel ul li { font-size: 13px; color: var(--text-muted); padding-left: 18px; position: relative; }
-.do-panel.do ul li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
-.do-panel.dont ul li::before { content: '✗'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
-
-/* ── KEYBOARD SHORTCUT ── */
-kbd {
-  font-family: var(--mono); font-size: 12px; background: var(--surface-3);
-  border: 1.5px solid var(--border-strong); border-radius: 4px;
-  padding: 2px 7px; box-shadow: 0 2px 0 var(--border-strong);
-  display: inline-block;
-}
-
-/* ── PHASE EXAMPLE ── */
-.phase-example {
-  background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
-  overflow: hidden; box-shadow: var(--shadow);
-}
-.phase-example-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
-}
-.phase-dot { width: 12px; height: 12px; border-radius: 50%; }
-.phase-name { font-weight: 700; font-size: 14px; }
-.phase-tasks { padding: 8px 0; }
-.phase-task {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 16px; border-bottom: 1px solid var(--border);
-  font-size: 13px; color: var(--text-muted);
-}
-.phase-task:last-child { border-bottom: none; }
-.task-status {
-  font-family: var(--mono); font-size: 10px; font-weight: 700;
-  padding: 2px 7px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0.04em;
-}
-.ts-flagged  { background: #FDF3E0; color: var(--amber); }
-.ts-todo     { background: #E8F2FA; color: var(--blue); }
-.ts-active   { background: #E8F5EC; color: var(--green); }
-.ts-done     { background: #F0EAF8; color: var(--purple); }
-.task-cost { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
+.callout-success strong { color: var(--green); }
 
 /* ── INLINE CODE ── */
 code {
-  font-family: var(--mono); font-size: 12px; background: var(--surface-3);
-  border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px;
+  font-family: var(--mono); font-size: 0.85em;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; color: var(--amber-deep);
 }
 
-/* ── CONVERSATION DEMO ── */
-.convo { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-.msg {
-  max-width: 82%; border-radius: 12px; padding: 12px 16px;
-  font-size: 14px; line-height: 1.55;
-  border: 1.5px solid var(--border); box-shadow: var(--shadow);
+/* ── SETTINGS ── */
+.settings-list { display: flex; flex-direction: column; gap: 10px; }
+.settings-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
 }
-.msg-user {
-  align-self: flex-end;
-  background: var(--amber-bg); border-color: var(--amber-dim); color: var(--text);
+.settings-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.settings-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.settings-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border); padding: 28px 0;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  font-size: 12px; color: var(--text-dim);
 }
-.msg-agent {
-  align-self: flex-start;
-  background: var(--surface); color: var(--text-muted);
-}
-.msg-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 5px; }
-.msg-user .msg-label { text-align: right; color: var(--amber); }
-.msg-agent .msg-label { color: var(--text-dim); }
-.tool-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-family: var(--mono); font-size: 10px;
-  background: var(--surface-3); border: 1px solid var(--border);
-  border-radius: 4px; padding: 2px 7px; margin: 4px 2px 0 0;
-  color: var(--text-dim);
+footer a { color: var(--amber); text-decoration: none; }
+
+@media (max-width: 640px) {
+  .page { padding: 0 16px 60px; }
+  nav { padding: 0 16px; }
+  .hero { padding: 48px 0 40px; }
+  h2 { font-size: 20px; }
+  .step { padding: 16px; }
+  .convo-role { width: 52px; min-width: 52px; font-size: 9px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ── STICKY NAV ── -->
-<nav class="nav">
-  <div class="nav-brand">🚙 CJ8 Planner — How to Use It</div>
+<nav>
+  <div class="nav-brand">🚙 CJ8 PLANNER</div>
   <div class="nav-links">
-    <a href="#start">Getting Started</a>
-    <a href="#plan">Building a Plan</a>
-    <a href="#daily">Daily Use</a>
-    <a href="#ui-actions">UI Actions</a>
+    <a href="#getting-started">Getting Started</a>
+    <a href="#interface">Interface</a>
+    <a href="#views">Views</a>
+    <a href="#talking">Talking to the Advisor</a>
+    <a href="#tasks">Task Detail</a>
     <a href="#photos">Photos</a>
-    <a href="#prompts">Prompt Guide</a>
-    <a href="#tips">Tips & Traps</a>
-    <a href="project-overview.html">Architecture →</a>
+    <a href="#background">Background AI</a>
+    <a href="#settings">Settings</a>
+    <a href="#tips">Pro Tips</a>
+  </div>
+  <div class="nav-side">
+    <a href="project-overview.html">Tech Overview →</a>
   </div>
 </nav>
 
 <div class="page">
 
-  <!-- ── HERO ── -->
-  <div class="hero">
-    <div class="hero-tag">User Guide</div>
-    <h1>How to get the most out of<br><span>your AI restoration advisor</span></h1>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">📖 USER GUIDE</div>
+    <h1>Your <span>CJ8 advisor</span><br>is always open</h1>
     <p class="hero-sub">
-      This is not a generic chatbot. It knows your 1989 CJ8 Scrambler, remembers every decision you make, builds a real plan — and quietly watches the project while you're in the garage.
+      The app is organized around one idea: the restoration advisor should never be hidden.
+      Ask questions, build your plan, track progress — all in one side-by-side view.
     </p>
-    <div class="hero-chips">
-      <span class="chip chip-amber">The agent learns as you talk</span>
-      <span class="chip chip-green">Everything is saved automatically</span>
-      <span class="chip chip-blue">Ask anything, anytime</span>
+    <div class="hero-promise">
+      <div class="hero-promise-item">
+        <div class="hero-promise-icon">🧠</div>
+        <div class="hero-promise-text">
+          <strong>It knows your car</strong>
+          Builds a profile from your answers. Recommendations are for your specific 1989 CJ8, not generic Jeep advice.
+        </div>
+      </div>
+      <div class="hero-promise-item">
+        <div class="hero-promise-icon">📋</div>
+        <div class="hero-promise-text">
+          <strong>It maintains the plan</strong>
+          Every conversation can add phases, tasks, cost estimates, parts lists, and step-by-step guides.
+        </div>
+      </div>
+      <div class="hero-promise-item">
+        <div class="hero-promise-icon">🇮🇱</div>
+        <div class="hero-promise-text">
+          <strong>It knows Israeli prices</strong>
+          Can search jeepland.co.il directly. Quotes costs in ₪ with local supplier options.
+        </div>
+      </div>
+      <div class="hero-promise-item">
+        <div class="hero-promise-icon">🔕</div>
+        <div class="hero-promise-text">
+          <strong>It works in the background</strong>
+          Scans for gaps, preps next tasks, flags risks — automatically, without interrupting you.
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 1: FIRST SESSION -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="start">
-    <div class="section-header">
-      <span class="section-num">01</span>
-      <div>
-        <div class="section-title">Your first session — what to tell it</div>
-        <div class="section-desc">The agent builds a mental model of your Jeep. The more context you give upfront, the better every future answer will be.</div>
+  <!-- GETTING STARTED -->
+  <section id="getting-started">
+    <div class="section-label">First Time</div>
+    <h2>Getting started</h2>
+    <p class="section-intro">
+      Onboarding is a conversation. The advisor asks about your car and situation to build a starting profile.
+      There's no form to fill — just talk.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Describe where the car is right now</div>
+          <div class="step-desc">
+            Don't worry about getting it perfect. The advisor needs to know the current state —
+            running, disassembled, stalled mid-project, sitting for years.
+            Be specific about what you know and honest about what you don't.
+          </div>
+          <div class="step-example">
+            <strong>EXAMPLE</strong><br>
+            "I took it apart 8 years ago for a full redo. Got halfway, stopped. Some parts are off, some on,
+            I have a pile of new old-stock parts I bought. I'm not sure what works and what doesn't."
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Answer the advisor's follow-up questions</div>
+          <div class="step-desc">
+            It'll ask about the engine (AMC 150 2.5L or AMC 258 4.2L?), transmission, your budget range,
+            whether you're doing the work yourself, what you have for tools, and what you ultimately want
+            to use the car for. These answers shape every recommendation.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Let it build the first phases</div>
+          <div class="step-desc">
+            The advisor will create phases and tasks based on what you told it — starting from where
+            you actually are. Phase 1 is almost always Assessment &amp; Inventory because you can't
+            plan until you know what you have.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">You're in the main interface</div>
+          <div class="step-desc">
+            Your plan is on the left, the advisor is on the right — always. You can now navigate phases,
+            open tasks, ask questions, request more detail on any topic, or just start working.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:20px">
+      <strong>Note:</strong> Onboarding only runs once. If you want to re-run it, you can reset the app from Settings → Reset App.
+      Your existing data will be cleared.
+    </div>
+  </section>
+
+  <!-- INTERFACE MAP -->
+  <section id="interface">
+    <div class="section-label">Interface Map</div>
+    <h2>Every piece of the screen</h2>
+    <p class="section-intro">
+      The layout has four zones. Everything is always visible — nothing hides.
+    </p>
+
+    <div class="interface-zones">
+
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">📊</div>
+          <div class="zone-name">Top Bar</div>
+          <div class="zone-tag">Full width</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🚙</div>
+            <div><strong>CJ8 SCRAMBLER 1989</strong> — your build's identity. Always visible at top left.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">📈</div>
+            <div><strong>Progress bar</strong> — tasks done / total tasks across the whole plan, with percentage.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🏷</div>
+            <div><strong>Stat pills</strong> — number of phases, total estimated cost in ₪. Updates live as advisor adds tasks.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">⚠</div>
+            <div><strong>Critical badge</strong> — shows how many undismissed critical gaps exist. Click to jump to the first critical task.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">⚙</div>
+            <div><strong>Settings</strong> — API key, export, reset app.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">🗺</div>
+          <div class="zone-name">Phase Pills Strip</div>
+          <div class="zone-tag">Left column</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">💊</div>
+            <div>One pill per phase — <strong>Ph.1 1/6</strong>, <strong>Ph.2 0/4</strong>, etc. Scrolls horizontally if there are many phases.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🟡</div>
+            <div><strong>Amber pill</strong> = current phase (active tasks or first incomplete phase). <strong>Green</strong> = phase complete. <strong>Gray</strong> = not started.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🖱</div>
+            <div>Click any pill to scroll the plan column directly to that phase and expand it.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">📋</div>
+          <div class="zone-name">Plan Column</div>
+          <div class="zone-tag">Left · 55%</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🃏</div>
+            <div><strong>Phase cards</strong> — each phase is a card with a colored top band, name, subtitle, and a progress bar showing tasks done/total. Click the header to expand/collapse.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">✅</div>
+            <div><strong>Task rows</strong> — inside expanded cards. Shows status symbol, task name, priority, cost estimate. Click any task to open the Task Detail view.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🔧</div>
+            <div><strong>Map out tasks button</strong> — appears in empty phases. Clicking it sends a prompt to the advisor asking it to fill in that phase.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🗂</div>
+            <div><strong>Three tabs</strong> at the top: PLAN, WORK NOW, JOURNEY.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">🔧</div>
+          <div class="zone-name">Restoration Advisor Panel</div>
+          <div class="zone-tag">Right · 45%</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">💬</div>
+            <div><strong>Message history</strong> — full conversation, scrollable. User messages on the right, advisor on the left. Conversation persists across sessions.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">⚡</div>
+            <div><strong>Live tool activity</strong> — while the advisor is thinking, a small bubble shows which tools it's calling: <em>⚡ Searching: "AMC 258 rebuild kit"</em>, <em>⚡ Adding "Inspect frame rails" → Phase 1</em></div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">📎</div>
+            <div><strong>Photo attachment</strong> — when you're viewing a task, the paperclip icon appears in the input. Attach photos for the advisor to analyze.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">💡</div>
+            <div><strong>Prompt chips</strong> — quick-send suggestions appear when the conversation is empty. They change based on whether you're viewing a task or the general plan.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- VIEWS -->
+  <section id="views">
+    <div class="section-label">Plan Column Tabs</div>
+    <h2>Three ways to look at your work</h2>
+    <p class="section-intro">
+      The PLAN / WORK NOW / JOURNEY tabs give you three different perspectives on the same data.
+    </p>
+
+    <div class="views-grid">
+      <div class="view-card">
+        <div class="view-name">PLAN</div>
+        <div class="view-title">The full map</div>
+        <div class="view-desc">
+          All phases as cards, in order. Expand any phase to see its tasks.
+          The colored top band shows phase status — amber for in-progress, green for complete, red for critical.
+          This is the default view.
+        </div>
+        <div class="view-use">Use when: reviewing the overall plan, looking for what's in a specific phase, understanding the scope.</div>
+      </div>
+
+      <div class="view-card">
+        <div class="view-name">WORK NOW</div>
+        <div class="view-title">What to do next</div>
+        <div class="view-desc">
+          A flat sorted list of all incomplete tasks — ordered by priority (critical first), then phase order.
+          Shows which tasks are <strong>blocked</strong> (dependencies not met) vs available to start.
+          Has quick START and ✓ (done) buttons.
+        </div>
+        <div class="view-use">Use when: sitting down to work, deciding what to tackle today, seeing the full critical-path view.</div>
+      </div>
+
+      <div class="view-card">
+        <div class="view-name">JOURNEY</div>
+        <div class="view-title">What you've done</div>
+        <div class="view-desc">
+          Chronological log of completed tasks, newest first. Shows notes, photos, actual vs estimated cost.
+          Also shows key decisions recorded by the advisor in a summary block at the top.
+        </div>
+        <div class="view-use">Use when: tracking progress, reviewing what was done before a session, documenting the restoration story.</div>
+      </div>
+    </div>
+
+    <!-- Status badges -->
+    <div style="margin-top:28px">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:var(--text-dim);text-transform:uppercase;margin-bottom:14px">Task Status Symbols</div>
+      <div class="status-grid">
+        <div class="status-badge">
+          <div class="status-dot" style="background:#DDD0B3"></div>
+          <div><div class="status-name">○ todo</div><div class="status-desc">Not started</div></div>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot" style="background:#C4731A"></div>
+          <div><div class="status-name">◉ active</div><div class="status-desc">In progress now</div></div>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot" style="background:#2D7A3A"></div>
+          <div><div class="status-name">✓ done</div><div class="status-desc">Completed</div></div>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot" style="background:#B83030"></div>
+          <div><div class="status-name">⚑ flagged</div><div class="status-desc">Needs attention</div></div>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot" style="background:#9C8270"></div>
+          <div><div class="status-name">— skipped</div><div class="status-desc">Intentionally skipped</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TALKING TO THE ADVISOR -->
+  <section id="talking">
+    <div class="section-label">Conversations</div>
+    <h2>How to talk to the advisor</h2>
+    <p class="section-intro">
+      The advisor is a mechanic who knows your car and your plan. Talk to it like one.
+      These examples show what kind of conversations it can handle.
+    </p>
+
+    <div class="convo-example">
+      <div class="convo-example-label">💰 Asking about costs and sourcing</div>
+      <div class="convo">
+        <div class="convo-turn">
+          <div class="convo-role user">You</div>
+          <div class="convo-body">
+            <div class="convo-text">What should a brake master cylinder rebuild cost me? Check jeepland.</div>
+          </div>
+        </div>
+        <div class="convo-turn">
+          <div class="convo-role advisor">Advisor</div>
+          <div class="convo-body">
+            <div class="convo-text">Found it on Jeepland — rebuild kit is ₪220, new aftermarket unit ₪480. If yours is more than 10 years old since last replacement, go new. The original master on an '89 is almost certainly original.</div>
+            <div class="convo-tools">
+              <div class="convo-tool">✓ search_jeepland: "CJ8 brake master cylinder"</div>
+              <div class="convo-tool">✓ update_task_cost: Brake master cylinder → ₪480</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="convo-example">
+      <div class="convo-example-label">🔩 Getting a step-by-step guide</div>
+      <div class="convo">
+        <div class="convo-turn">
+          <div class="convo-role user">You</div>
+          <div class="convo-body">
+            <div class="convo-text">Write me the step-by-step for checking the AMC 258 head gasket condition without pulling the head.</div>
+          </div>
+        </div>
+        <div class="convo-turn">
+          <div class="convo-role advisor">Advisor</div>
+          <div class="convo-body">
+            <div class="convo-text">
+              For the AMC 258, there are four signs you can check without disassembly: oil fill cap (white mayonnaise = coolant in oil), coolant reservoir (oil sheen), compression test across all 6 cylinders (a dead or low cylinder adjacent to the hot side is a classic sign on the 258), and idle behavior — the 258 misfires distinctively when a head gasket is seeping. I've saved the full procedure to the task.
+            </div>
+            <div class="convo-tools">
+              <div class="convo-tool">✓ set_task_steps: "Check engine condition" → 8 steps</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="convo-example">
+      <div class="convo-example-label">📦 Building out a phase</div>
+      <div class="convo">
+        <div class="convo-turn">
+          <div class="convo-role user">You</div>
+          <div class="convo-body">
+            <div class="convo-text">Map out all the tasks I'll need for the frame and body mounts phase.</div>
+          </div>
+        </div>
+        <div class="convo-turn">
+          <div class="convo-role advisor">Advisor</div>
+          <div class="convo-body">
+            <div class="convo-text">Added 7 tasks to the Frame &amp; Body Mounts phase. The CJ8 has 8 body mount positions — 4 more than the CJ7 because of the longer wheelbase. The rear crossmember is the one most likely to have rusted through. I flagged it as critical since structural integrity is a safety issue.</div>
+            <div class="convo-tools">
+              <div class="convo-tool">✓ add_task: "Inspect all 8 body mount positions" → Frame phase · CRITICAL</div>
+              <div class="convo-tool">✓ add_task: "Measure rear crossmember thickness" → Frame phase · CRITICAL</div>
+              <div class="convo-tool">✓ add_task: "Source body mount bushings" → Frame phase · HIGH</div>
+              <div class="convo-tool">✓ flag_gap: "No frame rust treatment task" [critical]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="convo-example">
+      <div class="convo-example-label">🏁 Marking something done</div>
+      <div class="convo">
+        <div class="convo-turn">
+          <div class="convo-role user">You</div>
+          <div class="convo-body">
+            <div class="convo-text">I finished inventorying all the parts. Found 3 boxes of NOS parts I forgot about — brake hardware, some engine bolts, and a complete fuel line kit.</div>
+          </div>
+        </div>
+        <div class="convo-turn">
+          <div class="convo-role advisor">Advisor</div>
+          <div class="convo-body">
+            <div class="convo-text">Good find. NOS fuel line kit will save you around ₪350 at current prices. I've marked the inventory task done and recorded the discovery. Those engine bolts — AMC 258 head bolts are torque-to-yield on some years, worth identifying them specifically.</div>
+            <div class="convo-tools">
+              <div class="convo-tool">✓ update_task_status: "Inventory all removed parts" → done</div>
+              <div class="convo-tool">✓ add_task_note: "Found NOS: brake hardware, engine bolts, complete fuel line kit"</div>
+              <div class="convo-tool">✓ add_research_note: "NOS fuel line kit found in inventory, saves ~₪350"</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="callout">
-      <div class="callout-icon">🧠</div>
-      <div class="callout-body">
-        <strong>The agent remembers forever.</strong> You only have to tell it something once. It stores key facts about your Jeep in a car profile — engine condition, mileage, skills, budget, goals — and refers back to them when planning tasks or suggesting priorities.
-      </div>
+      <strong>What the advisor won't do:</strong> give vague generic advice, pretend to know something it doesn't,
+      give you a cost estimate without checking jeepland, or plan based on a CJ7 when you have a CJ8.
+      If it's uncertain, it says so and searches.
     </div>
+  </section>
 
-    <p style="font-size:14px; color:var(--text-muted); margin: 20px 0 12px;">
-      Start a fresh session and send a message like this — be as specific as you can:
+  <!-- TASK DETAIL -->
+  <section id="tasks">
+    <div class="section-label">Task Detail View</div>
+    <h2>Inside a task</h2>
+    <p class="section-intro">
+      Click any task row to open the Task Detail view. The plan column is replaced
+      by a deep-dive on that one task. Press Back to return.
     </p>
 
-    <div class="prompt-block">
-      <div class="prompt-label">✦ Great first message</div>
-      Hi. I have a 1989 Jeep CJ8 Scrambler with the AMC 258 I-6. It has about 180,000 km on it. The engine runs but smokes on cold start and has a rough idle. The transfer case is fine, axles were rebuilt 3 years ago. Brakes haven't been touched in years. Body has surface rust on the sills and one small patch on the driver floor. I'm intermediate skill level — comfortable with tools, have done brakes and oil changes but never engine work. My budget is around ₪70,000 total. Goal is a reliable daily driver that can handle some weekend trails. Where should I start?
+    <div class="interface-zones">
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">✅</div>
+          <div class="zone-name">What you'll find in a task</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🔄</div>
+            <div><strong>Status buttons</strong> — quickly change to todo / active / done / flagged / skipped directly from this view.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">📋</div>
+            <div><strong>Step-by-step guide</strong> — if the advisor has written steps for this task, they appear as a numbered checklist. Specific to the CJ8 Scrambler.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🔩</div>
+            <div><strong>Parts list</strong> — required parts with part numbers, suppliers, cost, and purchased status. Can be expanded via the advisor.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">📝</div>
+            <div><strong>Notes</strong> — advisor observations and your discoveries. Timestamped. Ask the advisor to add notes, or it adds them automatically as you complete related tasks.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">📸</div>
+            <div><strong>Photo gallery</strong> — photos attached to this task. See below for how to add them.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">₪</div>
+            <div><strong>Cost tracking</strong> — estimated vs actual cost. Update actual cost after completing the work.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <p style="font-size:14px; color:var(--text-muted); margin: 16px 0 12px;">
-      After this, the agent will record all those facts and propose your first phases. You'll see it call tools in the background — that's it building the plan.
+    <div class="callout callout-success" style="margin-top:16px">
+      <strong>Tip:</strong> When you're viewing a task and ask the advisor a question, it automatically
+      includes the task context — task name, phase, system. You don't need to specify which task you mean.
+    </div>
+  </section>
+
+  <!-- PHOTOS -->
+  <section id="photos">
+    <div class="section-label">Photo Attachment</div>
+    <h2>Show the advisor what you're looking at</h2>
+    <p class="section-intro">
+      Photos are the fastest way to get a specific assessment. The advisor can see corrosion,
+      damage, part condition, and identify what you're looking at.
     </p>
 
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon">🔑</div>
-        <h4>Facts it wants to know</h4>
-        <p>Engine condition, mileage, known issues, which systems were recently worked on, body rust situation, transmission type.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🧰</div>
-        <h4>About you</h4>
-        <p>Your DIY skill level, tools you have access to, whether you have a lift, and how much time you can dedicate per week.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🎯</div>
-        <h4>Your goals</h4>
-        <p>Daily driver, trail rig, show-quality restoration, or somewhere in between. This shapes what "done" looks like for every task.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">💰</div>
-        <h4>Budget</h4>
-        <p>Tell it your total budget in ₪. It will flag when estimates are approaching or exceeding it, and suggest lower-cost alternatives.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 2: BUILDING THE PLAN -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="plan">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <div>
-        <div class="section-title">How plan building works</div>
-        <div class="section-desc">The agent creates phases and tasks — each with step-by-step instructions and Israeli market parts estimates.</div>
-      </div>
-    </div>
-
-    <div class="flow">
-      <div class="flow-step">
-        <div class="flow-dot">💬</div>
-        <div class="flow-body">
-          <h4>You describe what you know</h4>
-          <p>Tell the agent about your Jeep's condition, what you've noticed, what's next. No need to be technical — describe symptoms.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Open the relevant task</div>
+          <div class="step-desc">
+            The paperclip icon (📎) in the advisor's input box only appears when you're viewing a task.
+            This ensures photos are linked to the right place in your plan.
+          </div>
         </div>
       </div>
-      <div class="flow-step">
-        <div class="flow-dot">🔍</div>
-        <div class="flow-body">
-          <h4>Agent researches and reasons</h4>
-          <p>It searches for CJ8-specific information, cross-references known failure points for the AMC 258, and builds tasks that are specific to <em>your</em> Jeep — not a generic guide.</p>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Tap the paperclip and select your photo</div>
+          <div class="step-desc">
+            A preview thumbnail appears above the input. You can ask a specific question with it,
+            or just send the photo alone — the advisor will describe what it sees.
+          </div>
+          <div class="step-example">
+            <strong>EXAMPLE</strong><br>
+            Send a photo of the frame rail with the message: "Is this rust through or just surface corrosion?"
+          </div>
         </div>
       </div>
-      <div class="flow-step">
-        <div class="flow-dot">📦</div>
-        <div class="flow-body">
-          <h4>Phases and tasks appear</h4>
-          <p>The agent creates phases in logical order, adds tasks with priorities, records step-by-step how-to guides, and estimates costs in ₪ from Israeli market sources.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-dot">🔗</div>
-        <div class="flow-body">
-          <h4>Dependencies are set automatically</h4>
-          <p>It knows that you must fix the rear main seal before painting the frame, and that brakes come before trail driving. These ordering constraints are tracked so nothing gets skipped.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-dot">⚠️</div>
-        <div class="flow-body">
-          <h4>Gaps appear quietly</h4>
-          <p>While you work, the agent silently scans for things you might have missed — CJ8 brake fade at altitude, rust behind the spring hangers, missing ground straps. These show as orange flags.</p>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Photo is stored in the task automatically</div>
+          <div class="step-desc">
+            The image is stored in your browser's IndexedDB (no server upload, no account needed).
+            It appears in the task's photo gallery and in the JOURNEY view for that task.
+            The advisor's analysis is saved as an annotation on the file.
+          </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <p style="font-size:14px; color:var(--text-muted); margin: 24px 0 12px;">Here's what a typical phase looks like after the agent populates it:</p>
+  <!-- BACKGROUND INTELLIGENCE -->
+  <section id="background">
+    <div class="section-label">Silent AI Activity</div>
+    <h2>What happens without you asking</h2>
+    <p class="section-intro">
+      The advisor does three things automatically, in the background, without adding messages to the conversation.
+      You'll see their results as new gap flags and task updates.
+    </p>
 
-    <div class="phase-example">
-      <div class="phase-example-header">
-        <div class="phase-dot" style="background:#E74C3C"></div>
+    <div class="interface-zones">
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">🔍</div>
+          <div class="zone-name">Automatic Gap Scan</div>
+          <div class="zone-tag">After plan changes</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">⏱</div>
+            <div>Fires 8 seconds after you or the advisor makes a plan change (add/edit tasks or phases), but only if 10+ minutes have passed since the last scan.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🚨</div>
+            <div>Checks the entire plan against known CJ8 failure points, missing safety tasks, and uncaptured dependencies. Adds critical gaps to the counter in the top bar.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">💬</div>
+            <div>Does not add any chat messages — silent. You'll just notice the gap count change.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">✅</div>
+          <div class="zone-name">Post-Completion Analysis</div>
+          <div class="zone-tag">When a task is marked done</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🔓</div>
+            <div>Immediately when you mark a task done, the advisor checks what tasks are now unblocked.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">📋</div>
+            <div>Writes step-by-step guides into the newly-unblocked tasks so they're ready when you get there.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🔩</div>
+            <div>Populates parts lists for the next tasks, so you know what to order.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="zone">
+        <div class="zone-header">
+          <div class="zone-icon">📅</div>
+          <div class="zone-name">Weekly Health Check</div>
+          <div class="zone-tag">On app load, max once per week</div>
+        </div>
+        <div class="zone-body">
+          <div class="zone-feature">
+            <div class="zone-feature-icon">🗂</div>
+            <div>Checks for a complete CJ8 restoration phase coverage — flags if major systems (brakes, electrical, frame) have no phase.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">⏰</div>
+            <div>Flags tasks that have been "active" for a long time with no notes — prompts you to update their status.</div>
+          </div>
+          <div class="zone-feature">
+            <div class="zone-feature-icon">📦</div>
+            <div>Warns if any phase has more than 10 tasks — suggests splitting it for clarity.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings">
+    <div class="section-label">Settings Panel</div>
+    <h2>Configuration &amp; export</h2>
+    <p class="section-intro">Access from the ⚙ icon in the top right.</p>
+
+    <div class="settings-list">
+      <div class="settings-item">
+        <div class="settings-icon">🔑</div>
         <div>
-          <div class="phase-name">Phase 1 — Safety First</div>
-          <span style="font-size:11px; color:var(--text-dim)">Brakes · Steering · Electrical</span>
+          <div class="settings-name">API Key</div>
+          <div class="settings-desc">
+            Your Anthropic API key. Stored locally in the browser, never sent anywhere except directly to the Anthropic API.
+            Get one at <code>console.anthropic.com</code>. Alternatively, set <code>VITE_ANTHROPIC_API_KEY</code> in <code>.env.local</code> for development.
+          </div>
         </div>
-        <div style="margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--amber)">₪12,800 est.</div>
       </div>
-      <div class="phase-tasks">
-        <div class="phase-task">
-          <span class="task-status ts-done">DONE</span>
-          Inspect and flush brake fluid — replace if dark or >2 years old
-          <span class="task-cost">₪320</span>
+      <div class="settings-item">
+        <div class="settings-icon">📤</div>
+        <div>
+          <div class="settings-name">Export Plan</div>
+          <div class="settings-desc">
+            Downloads your complete plan as a JSON file — all phases, tasks, notes, decisions, carFacts, research notes.
+            Useful as a backup or for sharing with a mechanic.
+          </div>
         </div>
-        <div class="phase-task">
-          <span class="task-status ts-active">ACTIVE</span>
-          Replace front drum brakes — pads, drums, wheel cylinders
-          <span class="task-cost">₪1,800</span>
-        </div>
-        <div class="phase-task">
-          <span class="task-status ts-todo">TODO</span>
-          Inspect and bleed rear brake lines — CJ8 lines corrode at rear axle
-          <span class="task-cost">₪600</span>
-        </div>
-        <div class="phase-task">
-          <span class="task-status ts-todo">TODO</span>
-          Rebuild or replace brake booster — vacuum-operated, often fails at this age
-          <span class="task-cost">₪2,200</span>
-        </div>
-        <div class="phase-task">
-          <span class="task-status ts-flagged">FLAGGED</span>
-          Steering box play inspection — excessive play is common on worn CJ8s
-          <span class="task-cost">₪?</span>
+      </div>
+      <div class="settings-item">
+        <div class="settings-icon">🗑</div>
+        <div>
+          <div class="settings-name">Reset App</div>
+          <div class="settings-desc">
+            Clears all data and returns to onboarding. Use this if you want to start fresh.
+            Export your plan first if you want to keep a copy.
+          </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="callout callout-blue" style="margin-top:20px">
-      <div class="callout-icon">💡</div>
-      <div class="callout-body">
-        <strong>FLAGGED tasks</strong> are things the agent noticed but couldn't fully assess without you checking first. When you inspect and know the outcome, tell the agent — it will update the task or remove it.
-      </div>
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 3: DAILY USE -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="daily">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <div>
-        <div class="section-title">Day-to-day usage</div>
-        <div class="section-desc">Short check-ins are as useful as long planning sessions. Use the agent like a knowledgeable friend you can text from the garage.</div>
-      </div>
-    </div>
-
-    <div class="card-grid" style="margin-bottom:24px">
-      <div class="card">
-        <div class="card-icon">🔧</div>
-        <h4>Logging work done</h4>
-        <p>Tell it what you completed, what you found, and what it actually cost. The plan updates automatically.</p>
-        <div class="prompt-block" style="margin-top:10px; font-size:12px">
-          Finished the front brakes. Both drums were severely scored, replaced everything. Actual cost was ₪2,100. Also noticed the driver-side wheel cylinder is weeping.
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-icon">❓</div>
-        <h4>Technical questions</h4>
-        <p>Ask anything specific to your Jeep. It will search for CJ8 forum knowledge and manual references.</p>
-        <div class="prompt-block" style="margin-top:10px; font-size:12px">
-          What's the torque spec for the AMC 258 head bolts, and do I need to replace them after removal?
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-icon">🛒</div>
-        <h4>Parts research</h4>
-        <p>Ask for Israeli supplier recommendations, part numbers, and price comparisons before you buy.</p>
-        <div class="prompt-block" style="margin-top:10px; font-size:12px">
-          Where can I get a Felpro head gasket for the AMC 258 in Israel? What should I pay?
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-icon">📅</div>
-        <h4>Status check</h4>
-        <p>Quick check on where you stand — what's next, what's blocking what, what the current estimate total is.</p>
-        <div class="prompt-block" style="margin-top:10px; font-size:12px">
-          What's the next thing I should work on? And how close am I to the budget?
-        </div>
-      </div>
-    </div>
-
-    <p style="font-size:14px; font-weight:600; margin-bottom:12px">Example: a typical end-of-garage-day message</p>
-
-    <div class="convo">
-      <div class="msg msg-user">
-        <div class="msg-label">YOU</div>
-        Spent 4 hours on the brakes today. Front drums are done — new wheel cylinders, drums, and shoes. Everything bled clean. Parking brake cable is seized though, I couldn't get it free. Might need a new cable.
-      </div>
-      <div class="msg msg-agent">
-        <div class="msg-label">AGENT</div>
-        Good progress — front drums are a meaningful safety win on a CJ8.
-        <br><br>
-        I've marked the front brake work as done and added a note about the seized parking cable. I've also created a new task for the parking brake cable replacement — the CJ8 uses a two-piece cable system and the rear section (behind the transfer case) is the one that typically seizes due to road salt exposure.
-        <br><br>
-        <span class="tool-badge">✓ update_task_status</span>
-        <span class="tool-badge">✓ add_task_note</span>
-        <span class="tool-badge">✓ add_task</span>
-        <br><br>
-        Estimated cost for the cable is ₪280–₪420 from AutoMatic or Ofer Brothers. Want me to add the specific part number?
-      </div>
-      <div class="msg msg-user">
-        <div class="msg-label">YOU</div>
-        Yes please. Also what's my brake phase completion now?
-      </div>
-      <div class="msg msg-agent">
-        <div class="msg-label">AGENT</div>
-        The parking brake cable (dorman 924-5401 or equivalent) runs around ₪340 landed in Israel.<br><br>
-        Phase 1 — Safety First: 3 of 7 tasks done (43%). Still open: rear brake lines, brake booster, steering box inspection, and now the parking cable. You're on track — brake booster is the big-ticket item remaining at ~₪2,200.
-      </div>
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 3.5: UI ACTIONS -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="ui-actions">
-    <div class="section-header">
-      <span class="section-num">03½</span>
-      <div>
-        <div class="section-title">What you can click directly</div>
-        <div class="section-desc">Some things don't need the agent. You can do them directly in the app.</div>
-      </div>
-    </div>
-
-    <p style="margin-bottom:20px; font-size:15px">The agent handles <em>creating</em> things. The UI handles <em>using</em> them — tracking progress, recording what actually happened, and managing what you bought.</p>
-
-    <!-- ── CLICKABLE ACTIONS TABLE ── -->
-    <table style="width:100%; border-collapse:collapse; margin-bottom:28px; font-size:14px">
-      <thead>
-        <tr style="background:var(--surface-3); border-bottom:2px solid var(--border-strong)">
-          <th style="text-align:left; padding:10px 12px; font-family:var(--mono); font-size:12px; color:var(--text-muted)">ACTION</th>
-          <th style="text-align:left; padding:10px 12px; font-family:var(--mono); font-size:12px; color:var(--text-muted)">WHERE</th>
-          <th style="text-align:left; padding:10px 12px; font-family:var(--mono); font-size:12px; color:var(--text-muted)">HOW</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom:1px solid var(--border)">
-          <td style="padding:10px 12px; font-weight:600">Change task status</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Open any task</td>
-          <td style="padding:10px 12px">Status dropdown at top, or TODO / ACTIVE / DONE / SKIP buttons</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border); background:var(--surface-2)">
-          <td style="padding:10px 12px; font-weight:600">Mark complete + record actual cost</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Open any task</td>
-          <td style="padding:10px 12px">Type the actual ₪ amount in the field above the green <strong>Mark Complete</strong> button — or skip it and just click the button</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border)">
-          <td style="padding:10px 12px; font-weight:600">Edit a cost estimate</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Open any task → scroll to COST ESTIMATE</td>
-          <td style="padding:10px 12px">Click the ₪ amount (or "Not set") → inline edit field appears → type → Save</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border); background:var(--surface-2)">
-          <td style="padding:10px 12px; font-weight:600">Add a note</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Open any task</td>
-          <td style="padding:10px 12px">Text field at the bottom of the task panel → type → click <strong>+</strong> or press Enter</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border)">
-          <td style="padding:10px 12px; font-weight:600">Mark a part as purchased</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Open any task → PARTS LIST</td>
-          <td style="padding:10px 12px">Click the checkbox next to each part — turns green with strikethrough when purchased</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border); background:var(--surface-2)">
-          <td style="padding:10px 12px; font-weight:600">Quick-start or quick-complete a task</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Work Now tab</td>
-          <td style="padding:10px 12px"><strong>START</strong> sets it to Active and opens it. <strong>✓</strong> marks it Done immediately</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border)">
-          <td style="padding:10px 12px; font-weight:600">Upload a photo or PDF</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Open any task → FILES section</td>
-          <td style="padding:10px 12px">Drag & drop, or click the upload area / the Upload link in the header</td>
-        </tr>
-        <tr style="background:var(--surface-2)">
-          <td style="padding:10px 12px; font-weight:600">Dismiss a gap warning</td>
-          <td style="padding:10px 12px; color:var(--text-muted)">Dashboard → gap alerts</td>
-          <td style="padding:10px 12px">Click the <strong>×</strong> on any orange gap card to dismiss it</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- ── AGENT-ONLY ACTIONS ── -->
-    <div style="background:var(--surface); border:2px solid var(--border); border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:var(--shadow)">
-      <h4 style="font-family:var(--mono); font-size:13px; color:var(--text-muted); margin-bottom:12px; letter-spacing:0.05em">REQUIRES THE AGENT (chat only)</h4>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:14px">
-        <div style="display:flex; gap:8px; align-items:center"><span style="color:var(--red); font-size:16px">✗</span> Create tasks or phases</div>
-        <div style="display:flex; gap:8px; align-items:center"><span style="color:var(--red); font-size:16px">✗</span> Add parts to a task</div>
-        <div style="display:flex; gap:8px; align-items:center"><span style="color:var(--red); font-size:16px">✗</span> Set task dependencies</div>
-        <div style="display:flex; gap:8px; align-items:center"><span style="color:var(--red); font-size:16px">✗</span> Edit a task name</div>
-        <div style="display:flex; gap:8px; align-items:center"><span style="color:var(--red); font-size:16px">✗</span> Move a task to another phase</div>
-        <div style="display:flex; gap:8px; align-items:center"><span style="color:var(--red); font-size:16px">✗</span> Set step-by-step guides</div>
-      </div>
-    </div>
-
-    <!-- ── FOUND A PART ONLINE? ── -->
-    <div style="background:var(--amber-bg); border:2px solid var(--amber-dim); border-radius:8px; padding:20px; box-shadow:var(--shadow)">
-      <h4 style="font-weight:700; margin-bottom:10px">📌 Found a part on jeepland.co.il (or anywhere else)?</h4>
-      <p style="font-size:14px; margin-bottom:12px">There's no direct "paste a link" field. Instead, paste the link or price into chat and the agent saves it properly:</p>
-      <div class="prompt-block" style="margin:0">
-        Found this on jeepland: [paste URL] — ₪112, part# 52000848. Add it to the rear wheel cylinder task.
-      </div>
-      <p style="font-size:13px; color:var(--text-muted); margin-top:10px">The agent will call <code style="font-family:var(--mono); font-size:12px; background:var(--surface-3); padding:1px 5px; border-radius:3px">add_part_to_task</code> with the name, price, and part number — stored on the task permanently.</p>
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 4: PHOTOS AND FILES -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="photos">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <div>
-        <div class="section-title">Using photos and manuals</div>
-        <div class="section-desc">Upload photos from the garage or PDFs from your workshop manuals. The agent will analyze and annotate them.</div>
-      </div>
-    </div>
-
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon">📷</div>
-        <h4>Upload garage photos</h4>
-        <p>Attach a photo in your message and describe what you're looking at. The agent will provide a technical assessment and save its observations to that task's file.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">📋</div>
-        <h4>Workshop manuals</h4>
-        <p>Upload pages from your Haynes, factory FSM, or Israeli תב"ד documents. The agent can reference them when writing step-by-step guides for your tasks.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔎</div>
-        <h4>Rust inspection photos</h4>
-        <p>Send undercarriage photos and ask for an assessment. The agent will estimate repair scope and flag anything that looks structural or load-bearing.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🧾</div>
-        <h4>Receipts and invoices</h4>
-        <p>Upload garage receipts to track actual costs vs. estimates. The agent will update the task's actual cost and note any parts installed.</p>
-      </div>
-    </div>
-
-    <div class="prompt-block prompt-tip" style="margin-top:20px">
-      <div class="prompt-label">📷 Photo prompt template</div>
-      [Attach photo]<br>
-      This is the driver-side rear frame rail, taken from under the car. Can you assess the rust severity and tell me if this is surface rust or structural? Should I be worried about welding vs. treating?
-    </div>
-
-    <div class="prompt-block prompt-tip" style="margin-top:12px">
-      <div class="prompt-label">📋 Manual reference prompt</div>
-      [Attach PDF page]<br>
-      This is page 14 of the AMC 258 section from my Haynes manual. Can you write the task steps for the valve adjustment based on this and save them to my "Valve clearance adjustment" task?
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 5: PROMPT GUIDE -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="prompts">
-    <div class="section-header">
-      <span class="section-num">05</span>
-      <div>
-        <div class="section-title">Prompt guide — what to say and when</div>
-        <div class="section-desc">These phrases reliably unlock the agent's full capabilities.</div>
-      </div>
-    </div>
-
-    <div class="prompt-table-wrap" style="margin-bottom:24px">
-      <table class="prompt-table">
-        <tr>
-          <td>Planning</td>
-          <td>"Build me a complete phase for the cooling system — the AMC 258 is known to run hot."</td>
-        </tr>
-        <tr>
-          <td>Status</td>
-          <td>"What's my next task? What's blocking anything right now?"</td>
-        </tr>
-        <tr>
-          <td>Research</td>
-          <td>"Search for known AMC 258 oil leak points and add any I don't have as tasks."</td>
-        </tr>
-        <tr>
-          <td>Logging</td>
-          <td>"Mark the head gasket job as done. Actual cost was ₪3,400. Found hairline crack in block — adding as a separate task."</td>
-        </tr>
-        <tr>
-          <td>Budget</td>
-          <td>"Where am I vs. my ₪70k budget? Which phase is the most over-estimated?"</td>
-        </tr>
-        <tr>
-          <td>Decisions</td>
-          <td>"Record this: I've decided to rebuild the carb rather than go EFI — budget constraint."</td>
-        </tr>
-        <tr>
-          <td>Parts</td>
-          <td>"What parts do I need for the front axle birfield rebuild? With part numbers and Israeli pricing."</td>
-        </tr>
-        <tr>
-          <td>Sequencing</td>
-          <td>"Is there anything I should do before pulling the engine that I might have missed?"</td>
-        </tr>
-        <tr>
-          <td>Safety</td>
-          <td>"Am I missing any safety-critical items before I take this on trails?"</td>
-        </tr>
-        <tr>
-          <td>Priorities</td>
-          <td>"I have 3 hours this weekend. What's the highest-value thing I can do?"</td>
-        </tr>
-        <tr>
-          <td>Problem-solving</td>
-          <td>"The engine has a ticking noise when warm, louder under load. What should I check first?"</td>
-        </tr>
-        <tr>
-          <td>Reorganize</td>
-          <td>"Move all the electrical tasks into their own phase — they got buried in Phase 3."</td>
-        </tr>
-      </table>
-    </div>
-
-    <p style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Decisions — how to use them</p>
-    <p style="font-size:14px; color:var(--text-muted); margin-bottom:12px">
-      Decisions are permanent project commitments. The agent refers back to them before making any suggestion that might conflict. Use them for anything you've resolved and don't want revisited.
-    </p>
-    <div class="prompt-block prompt-good">
-      <div class="prompt-label">✓ Decision examples — tell the agent to record these</div>
-      "I've decided to keep the original AMC 258 — no engine swap."<br>
-      "We agreed to prioritize mechanical over cosmetic. Don't suggest paint work until phase 4."<br>
-      "Record: buying all parts from AutoMatic in Tel Aviv unless unavailable. They gave me a discount account."<br>
-      "Record this decision: I'll do all work myself unless it requires welding — in that case I'm using Moshe in Petah Tikva."
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 5½: ADVANCED PROMPTS & WORKFLOWS -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="advanced-prompts">
-    <div class="section-header">
-      <span class="section-num">05½</span>
-      <div>
-        <div class="section-title">Advanced prompts &amp; workflows</div>
-        <div class="section-desc">Things you didn't know you could ask — and how to chain them into fast, focused sessions.</div>
-      </div>
-    </div>
-
-    <p style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Things you didn't know you could ask</p>
-
-    <div class="prompt-table-wrap" style="margin-bottom:24px">
-      <table class="prompt-table">
-        <tr>
-          <td>Jeepland search</td>
-          <td>"Search jeepland.co.il for brake wheel cylinders and add the cheapest one to my brake task as a part with the URL."</td>
-        </tr>
-        <tr>
-          <td>Dependency check</td>
-          <td>"Before I start the engine pull, what tasks absolutely have to be done first? Set them as dependencies."</td>
-        </tr>
-        <tr>
-          <td>Phase gap review</td>
-          <td>"Look at Phase 2 and tell me what tasks I'm probably missing. Add any critical ones."</td>
-        </tr>
-        <tr>
-          <td>Research note</td>
-          <td>"Search for common CJ8 frame rot locations and save your findings as a research note I can refer back to."</td>
-        </tr>
-        <tr>
-          <td>Parts hunt</td>
-          <td>"Which of my tasks have no parts listed? Suggest parts with Israeli pricing for the top 3."</td>
-        </tr>
-        <tr>
-          <td>Progress milestone</td>
-          <td>"I finished Phase 1. Write me a summary of what was done, total actual cost, and what Phase 2 unlocks."</td>
-        </tr>
-        <tr>
-          <td>Cost variance</td>
-          <td>"Compare estimated vs. actual costs for everything I've done. Where am I most over/under?"</td>
-        </tr>
-        <tr>
-          <td>Safety audit</td>
-          <td>"Run a safety audit across all phases. Flag anything that would be dangerous to skip or do out of order."</td>
-        </tr>
-      </table>
-    </div>
-
-    <p style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Common session flows</p>
-    <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px">
-      Use these sequences at the start or end of a work session to get maximum value from the advisor with minimal typing.
+  <!-- PRO TIPS -->
+  <section id="tips">
+    <div class="section-label">Getting the Most Out of It</div>
+    <h2>Pro tips</h2>
+    <p class="section-intro">
+      Patterns that make the advisor significantly more useful.
     </p>
 
-    <div class="prompt-block prompt-tip" style="margin-bottom:12px">
-      <div class="prompt-label">🔧 Starting a new phase</div>
-      <strong>Step 1:</strong> "Map out all the tasks for [Phase Name] on my CJ8 Scrambler. Include safety-critical items first."<br>
-      <strong>Step 2:</strong> "For each critical task, search for parts pricing on jeepland.co.il."<br>
-      <strong>Step 3:</strong> "What should I do first in this phase? Set dependencies where needed."
+    <div class="tips-grid">
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">📸</div>
+          <div class="tip-title">Photo first, questions second</div>
+        </div>
+        <div class="tip-body">Before asking about a specific component's condition, attach a photo. A photo gives the advisor context that takes paragraphs to describe in words.</div>
+        <div class="tip-example">"Is this rust on the body mount serious?" + photo → instant condition assessment</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">🇮🇱</div>
+          <div class="tip-title">Ask about jeepland explicitly</div>
+        </div>
+        <div class="tip-body">The advisor can search jeepland.co.il directly. When discussing parts, ask it to check jeepland for current stock and pricing — it'll update the task cost estimates automatically.</div>
+        <div class="tip-example">"Check jeepland for AMC 258 carburetor pricing"</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">📋</div>
+          <div class="tip-title">Ask for steps before you start</div>
+        </div>
+        <div class="tip-body">Before starting any task, open it and ask the advisor to write the step-by-step procedure for your specific car. It will be saved into the task for reference while you work.</div>
+        <div class="tip-example">"Write me the steps for this task on a CJ8 Scrambler with a Dana 300"</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">💬</div>
+          <div class="tip-title">Talk through discoveries</div>
+        </div>
+        <div class="tip-body">When you find something unexpected — corrosion, wrong parts, surprises — tell the advisor. It will add a note, adjust cost estimates, and check if this changes any dependencies.</div>
+        <div class="tip-example">"Found that the rear crossmember has a 3cm crack welded badly by a previous owner"</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">🗺</div>
+          <div class="tip-title">Use WORK NOW before each session</div>
+        </div>
+        <div class="tip-body">Before sitting down to work, switch to the WORK NOW tab. It shows exactly what's available right now, ordered by priority, with blocked tasks grayed out. No hunting through phases.</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">⚠</div>
+          <div class="tip-title">Take critical gaps seriously</div>
+        </div>
+        <div class="tip-body">The red critical badge in the top bar is the advisor flagging something it knows matters. Click it to jump to the critical task. These are usually safety-related or structural — don't dismiss them without reading.</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">🏛</div>
+          <div class="tip-title">Record decisions explicitly</div>
+        </div>
+        <div class="tip-body">When you make a major choice — budget limit, build direction, which supplier to use — tell the advisor. It will record it as a decision that shapes all future recommendations.</div>
+        <div class="tip-example">"We're going for a reliable daily driver, budget is ₪25,000 total, DIY everything except welding"</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-icon">🔧</div>
+          <div class="tip-title">Ask it to phase-map the whole build</div>
+        </div>
+        <div class="tip-body">If you want a complete restoration plan quickly, ask the advisor to map out all the phases your CJ8 needs from where it is now to the goal. It will create a structured multi-phase plan in one go.</div>
+        <div class="tip-example">"Map out all the phases needed to take my CJ8 from disassembled to running and roadworthy"</div>
+      </div>
+
     </div>
 
-    <div class="prompt-block prompt-tip" style="margin-bottom:12px">
-      <div class="prompt-label">📝 Logging a completed task</div>
-      <strong>Step 1:</strong> "I just finished [task name]. Actual cost was ₪X."<br>
-      <strong>Step 2:</strong> "Here's what I found: [describe any new discoveries]."<br>
-      <strong>Step 3:</strong> "What's unlocked now? What should I do next?"
+    <div class="callout callout-info" style="margin-top:24px">
+      <strong>Remember:</strong> The advisor reads your whole plan before answering complex questions (using the <code>get_full_plan</code> tool). It knows the state of every task, every gap, every decision recorded. The more context you give it about your car and situation, the more specific and useful its answers.
     </div>
+  </section>
 
-    <div class="prompt-block prompt-tip" style="margin-bottom:12px">
-      <div class="prompt-label">🛒 Planning a parts run</div>
-      <strong>Step 1:</strong> "List all parts I still need to buy across all active tasks."<br>
-      <strong>Step 2:</strong> "Group them by supplier — which can I get from jeepland.co.il?"<br>
-      <strong>Step 3:</strong> "What's the total I should budget for this run?"
-    </div>
-
-    <p style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Power tips</p>
-
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon">⚡</div>
-        <h4>Short &amp; specific = fast</h4>
-        <p>Single-topic questions get responses in 2–3 seconds. "What's my next task?" is faster than a 3-part question. Use chips for common queries.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🧠</div>
-        <h4>State context explicitly</h4>
-        <p>Mention the task name when you're in it. "Add a note to the valve adjustment task: torque spec is 85 ft-lbs" beats navigating to the task first.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔗</div>
-        <h4>Paste part links directly</h4>
-        <p>Copy a jeepland.co.il or aliexpress URL and paste it in chat. Say "Add this as a part to [task name] for ₪X" — it saves the link too.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">📸</div>
-        <h4>Photo = 1000 words</h4>
-        <p>Instead of describing rust, just attach a photo. The agent's visual analysis is more accurate than text descriptions for assessing physical condition.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 6: THE SILENT BACKGROUND AGENT -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">06</span>
-      <div>
-        <div class="section-title">What the agent does on its own</div>
-        <div class="section-desc">Even when you're not chatting, three background processes are quietly watching your plan.</div>
-      </div>
-    </div>
-
-    <div class="card-grid">
-      <div class="card" style="border-left: 3px solid var(--amber)">
-        <div class="card-icon">🔄</div>
-        <h4>After any change — Gap scan</h4>
-        <p>8 seconds after you or the agent modifies the plan, a quiet scan runs. It checks for CJ8-specific gaps you might have missed — things like the vacuum advance on the distributor being connected, or timing chain stretch at this mileage.</p>
-        <p style="margin-top:8px; font-size:12px; color:var(--text-dim)">Result: orange warning flags appear in your plan.</p>
-      </div>
-      <div class="card" style="border-left: 3px solid var(--green)">
-        <div class="card-icon">✅</div>
-        <h4>When you complete a task</h4>
-        <p>When a task is marked done, the agent checks if any other tasks just became unblocked. If so, it pre-populates their parts lists and step-by-step guides so you're ready to start immediately.</p>
-        <p style="margin-top:8px; font-size:12px; color:var(--text-dim)">Result: newly unblocked tasks arrive fully detailed.</p>
-      </div>
-      <div class="card" style="border-left: 3px solid var(--blue)">
-        <div class="card-icon">📅</div>
-        <h4>Weekly — Health check</h4>
-        <p>Once a week on app load, it scans for stale tasks (marked "active" but no recent progress notes), overloaded phases, and missing restoration phases that a complete CJ8 rebuild typically needs.</p>
-        <p style="margin-top:8px; font-size:12px; color:var(--text-dim)">Result: flags for stale tasks and structural plan issues.</p>
-      </div>
-    </div>
-
-    <div class="callout callout-blue" style="margin-top:20px">
-      <div class="callout-icon">🔇</div>
-      <div class="callout-body">
-        <strong>All background activity is silent.</strong> You won't see a message or get interrupted. Gaps and notes just appear in the plan. Look for orange warning triangles — those are the background agent's contributions.
-      </div>
-    </div>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 7: TIPS AND TRAPS -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section" id="tips">
-    <div class="section-header">
-      <span class="section-num">07</span>
-      <div>
-        <div class="section-title">Tips, traps, and habits that help</div>
-        <div class="section-desc">The patterns that separate a good plan from a great one.</div>
-      </div>
-    </div>
-
-    <div class="do-dont">
-      <div class="do-panel do">
-        <h5>✓ DO THIS</h5>
-        <ul>
-          <li>Tell the agent what you <em>found</em> when you inspect something, not just what you planned to do.</li>
-          <li>Log actual costs when you finish each task — the estimate vs. actual gap tells you where the plan was wrong.</li>
-          <li>Ask "what am I missing?" regularly. The agent knows common CJ8 failure patterns you might not.</li>
-          <li>Use it to record decisions, even minor ones. "Decided to use Redline MT-90 in the transfer case."</li>
-          <li>Upload photos of rust, wear, or any "what is this?" moments in the garage.</li>
-          <li>Ask for step-by-step instructions before starting anything unfamiliar — it will write CJ8-specific guides.</li>
-        </ul>
-      </div>
-      <div class="do-panel dont">
-        <h5>✗ AVOID THIS</h5>
-        <ul>
-          <li>Don't ask vague questions like "tell me about CJ8 engines" — be specific to your car and your plan.</li>
-          <li>Don't skip logging completions. The plan becomes stale and the weekly check will flag everything as abandoned.</li>
-          <li>Don't ignore the orange warning flags — the agent only raises them when it thinks something is important.</li>
-          <li>Don't add tasks yourself without telling the agent why — it can't set dependencies or add steps if it doesn't know the context.</li>
-          <li>Don't share budget info vaguely. "I have some money" doesn't help. "₪70,000 total, ₪20,000 available now" is useful.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">The single best habit</div>
-
-    <div class="callout callout-green">
-      <div class="callout-icon">💬</div>
-      <div class="callout-body">
-        <strong>Talk to it like it was there in the garage with you.</strong> "Pulled the valve cover — three of the valve seals are shot and there's sludge on the cam. What does this tell us about the engine's maintenance history and what should we add to the plan?" This kind of message gives the agent what it needs to reason, not just retrieve.
-      </div>
-    </div>
-
-    <div style="margin-top: 28px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">Understanding response speed</div>
-
-    <div class="prompt-table-wrap">
-      <table class="prompt-table">
-        <tr>
-          <td>Fast (instant)</td>
-          <td>Simple questions, greetings, status checks, "what's next?" — routed to a lightweight model, no tools, responds in under 2 seconds.</td>
-        </tr>
-        <tr>
-          <td>Full (5–20 sec)</td>
-          <td>Anything involving research, adding tasks, updating the plan, analyzing photos, or calculating costs — uses the full AI with access to all 23 tools. You'll see the tool calls appear as it works.</td>
-        </tr>
-      </table>
-    </div>
-
-    <div style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">Data safety</div>
-
-    <p style="font-size:14px; color:var(--text-muted)">
-      Everything is stored locally on your computer — the full plan, all conversation history, every photo, every cost estimate. Nothing goes to any server except the AI API calls themselves (which don't store your plan data). The plan is saved as a plain <code>project.json</code> file on disk, backed up to a <code>changelog.ndjson</code> audit log, and synced to localStorage. Even if the app crashes, nothing is lost.
-    </p>
-  </div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- SECTION 8: QUICK REFERENCE -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">08</span>
-      <div>
-        <div class="section-title">Quick reference</div>
-        <div class="section-desc">Task statuses, flags, and what they mean.</div>
-      </div>
-    </div>
-
-    <div class="prompt-table-wrap" style="margin-bottom:20px">
-      <table class="prompt-table">
-        <tr>
-          <td><span class="task-status ts-flagged" style="font-size:11px">FLAGGED</span></td>
-          <td>Something the agent noticed that needs your attention — a possible issue, an inspection needed, or a task the agent can't fully define without you looking first.</td>
-        </tr>
-        <tr>
-          <td><span class="task-status ts-todo" style="font-size:11px">TODO</span></td>
-          <td>Defined, scheduled, not started. Dependencies may or may not be complete — check before starting.</td>
-        </tr>
-        <tr>
-          <td><span class="task-status ts-active" style="font-size:11px">ACTIVE</span></td>
-          <td>You're currently working on this. Add notes as you go — the weekly check will flag active tasks with no notes as potentially stale.</td>
-        </tr>
-        <tr>
-          <td><span class="task-status ts-done" style="font-size:11px">DONE</span></td>
-          <td>Complete. The actual cost should be logged. Completing a task may unlock dependent tasks — the agent will populate them automatically.</td>
-        </tr>
-      </table>
-    </div>
-
-    <div style="font-size:14px; font-weight:600; margin-bottom:12px">Warning flag severities</div>
-
-    <div class="prompt-table-wrap">
-      <table class="prompt-table">
-        <tr>
-          <td style="color: var(--red)">🔴 Critical</td>
-          <td>Safety risk or something that will cause a bigger problem if ignored. Address before the next drive.</td>
-        </tr>
-        <tr>
-          <td style="color: var(--amber)">🟠 Warning</td>
-          <td>Important gap in the plan — not immediately dangerous but should be addressed in the current phase.</td>
-        </tr>
-        <tr>
-          <td style="color: var(--blue)">🔵 Suggestion</td>
-          <td>Something worth considering — a nice-to-have, a more efficient order, or a preventative measure.</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <hr class="divider">
-  <div style="text-align:center; color:var(--text-dim); font-size:13px; padding: 8px 0 20px">
-    <span style="font-family:var(--mono)">1989 Jeep CJ8 Scrambler AMC 258</span>
-    &nbsp;·&nbsp; Built for one Jeep, one owner
-    &nbsp;·&nbsp; <a href="project-overview.html" style="color:var(--amber); text-decoration:none">Technical Architecture →</a>
-  </div>
+  <footer>
+    <span>🚙 Jeep CJ8 Scrambler 1989 Restoration Planner</span>
+    <a href="project-overview.html">Tech Overview →</a>
+    <span style="margin-left:auto">Always open · Always parallel · Your CJ8, your plan</span>
+  </footer>
 
 </div>
 </body>

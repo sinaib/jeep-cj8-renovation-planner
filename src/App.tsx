@@ -22,7 +22,6 @@ function AppShell() {
   const phases = useMemo(() => rawPhases, [rawPhases]);
   const allTasks = useRenovationStore((s) => s.tasks);
 
-  // Current phase for the selected task (for context injection)
   const selectedPhase = useMemo(
     () => selectedTask ? (phases.find((p) => p.id === selectedTask.phaseId) ?? null) : null,
     [selectedTask, phases]
@@ -58,38 +57,48 @@ function AppShell() {
       background: 'var(--bg)',
       overflow: 'hidden',
     }}>
-      {/* Top bar */}
+      {/* Top bar — full width */}
       <TopBar onSettingsOpen={() => setSettingsOpen(true)} onCriticalClick={handleCriticalClick} />
 
-      {/* Journey strip */}
-      <JourneyStrip
-        scrollToPhase={handleScrollToPhase}
-        activePhaseId={activePhaseId}
-      />
+      {/* Two-column body */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
 
-      {/* Main content area — scrollable */}
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
-        {selectedTask ? (
-          <TaskDetailView
-            task={selectedTask}
-            onBack={() => setSelectedTask(null)}
+        {/* LEFT: Plan column */}
+        <div style={{
+          flex: '0 0 55%',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRight: '2px solid var(--border)',
+          overflow: 'hidden',
+        }}>
+          <JourneyStrip
+            scrollToPhase={handleScrollToPhase}
+            activePhaseId={activePhaseId}
           />
-        ) : (
-          <PlanContent
-            ref={planRef}
-            onSelectTask={setSelectedTask}
-            onMapPhase={handleMapPhase}
-          />
-        )}
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+            {selectedTask ? (
+              <TaskDetailView
+                task={selectedTask}
+                onBack={() => setSelectedTask(null)}
+              />
+            ) : (
+              <PlanContent
+                ref={planRef}
+                onSelectTask={setSelectedTask}
+                onMapPhase={handleMapPhase}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: Agent panel — always visible */}
+        <AgentBar
+          ref={agentBarRef}
+          currentTask={selectedTask}
+          currentPhase={selectedPhase}
+          contextHint={selectedTask ? `Ask about "${selectedTask.name}"...` : undefined}
+        />
       </div>
-
-      {/* Agent bar — always at bottom, receives current task context */}
-      <AgentBar
-        ref={agentBarRef}
-        currentTask={selectedTask}
-        currentPhase={selectedPhase}
-        contextHint={selectedTask ? `Ask about "${selectedTask.name}"...` : undefined}
-      />
 
       {/* Modals */}
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
@@ -100,7 +109,6 @@ function AppShell() {
 export default function App() {
   const appState = useRenovationStore((s) => s.appState);
 
-  // Run weekly health check on load (at most once per week, silent)
   useEffect(() => {
     if (appState !== 'onboarding') {
       maybeRunWeeklyCheck();
