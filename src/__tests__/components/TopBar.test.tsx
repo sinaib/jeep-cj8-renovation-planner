@@ -1,27 +1,21 @@
 /**
  * TopBar component tests
  *
- * Verifies:
- * - Critical badge renders when criticalGaps > 0
- * - Critical badge is a <button> (not <div>)
- * - Clicking badge calls the onCriticalClick callback
- * - Badge does not render when criticalGaps === 0
- * - Settings button calls onSettingsOpen
+ * TopBar now uses useResolvedTasks/useResolvedPhases from usePlanData.
+ * We mock those hooks to control what data the component sees.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TopBar } from '../../components/layout/TopBar';
-import { useRenovationStore } from '../../store/useRenovationStore';
+import type { Task, Phase } from '../../types';
 
 vi.mock('../../ai/agentBackground', () => ({
   scheduleBackgroundAnalysis: vi.fn(),
   triggerTaskCompletedAnalysis: vi.fn(),
   maybeRunWeeklyCheck: vi.fn(),
 }));
-vi.mock('../../store/changelog', () => ({
-  logChange: vi.fn(),
-}));
+vi.mock('../../store/changelog', () => ({ logChange: vi.fn() }));
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...p }: React.PropsWithChildren<Record<string, unknown>>) =>
@@ -30,49 +24,63 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
 
-const store = () => useRenovationStore.getState();
+// Mock usePlanData so we can control tasks/phases
+const mockTasks: Record<string, Partial<Task>> = {};
+const mockPhases: Partial<Phase>[] = [];
+vi.mock('../../hooks/usePlanData', () => ({
+  useResolvedTasks: () => mockTasks,
+  useResolvedPhases: () => mockPhases,
+}));
 
-beforeEach(() => {
-  store().resetAll();
-});
+function clearMocks() {
+  for (const k of Object.keys(mockTasks)) delete mockTasks[k];
+  mockPhases.length = 0;
+}
 
 describe('TopBar', () => {
-  it('does not show critical badge when no critical gaps', () => {
+  it('does not show critical badge when no critical tasks', () => {
+    clearMocks();
     const { container } = render(<TopBar onSettingsOpen={vi.fn()} />);
     expect(container.querySelector('[title="Jump to critical tasks"]')).toBeNull();
     expect(screen.queryByText(/critical/i)).toBeNull();
   });
 
-  it('shows critical badge when critical gaps exist', () => {
-    const phase = store().addPhase({ name: 'P', subtitle: '', systemIds: [], order: 0, color: '#000' });
-    store().addGap(phase.id, 'Safety issue', 'critical');
+  it('shows critical badge when critical tasks exist', () => {
+    clearMocks();
+    mockTasks['t1'] = { id: 't1', status: 'todo', priority: 'critical', estimatedCostILS: 0 } as Task;
     render(<TopBar onSettingsOpen={vi.fn()} />);
     expect(screen.getByText(/critical/i)).toBeTruthy();
   });
 
   it('critical badge is a button element', () => {
-    const phase = store().addPhase({ name: 'P', subtitle: '', systemIds: [], order: 0, color: '#000' });
-    store().addGap(phase.id, 'Safety issue', 'critical');
+    clearMocks();
+    mockTasks['t1'] = { id: 't1', status: 'todo', priority: 'critical', estimatedCostILS: 0 } as Task;
     const { container } = render(<TopBar onSettingsOpen={vi.fn()} />);
     const badge = container.querySelector('[title="Jump to critical tasks"]');
     expect(badge?.tagName.toLowerCase()).toBe('button');
   });
 
   it('calls onCriticalClick when critical badge is clicked', () => {
-    const phase = store().addPhase({ name: 'P', subtitle: '', systemIds: [], order: 0, color: '#000' });
-    store().addGap(phase.id, 'Safety issue', 'critical');
+    clearMocks();
+    mockTasks['t1'] = { id: 't1', status: 'todo', priority: 'critical', estimatedCostILS: 0 } as Task;
     const onCriticalClick = vi.fn();
     render(<TopBar onSettingsOpen={vi.fn()} onCriticalClick={onCriticalClick} />);
-    const badge = screen.getByTitle('Jump to critical tasks');
-    fireEvent.click(badge);
+    fireEvent.click(screen.getByTitle('Jump to critical tasks'));
     expect(onCriticalClick).toHaveBeenCalledOnce();
   });
 
+  it('does not show critical badge for done critical tasks', () => {
+    clearMocks();
+    mockTasks['t1'] = { id: 't1', status: 'done', priority: 'critical', estimatedCostILS: 0 } as Task;
+    const { container } = render(<TopBar onSettingsOpen={vi.fn()} />);
+    expect(container.querySelector('[title="Jump to critical tasks"]')).toBeNull();
+  });
+
   it('calls onSettingsOpen when settings button clicked', () => {
+    clearMocks();
     const onSettingsOpen = vi.fn();
     render(<TopBar onSettingsOpen={onSettingsOpen} />);
-    const settingsBtn = screen.getByTitle('Settings / Export');
-    fireEvent.click(settingsBtn);
+    fireEvent.click(screen.getByTitle('Settings / Export'));
     expect(onSettingsOpen).toHaveBeenCalledOnce();
   });
 });

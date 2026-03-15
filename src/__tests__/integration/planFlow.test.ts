@@ -1,9 +1,12 @@
 /**
- * Integration tests: end-to-end store flows
+ * Integration tests: end-to-end store flows (delta-only store, v3)
+ *
+ * plan.ts is the structural source of truth (phases, tasks, steps, parts).
+ * The store persists only the runtime delta: statuses, notes, actual costs,
+ * agent history, storeOnly tasks, decisions, etc.
  *
  * These tests exercise multi-step workflows the way a real user (or agent) would —
- * adding a phase → adding tasks → progressing statuses → checking costs/gaps/deps.
- * No mocking of the store itself; the real Zustand store is used throughout.
+ * adding storeOnly tasks → progressing statuses → tracking costs → exporting.
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -18,7 +21,8 @@ vi.mock('../../ai/agentBackground', () => ({
 
 // Prevent changelog from making API calls
 vi.mock('../../store/changelog', () => ({
-  logChange: vi.fn(),
+  logChange: vi.fn().mockResolvedValue(undefined),
+  saveSnapshot: vi.fn().mockResolvedValue(undefined),
 }));
 
 const store = () => useRenovationStore.getState();
@@ -27,417 +31,310 @@ beforeEach(() => {
   store().resetAll();
 });
 
-// ─── Helper: build a full phase + tasks scenario ─────────────────────────────
+// ─── Helper: build storeOnly tasks scenario ───────────────────────────────────
 
-function buildSafetyPhase() {
-  const phase = store().addPhase({
-    name: 'Safety First',
-    subtitle: 'Critical safety items before anything else',
-    systemIds: ['brakes', 'steering', 'suspension'],
-    order: 1,
-    color: '#E74C3C',
-  });
-
-  const brakes = store().addTask({
+function buildBrakesTasks() {
+  const brakes = store().addStoreOnlyTask({
     name: 'Inspect and replace brake pads',
     systemId: 'brakes',
-    phaseId: phase.id,
+    phaseId: 'phase-safety',
     status: 'todo',
     priority: 'critical',
     estimatedCostILS: 1800,
     addedBy: 'agent',
-    agentRationale: 'Safety critical',
     dependsOnTaskIds: [],
   });
 
-  const rotors = store().addTask({
+  const rotors = store().addStoreOnlyTask({
     name: 'Resurface or replace brake rotors',
     systemId: 'brakes',
-    phaseId: phase.id,
+    phaseId: 'phase-safety',
     status: 'todo',
     priority: 'critical',
     estimatedCostILS: 2400,
     addedBy: 'agent',
-    agentRationale: 'Must do with pads',
     dependsOnTaskIds: [],
   });
 
-  const lines = store().addTask({
+  const lines = store().addStoreOnlyTask({
     name: 'Inspect brake lines for rust',
     systemId: 'brakes',
-    phaseId: phase.id,
-    status: 'flagged',
+    phaseId: 'phase-safety',
+    status: 'todo',
     priority: 'critical',
     addedBy: 'agent',
-    agentRationale: 'CJ8 brake lines corrode',
     dependsOnTaskIds: [],
   });
 
-  return { phase, brakes, rotors, lines };
+  return { brakes, rotors, lines };
 }
 
-// ─── Flow 1: Add phase and tasks, verify state ────────────────────────────────
+// ─── Flow 1: storeOnly task creation ─────────────────────────────────────────
 
-describe('Flow 1: Phase and task creation', () => {
-  it('creates a phase with correct initial state', () => {
-    const phase = store().addPhase({ name: 'Engine Rebuild', order: 2, color: '#3498DB' });
-    expect(phase.id).toMatch(/^phase-/);
-    expect(phase.taskIds).toHaveLength(0);
-    expect(store().phases).toHaveLength(1);
-    expect(store().phases[0].name).toBe('Engine Rebuild');
+describe('Flow 1: storeOnly task creation', () => {
+  it('creates a task with generated id and correct fields', () => {
+    const task = store().addStoreOnlyTask({
+      name: 'Engine oil change',
+      systemId: 'engine',
+      phaseId: 'phase-engine',
+      status: 'todo',
+      priority: 'high',
+      estimatedCostILS: 300,
+      addedBy: 'agent',
+      dependsOnTaskIds: [],
+    });
+    expect(task.id).toMatch(/^task-/);
+    expect(task.name).toBe('Engine oil change');
+    expect(task.systemId).toBe('engine');
+    expect(task.priority).toBe('high');
+    expect(task.estimatedCostILS).toBe(300);
+    expect(task.parts).toEqual([]);
+    expect(task.notes).toBe('');
   });
 
-  it('adds tasks to a phase and links them bidirectionally', () => {
-    const { phase, brakes, rotors } = buildSafetyPhase();
-    const s = store();
-    // Phase knows about both tasks
-    const phaseInStore = s.phases.find((p) => p.id === phase.id)!;
-    expect(phaseInStore.taskIds).toContain(brakes.id);
-    expect(phaseInStore.taskIds).toContain(rotors.id);
-    // Tasks know about their phase
-    expect(s.tasks[brakes.id].phaseId).toBe(phase.id);
-    expect(s.tasks[rotors.id].phaseId).toBe(phase.id);
+  it('stores task in storeOnlyTasks record', () => {
+    const task = store().addStoreOnlyTask({
+      name: 'Test Task', systemId: 'engine', phaseId: 'phase-engine',
+      status: 'todo', priority: 'medium', addedBy: 'agent', dependsOnTaskIds: [],
+    });
+    expect(store().storeOnlyTasks[task.id]).toBeDefined();
+    expect(store().storeOnlyTasks[task.id].name).toBe('Test Task');
   });
 
-  it('assigns correct phaseOrder to sequential tasks', () => {
-    const { brakes, rotors, lines } = buildSafetyPhase();
-    expect(store().tasks[brakes.id].phaseOrder).toBe(0);
-    expect(store().tasks[rotors.id].phaseOrder).toBe(1);
-    expect(store().tasks[lines.id].phaseOrder).toBe(2);
+  it('multiple tasks accumulate independently', () => {
+    buildBrakesTasks();
+    expect(Object.keys(store().storeOnlyTasks)).toHaveLength(3);
   });
 
-  it('getTasksForPhase returns tasks sorted by phaseOrder', () => {
-    const { phase, brakes, rotors, lines } = buildSafetyPhase();
-    const tasks = store().getTasksForPhase(phase.id);
-    expect(tasks[0].id).toBe(brakes.id);
-    expect(tasks[1].id).toBe(rotors.id);
-    expect(tasks[2].id).toBe(lines.id);
+  it('updateStoreOnlyTask merges fields without touching others', () => {
+    const task = store().addStoreOnlyTask({
+      name: 'Check fluid', systemId: 'engine', phaseId: 'phase-engine',
+      status: 'todo', priority: 'low', estimatedCostILS: 100,
+      addedBy: 'agent', dependsOnTaskIds: [],
+    });
+    store().updateStoreOnlyTask(task.id, { status: 'active', estimatedCostILS: 150 });
+    expect(store().storeOnlyTasks[task.id].status).toBe('active');
+    expect(store().storeOnlyTasks[task.id].estimatedCostILS).toBe(150);
+    expect(store().storeOnlyTasks[task.id].name).toBe('Check fluid'); // untouched
   });
 
-  it('adding multiple phases preserves their order', () => {
-    store().addPhase({ name: 'Phase A', order: 1 });
-    store().addPhase({ name: 'Phase B', order: 2 });
-    store().addPhase({ name: 'Phase C', order: 3 });
-    expect(store().phases).toHaveLength(3);
-    expect(store().phases.map((p) => p.name)).toEqual(['Phase A', 'Phase B', 'Phase C']);
+  it('updateStoreOnlyTask on unknown id does not throw', () => {
+    expect(() => store().updateStoreOnlyTask('nonexistent', { status: 'done' })).not.toThrow();
   });
 });
 
 // ─── Flow 2: Task status progression ─────────────────────────────────────────
 
 describe('Flow 2: Task status lifecycle', () => {
-  it('transitions task from flagged → todo → active → done', () => {
-    const { lines } = buildSafetyPhase();
-    const s = store();
-    expect(s.tasks[lines.id].status).toBe('flagged');
-
-    s.setTaskStatus(lines.id, 'todo');
-    expect(store().tasks[lines.id].status).toBe('todo');
-
-    store().setTaskStatus(lines.id, 'active');
-    expect(store().tasks[lines.id].status).toBe('active');
-
-    store().completeTask(lines.id, 1200);
-    expect(store().tasks[lines.id].status).toBe('done');
-    expect(store().tasks[lines.id].completedAt).toBeTruthy();
-    expect(store().tasks[lines.id].actualCostILS).toBe(1200);
+  it('setTaskStatus stores override in taskStatuses', () => {
+    const { brakes } = buildBrakesTasks();
+    store().setTaskStatus(brakes.id, 'active');
+    expect(store().taskStatuses[brakes.id]).toBe('active');
   });
 
-  it('completeTask sets completedAt timestamp', () => {
-    const { brakes } = buildSafetyPhase();
-    const before = new Date().toISOString();
+  it('completeTask sets status to done', () => {
+    const { brakes } = buildBrakesTasks();
     store().completeTask(brakes.id);
-    const after = new Date().toISOString();
-    const ts = store().tasks[brakes.id].completedAt!;
-    expect(ts >= before).toBe(true);
-    expect(ts <= after).toBe(true);
+    expect(store().taskStatuses[brakes.id]).toBe('done');
   });
 
-  it('skipping a task counts toward completion', () => {
-    const { phase, brakes, rotors } = buildSafetyPhase();
-    store().setTaskStatus(brakes.id, 'done');
+  it('completeTask stores actualCostILS when provided', () => {
+    const { brakes } = buildBrakesTasks();
+    store().completeTask(brakes.id, 1750);
+    expect(store().taskActualCosts[brakes.id]).toBe(1750);
+  });
+
+  it('completeTask does not store actualCostILS when omitted', () => {
+    const { brakes } = buildBrakesTasks();
+    store().completeTask(brakes.id);
+    expect(store().taskActualCosts[brakes.id]).toBeUndefined();
+  });
+
+  it('task can transition todo → active → done', () => {
+    const { lines } = buildBrakesTasks();
+    store().setTaskStatus(lines.id, 'active');
+    expect(store().taskStatuses[lines.id]).toBe('active');
+    store().completeTask(lines.id, 800);
+    expect(store().taskStatuses[lines.id]).toBe('done');
+    expect(store().taskActualCosts[lines.id]).toBe(800);
+  });
+
+  it('can skip a task', () => {
+    const { rotors } = buildBrakesTasks();
     store().setTaskStatus(rotors.id, 'skipped');
-    const pct = store().getPhaseCompletionPercent(phase.id);
-    // 2 of 3 tasks done/skipped = Math.round(66.666...) = 67%
-    expect(pct).toBe(67);
+    expect(store().taskStatuses[rotors.id]).toBe('skipped');
   });
 
-  it('getNextTask returns the first non-done, non-skipped task in the earliest phase', () => {
-    buildSafetyPhase();
-    const next = store().getNextTask();
-    expect(next).toBeDefined();
-    expect(next!.name).toBe('Inspect and replace brake pads');
-  });
-
-  it('getNextTask returns undefined when all tasks are done', () => {
-    const { brakes, rotors, lines } = buildSafetyPhase();
+  it('status overrides are task-isolated — other tasks unaffected', () => {
+    const { brakes, rotors } = buildBrakesTasks();
     store().setTaskStatus(brakes.id, 'done');
-    store().setTaskStatus(rotors.id, 'done');
-    store().setTaskStatus(lines.id, 'done');
-    expect(store().getNextTask()).toBeUndefined();
-  });
-
-  it('getOverallCompletionPercent reflects cross-phase completion', () => {
-    const { brakes } = buildSafetyPhase();
-    const phase2 = store().addPhase({ name: 'Engine', order: 2 });
-    const engineTask = store().addTask({
-      name: 'Oil change', systemId: 'engine', phaseId: phase2.id,
-      status: 'todo', priority: 'normal', addedBy: 'agent',
-      agentRationale: 'First step', dependsOnTaskIds: [],
-    });
-    // Complete 2 of 4 tasks
-    store().setTaskStatus(brakes.id, 'done');
-    store().setTaskStatus(engineTask.id, 'done');
-    expect(store().getOverallCompletionPercent()).toBe(50);
+    expect(store().taskStatuses[rotors.id]).toBeUndefined();
   });
 });
 
 // ─── Flow 3: Cost tracking ───────────────────────────────────────────────────
 
-describe('Flow 3: Cost tracking and calculations', () => {
-  it('getTotalCostEstimated sums all task estimates', () => {
-    buildSafetyPhase(); // brakes=1800, rotors=2400, lines=no cost
-    expect(store().getTotalCostEstimated()).toBe(4200);
+describe('Flow 3: Cost tracking', () => {
+  it('updateTaskCost records actual cost', () => {
+    const { brakes } = buildBrakesTasks();
+    store().updateTaskCost(brakes.id, 1950);
+    expect(store().taskActualCosts[brakes.id]).toBe(1950);
   });
 
-  it('updateTaskCost changes the estimate and affects total', () => {
-    const { lines } = buildSafetyPhase();
-    store().updateTaskCost(lines.id, 900);
-    expect(store().tasks[lines.id].estimatedCostILS).toBe(900);
-    expect(store().getTotalCostEstimated()).toBe(5100); // 1800 + 2400 + 900
+  it('updateTaskCost overwrites previous value', () => {
+    const { brakes } = buildBrakesTasks();
+    store().updateTaskCost(brakes.id, 1000);
+    store().updateTaskCost(brakes.id, 2200);
+    expect(store().taskActualCosts[brakes.id]).toBe(2200);
   });
 
-  it('getTotalCostSpent includes actualCostILS of done tasks', () => {
-    const { brakes, rotors } = buildSafetyPhase();
-    store().completeTask(brakes.id, 1750); // actual less than estimate
-    store().completeTask(rotors.id, 2600); // actual more than estimate
-    expect(store().getTotalCostSpent()).toBe(4350);
-  });
-
-  it('adding parts to a task does not auto-update estimatedCostILS', () => {
-    const { brakes } = buildSafetyPhase();
-    store().addPartToTask(brakes.id, 'Brake pads set', 600, 'BP-1234');
-    store().addPartToTask(brakes.id, 'Brake fluid', 80);
-    // parts don't auto-sum into estimatedCostILS — that's done separately
-    expect(store().tasks[brakes.id].estimatedCostILS).toBe(1800);
-    expect(store().tasks[brakes.id].parts).toHaveLength(2);
-  });
-
-  it('markPartPurchased flips the purchased flag', () => {
-    const { brakes } = buildSafetyPhase();
-    store().addPartToTask(brakes.id, 'Brake pads', 600);
-    const partId = store().tasks[brakes.id].parts[0].id;
-    expect(store().tasks[brakes.id].parts[0].purchased).toBe(false);
-    store().markPartPurchased(brakes.id, partId);
-    expect(store().tasks[brakes.id].parts[0].purchased).toBe(true);
-  });
-
-  it('budget check: sets car fact and computes over-budget state', () => {
-    buildSafetyPhase(); // 4200 total
-    store().setCarFact('budget', '₪3000', 'user');
-    const budgetFact = store().carFacts.find((f) => f.key === 'budget');
-    expect(budgetFact?.value).toBe('₪3000');
-    // The CostDashboard will parse this and show over-budget
-    const estimated = store().getTotalCostEstimated();
-    const budget = parseInt('3000', 10);
-    expect(estimated).toBeGreaterThan(budget);
+  it('actual costs accumulate per-task independently', () => {
+    const { brakes, rotors } = buildBrakesTasks();
+    store().updateTaskCost(brakes.id, 1750);
+    store().completeTask(rotors.id, 2600);
+    expect(store().taskActualCosts[brakes.id]).toBe(1750);
+    expect(store().taskActualCosts[rotors.id]).toBe(2600);
   });
 });
 
-// ─── Flow 4: Gap lifecycle ───────────────────────────────────────────────────
+// ─── Flow 4: Notes ───────────────────────────────────────────────────────────
 
-describe('Flow 4: Gap detection and dismissal', () => {
-  it('addGap creates a non-dismissed gap', () => {
-    const gap = store().addGap('Brakes', 'No parking brake', 'critical');
-    expect(gap.dismissed).toBe(false);
-    expect(store().getActiveGaps()).toHaveLength(1);
+describe('Flow 4: Task notes', () => {
+  it('addTaskNote stores first note with date prefix', () => {
+    const { brakes } = buildBrakesTasks();
+    store().addTaskNote(brakes.id, 'Found scoring on rotor surface');
+    const notes = store().taskNotes[brakes.id];
+    expect(notes).toContain('Found scoring on rotor surface');
+    expect(notes).toMatch(/^\[/); // starts with date prefix
   });
 
-  it('dismissGap removes it from active gaps', () => {
-    const gap = store().addGap('Engine', 'Coolant leak suspected', 'warning');
-    store().dismissGap(gap.id);
-    expect(store().getActiveGaps()).toHaveLength(0);
-    // But it's still in gaps array
-    expect(store().gaps).toHaveLength(1);
-    expect(store().gaps[0].dismissed).toBe(true);
+  it('addTaskNote appends subsequent notes with separator', () => {
+    const { brakes } = buildBrakesTasks();
+    store().addTaskNote(brakes.id, 'First observation');
+    store().addTaskNote(brakes.id, 'Second observation');
+    const notes = store().taskNotes[brakes.id];
+    expect(notes).toContain('First observation');
+    expect(notes).toContain('Second observation');
+    expect(notes).toContain('\n\n');
   });
 
-  it('convertGapToTask marks gap as dismissed with converted task id', () => {
-    const gap = store().addGap('Suspension', 'Ball joints worn', 'warning');
-    const { phase } = buildSafetyPhase();
-    const task = store().addTask({
-      name: 'Replace ball joints', systemId: 'suspension',
-      phaseId: phase.id, status: 'todo', priority: 'high',
-      addedBy: 'agent', agentRationale: 'From gap', dependsOnTaskIds: [],
-    });
-    store().convertGapToTask(gap.id, task.id);
-    const g = store().gaps.find((g) => g.id === gap.id)!;
-    expect(g.dismissed).toBe(true);
-    expect(g.convertedToTaskId).toBe(task.id);
-    expect(store().getActiveGaps()).toHaveLength(0);
+  it('notes are per-task and do not bleed into other tasks', () => {
+    const { brakes, rotors } = buildBrakesTasks();
+    store().addTaskNote(brakes.id, 'Note for brakes only');
+    expect(store().taskNotes[rotors.id]).toBeUndefined();
   });
 
-  it('multiple gaps with different severities are all tracked', () => {
-    store().addGap('Brakes', 'Brake fade risk', 'critical');
-    store().addGap('Electrical', 'Frayed wiring', 'warning');
-    store().addGap('Body', 'Surface rust on door', 'suggestion');
-    expect(store().getActiveGaps()).toHaveLength(3);
-    const severities = store().getActiveGaps().map((g) => g.severity);
-    expect(severities).toContain('critical');
-    expect(severities).toContain('warning');
-    expect(severities).toContain('suggestion');
+  it('addTaskNote on non-existent task does not throw', () => {
+    expect(() => store().addTaskNote('does-not-exist', 'anything')).not.toThrow();
   });
 });
 
-// ─── Flow 5: Dependency management ──────────────────────────────────────────
+// ─── Flow 5: Steps and guides ─────────────────────────────────────────────────
 
-describe('Flow 5: Task dependencies', () => {
-  it('adds a dependency and retrieves blocking/dependent tasks', () => {
-    const { phase } = buildSafetyPhase();
-    const taskA = store().addTask({
-      name: 'Drain old brake fluid', systemId: 'brakes',
-      phaseId: phase.id, status: 'todo', priority: 'critical',
-      addedBy: 'agent', agentRationale: 'Step 1', dependsOnTaskIds: [],
-    });
-    const taskB = store().addTask({
-      name: 'Bleed brake lines', systemId: 'brakes',
-      phaseId: phase.id, status: 'todo', priority: 'critical',
-      addedBy: 'agent', agentRationale: 'Step 2', dependsOnTaskIds: [],
-    });
-    store().addTaskDependency(taskB.id, taskA.id, 'Must drain before bleeding');
-
-    const blocking = store().getBlockingTasks(taskB.id);
-    expect(blocking).toHaveLength(1);
-    expect(blocking[0].id).toBe(taskA.id);
-
-    const dependents = store().getDependentTasks(taskA.id);
-    expect(dependents).toHaveLength(1);
-    expect(dependents[0].id).toBe(taskB.id);
+describe('Flow 5: Task steps and guides', () => {
+  it('setTaskSteps stores steps array', () => {
+    const { brakes } = buildBrakesTasks();
+    const steps = ['Remove wheel', 'Pull drum', 'Install new pads', 'Torque to 85 ft-lbs'];
+    store().setTaskSteps(brakes.id, steps);
+    expect(store().taskSteps[brakes.id]).toEqual(steps);
   });
 
-  it('ignores duplicate dependencies', () => {
-    const { phase } = buildSafetyPhase();
-    const t1 = store().addTask({
-      name: 'T1', systemId: 'engine', phaseId: phase.id, status: 'todo',
-      priority: 'normal', addedBy: 'agent', agentRationale: '', dependsOnTaskIds: [],
-    });
-    const t2 = store().addTask({
-      name: 'T2', systemId: 'engine', phaseId: phase.id, status: 'todo',
-      priority: 'normal', addedBy: 'agent', agentRationale: '', dependsOnTaskIds: [],
-    });
-    store().addTaskDependency(t2.id, t1.id, 'reason');
-    store().addTaskDependency(t2.id, t1.id, 'reason again');
-    expect(store().taskDependencies).toHaveLength(1);
+  it('setTaskGuide stores guide string', () => {
+    const { brakes } = buildBrakesTasks();
+    store().setTaskGuide(brakes.id, 'Use DOT 3 brake fluid. Torque caliper bolts to 25 Nm.');
+    expect(store().taskGuides[brakes.id]).toBe('Use DOT 3 brake fluid. Torque caliper bolts to 25 Nm.');
   });
 
-  it('removeTaskDependency clears the link', () => {
-    const { phase } = buildSafetyPhase();
-    const t1 = store().addTask({
-      name: 'T1', systemId: 'engine', phaseId: phase.id, status: 'todo',
-      priority: 'normal', addedBy: 'agent', agentRationale: '', dependsOnTaskIds: [],
-    });
-    const t2 = store().addTask({
-      name: 'T2', systemId: 'engine', phaseId: phase.id, status: 'todo',
-      priority: 'normal', addedBy: 'agent', agentRationale: '', dependsOnTaskIds: [],
-    });
-    store().addTaskDependency(t2.id, t1.id, 'reason');
-    store().removeTaskDependency(t2.id, t1.id);
-    expect(store().taskDependencies).toHaveLength(0);
-    expect(store().getBlockingTasks(t2.id)).toHaveLength(0);
-  });
-
-  it('removing a task cleans up its dependencies from both sides', () => {
-    const { phase, brakes, rotors } = buildSafetyPhase();
-    const t3 = store().addTask({
-      name: 'T3', systemId: 'brakes', phaseId: phase.id, status: 'todo',
-      priority: 'normal', addedBy: 'agent', agentRationale: '', dependsOnTaskIds: [],
-    });
-    store().addTaskDependency(rotors.id, brakes.id, 'brakes first');
-    store().addTaskDependency(t3.id, rotors.id, 'rotors first');
-
-    // Remove the middle task
-    store().removeTask(rotors.id);
-
-    // Both dependencies involving rotors should be gone
-    expect(store().taskDependencies).toHaveLength(0);
-    expect(store().getBlockingTasks(t3.id)).toHaveLength(0);
+  it('steps and guide are per-task', () => {
+    const { brakes, rotors } = buildBrakesTasks();
+    store().setTaskSteps(brakes.id, ['Step 1', 'Step 2']);
+    expect(store().taskSteps[rotors.id]).toBeUndefined();
   });
 });
 
-// ─── Flow 6: Move and remove tasks ───────────────────────────────────────────
+// ─── Flow 6: Parts management ─────────────────────────────────────────────────
 
-describe('Flow 6: Task relocation and deletion', () => {
-  it('moveTask transfers task between phases', () => {
-    const { phase, brakes } = buildSafetyPhase();
-    const phase2 = store().addPhase({ name: 'Engine', order: 2 });
-
-    store().moveTask(brakes.id, phase2.id);
-
-    // Old phase no longer has it
-    const oldPhase = store().phases.find((p) => p.id === phase.id)!;
-    expect(oldPhase.taskIds).not.toContain(brakes.id);
-
-    // New phase has it
-    const newPhase = store().phases.find((p) => p.id === phase2.id)!;
-    expect(newPhase.taskIds).toContain(brakes.id);
-
-    // Task's phaseId updated
-    expect(store().tasks[brakes.id].phaseId).toBe(phase2.id);
+describe('Flow 6: Parts — plan tasks vs storeOnly tasks', () => {
+  it('addPartToTask adds extra part for a plan task (goes to taskExtraParts)', () => {
+    // 'plan-task-brakes' is not in storeOnlyTasks → extra parts
+    store().addPartToTask('plan-task-brakes', 'Brake pads set', 600, 'BP-1234');
+    const parts = store().taskExtraParts['plan-task-brakes'];
+    expect(parts).toHaveLength(1);
+    expect(parts[0].name).toBe('Brake pads set');
+    expect(parts[0].estimatedCostILS).toBe(600);
+    expect(parts[0].partNumber).toBe('BP-1234');
+    expect(parts[0].purchased).toBe(false);
   });
 
-  it('removeTask deletes task and removes from phase taskIds', () => {
-    const { phase, brakes } = buildSafetyPhase();
-    store().removeTask(brakes.id);
-    expect(store().tasks[brakes.id]).toBeUndefined();
-    const phaseInStore = store().phases.find((p) => p.id === phase.id)!;
-    expect(phaseInStore.taskIds).not.toContain(brakes.id);
+  it('addPartToTask adds part directly to storeOnly task', () => {
+    const { brakes } = buildBrakesTasks();
+    store().addPartToTask(brakes.id, 'Axle shaft conversion kit', 2800);
+    expect(store().storeOnlyTasks[brakes.id].parts).toHaveLength(1);
+    expect(store().storeOnlyTasks[brakes.id].parts[0].name).toBe('Axle shaft conversion kit');
+    // Should NOT create taskExtraParts entry for storeOnly tasks
+    expect(store().taskExtraParts[brakes.id]).toBeUndefined();
   });
 
-  it('removeTask does not affect other tasks in the phase', () => {
-    const { phase, brakes, rotors } = buildSafetyPhase();
-    store().removeTask(brakes.id);
-    expect(store().tasks[rotors.id]).toBeDefined();
-    const phaseInStore = store().phases.find((p) => p.id === phase.id)!;
-    expect(phaseInStore.taskIds).toContain(rotors.id);
+  it('multiple parts accumulate on the same task', () => {
+    const { brakes } = buildBrakesTasks();
+    store().addPartToTask(brakes.id, 'Part A', 100);
+    store().addPartToTask(brakes.id, 'Part B', 200);
+    expect(store().storeOnlyTasks[brakes.id].parts).toHaveLength(2);
+  });
+
+  it('markPartPurchased adds partId to purchasedPartIds', () => {
+    store().addPartToTask('plan-task-123', 'Brake fluid', 80);
+    const partId = store().taskExtraParts['plan-task-123'][0].id;
+    store().markPartPurchased(partId);
+    expect(store().purchasedPartIds).toContain(partId);
+  });
+
+  it('markPartPurchased is idempotent', () => {
+    store().addPartToTask('plan-task-456', 'Rotor', 220);
+    const partId = store().taskExtraParts['plan-task-456'][0].id;
+    store().markPartPurchased(partId);
+    store().markPartPurchased(partId);
+    expect(store().purchasedPartIds.filter((id) => id === partId)).toHaveLength(1);
+  });
+
+  it('parts for plan tasks do not affect storeOnly task.parts', () => {
+    const { brakes } = buildBrakesTasks();
+    store().addPartToTask('some-plan-task', 'Oil filter', 50);
+    expect(store().storeOnlyTasks[brakes.id].parts).toHaveLength(0);
   });
 });
 
-// ─── Flow 7: Intelligence layer (decisions + car facts) ──────────────────────
+// ─── Flow 7: Decisions ───────────────────────────────────────────────────────
 
-describe('Flow 7: Decision and car fact management', () => {
-  it('records a decision and retrieves it', () => {
+describe('Flow 7: Runtime decisions', () => {
+  it('recordDecision creates decision with id and timestamp', () => {
     const decision = store().recordDecision({
       category: 'budget',
       summary: 'Cap total spend at ₪70,000',
-      details: 'Family agreed on max budget before project start',
+      madeBy: 'user',
     });
     expect(decision.id).toBeTruthy();
+    expect(decision.madeAt).toBeTruthy();
     expect(store().decisions).toHaveLength(1);
     expect(store().decisions[0].category).toBe('budget');
+    expect(store().decisions[0].summary).toBe('Cap total spend at ₪70,000');
   });
 
-  it('setCarFact creates a new fact', () => {
-    store().setCarFact('engine_condition', 'Runs rough, smokes on cold start', 'user');
-    expect(store().carFacts).toHaveLength(1);
-    expect(store().carFacts[0].key).toBe('engine_condition');
+  it('decisions accumulate across multiple calls', () => {
+    store().recordDecision({ category: 'priority', summary: 'Safety first', madeBy: 'user' });
+    store().recordDecision({ category: 'approach', summary: 'DIY only', madeBy: 'user' });
+    store().recordDecision({ category: 'budget', summary: 'Max ₪80k', madeBy: 'user' });
+    expect(store().decisions).toHaveLength(3);
   });
 
-  it('setCarFact updates an existing fact by key', () => {
-    store().setCarFact('mileage', '180,000 km', 'user');
-    store().setCarFact('mileage', '182,000 km', 'agent'); // correction
-    expect(store().carFacts).toHaveLength(1);
-    expect(store().carFacts[0].value).toBe('182,000 km');
-    expect(store().carFacts[0].confirmedBy).toBe('agent');
-  });
-
-  it('getCarProfile returns a key-value map', () => {
-    store().setCarFact('diy_skills', 'Intermediate', 'user');
-    store().setCarFact('goals', 'Daily driver + weekend trail', 'user');
-    const profile = store().getCarProfile();
-    expect(profile).toEqual({
-      diy_skills: 'Intermediate',
-      goals: 'Daily driver + weekend trail',
+  it('includes rationale when provided', () => {
+    store().recordDecision({
+      category: 'engine',
+      summary: 'Keep AMC 258',
+      rationale: 'Sentimental and cost reasons',
+      madeBy: 'user',
     });
+    expect(store().decisions[0].rationale).toBe('Sentimental and cost reasons');
   });
 });
 
@@ -467,6 +364,12 @@ describe('Flow 8: Agent history and compression', () => {
     expect(last.content).toBe('Brake inspection costs ₪4,200 total.');
   });
 
+  it('updateLastAgentMessage attaches toolCalls', () => {
+    store().addAgentMessage({ role: 'assistant', content: 'initial' });
+    store().updateLastAgentMessage('done', [{ name: 'add_task', input: {}, result: 'ok' }]);
+    expect(store().agentHistory[0].toolCalls![0].name).toBe('add_task');
+  });
+
   it('streaming flag toggles correctly', () => {
     expect(store().agentStreaming).toBe(false);
     store().setAgentStreaming(true);
@@ -474,135 +377,165 @@ describe('Flow 8: Agent history and compression', () => {
     store().setAgentStreaming(false);
     expect(store().agentStreaming).toBe(false);
   });
+
+  it('messages have auto-generated id and timestamp', () => {
+    store().addAgentMessage({ role: 'user', content: 'Hello' });
+    expect(store().agentHistory[0].id).toBeTruthy();
+    expect(store().agentHistory[0].timestamp).toBeTruthy();
+  });
 });
 
 // ─── Flow 9: Export / import round-trip ──────────────────────────────────────
 
 describe('Flow 9: Export and import', () => {
-  it('exports the full state as valid JSON', () => {
-    buildSafetyPhase();
-    store().recordDecision({ category: 'safety', summary: 'Safety always first' });
+  it('exports the delta state as valid JSON', () => {
+    const { brakes } = buildBrakesTasks();
+    store().setTaskStatus(brakes.id, 'done');
+    store().updateTaskCost(brakes.id, 1750);
+    store().recordDecision({ category: 'safety', summary: 'Safety always first', madeBy: 'user' });
+
     const json = store().exportProgress();
     expect(() => JSON.parse(json)).not.toThrow();
     const data = JSON.parse(json);
-    expect(data.phases).toHaveLength(1);
-    expect(Object.keys(data.tasks)).toHaveLength(3);
+    expect(data.taskStatuses[brakes.id]).toBe('done');
+    expect(data.taskActualCosts[brakes.id]).toBe(1750);
     expect(data.decisions).toHaveLength(1);
   });
 
-  it('imports exported state and restores all fields', () => {
-    buildSafetyPhase();
-    store().setCarFact('budget', '₪50,000', 'user');
+  it('exportProgress includes all required delta fields', () => {
+    const data = JSON.parse(store().exportProgress());
+    expect(data).toHaveProperty('taskStatuses');
+    expect(data).toHaveProperty('taskNotes');
+    expect(data).toHaveProperty('taskActualCosts');
+    expect(data).toHaveProperty('taskSteps');
+    expect(data).toHaveProperty('taskGuides');
+    expect(data).toHaveProperty('taskExtraParts');
+    expect(data).toHaveProperty('purchasedPartIds');
+    expect(data).toHaveProperty('storeOnlyTasks');
+    expect(data).toHaveProperty('decisions');
+    expect(data).toHaveProperty('agentHistory');
+  });
+
+  it('imports exported state and restores all delta fields', () => {
+    const { brakes } = buildBrakesTasks();
+    store().setTaskStatus(brakes.id, 'done');
+    store().updateTaskCost(brakes.id, 1750);
+    store().addTaskNote(brakes.id, 'Completed with new Raybestos pads');
     const json = store().exportProgress();
 
-    // Reset and re-import
     store().resetAll();
-    expect(store().phases).toHaveLength(0);
+    expect(store().taskStatuses[brakes.id]).toBeUndefined();
 
     store().importProgress(json);
-    expect(store().phases).toHaveLength(1);
-    expect(store().phases[0].name).toBe('Safety First');
-    expect(Object.keys(store().tasks)).toHaveLength(3);
-    expect(store().carFacts.find((f) => f.key === 'budget')?.value).toBe('₪50,000');
+    expect(store().taskStatuses[brakes.id]).toBe('done');
+    expect(store().taskActualCosts[brakes.id]).toBe(1750);
+    expect(store().taskNotes[brakes.id]).toContain('Completed with new Raybestos pads');
+  });
+
+  it('importProgress restores storeOnlyTasks', () => {
+    buildBrakesTasks();
+    const json = store().exportProgress();
+
+    store().resetAll();
+    expect(Object.keys(store().storeOnlyTasks)).toHaveLength(0);
+
+    store().importProgress(json);
+    expect(Object.keys(store().storeOnlyTasks)).toHaveLength(3);
   });
 
   it('importProgress with invalid JSON does not crash', () => {
     expect(() => store().importProgress('not json at all')).not.toThrow();
-    // State should remain unchanged after a failed import
-    expect(store().phases).toHaveLength(0);
+    // State should remain valid after a failed import
+    expect(store().taskStatuses).toEqual({});
   });
 
-  it('resetAll clears everything back to initial state', () => {
-    buildSafetyPhase();
-    store().recordDecision({ category: 'budget', summary: 'Test decision' });
-    store().addGap('Engine', 'Oil leak', 'warning');
-    store().setCarFact('mileage', '180,000 km', 'user');
+  it('resetAll clears all delta state', () => {
+    buildBrakesTasks();
+    store().recordDecision({ category: 'budget', summary: 'Test decision', madeBy: 'user' });
+    store().addAgentMessage({ role: 'user', content: 'Hello' });
+    const { brakes } = buildBrakesTasks();
+    store().setTaskStatus(brakes.id, 'done');
 
     store().resetAll();
-    expect(store().phases).toHaveLength(0);
-    expect(store().tasks).toEqual({});
+    expect(store().taskStatuses).toEqual({});
+    expect(store().taskNotes).toEqual({});
+    expect(store().taskActualCosts).toEqual({});
+    expect(store().storeOnlyTasks).toEqual({});
     expect(store().decisions).toHaveLength(0);
-    expect(store().gaps).toHaveLength(0);
-    expect(store().carFacts).toHaveLength(0);
     expect(store().agentHistory).toHaveLength(0);
-    expect(store().appState).toBe('onboarding');
+    expect(store().purchasedPartIds).toHaveLength(0);
   });
 });
 
-// ─── Flow 10: Onboarding lifecycle ───────────────────────────────────────────
+// ─── Flow 10: Full agent workflow simulation ──────────────────────────────────
 
-describe('Flow 10: Onboarding', () => {
-  it('starts in onboarding state', () => {
-    expect(store().appState).toBe('onboarding');
-  });
-
-  it('markSystemOnboarded adds system id once', () => {
-    store().markSystemOnboarded('engine');
-    store().markSystemOnboarded('brakes');
-    store().markSystemOnboarded('engine'); // duplicate
-    expect(store().onboardingSystemsCompleted).toHaveLength(2);
-    expect(store().onboardingSystemsCompleted).toContain('engine');
-    expect(store().onboardingSystemsCompleted).toContain('brakes');
-  });
-
-  it('finishOnboarding transitions to plan_built', () => {
-    store().finishOnboarding();
-    expect(store().appState).toBe('plan_built');
-  });
-});
-
-// ─── Flow 11: Research notes ──────────────────────────────────────────────────
-
-describe('Flow 11: Research notes', () => {
-  it('adds and retrieves research notes', () => {
-    store().addResearchNote({
-      topic: 'CJ8 brake booster',
-      finding: 'Stock vacuum booster often fails on 1989 models after 30 years',
-      source: 'jeepforum.com',
+describe('Flow 10: Full agent workflow simulation', () => {
+  it('agent adds task, user marks it active, user completes it with cost', () => {
+    const task = store().addStoreOnlyTask({
+      name: 'Bleed brake lines',
+      systemId: 'brakes',
+      phaseId: 'phase-safety',
+      status: 'todo',
+      priority: 'high',
+      estimatedCostILS: 400,
+      addedBy: 'agent',
+      dependsOnTaskIds: [],
     });
-    store().addResearchNote({
-      topic: 'Israeli brake part suppliers',
-      finding: 'AutoMatic in TLV stocks Raybestos pads for CJ series',
-      source: 'Local inquiry',
-      relatedTaskId: 'task-abc123',
+
+    // User starts working
+    store().setTaskStatus(task.id, 'active');
+    store().addTaskNote(task.id, 'Started bleeding — found rear caliper sticky');
+    expect(store().taskStatuses[task.id]).toBe('active');
+    expect(store().taskNotes[task.id]).toContain('rear caliper sticky');
+
+    // Agent adds a part
+    store().addPartToTask(task.id, 'Brake bleeder kit', 120, 'BLK-77');
+    expect(store().storeOnlyTasks[task.id].parts).toHaveLength(1);
+
+    // User completes task
+    store().completeTask(task.id, 520); // more than estimated
+    expect(store().taskStatuses[task.id]).toBe('done');
+    expect(store().taskActualCosts[task.id]).toBe(520);
+
+    // Agent records decision based on finding
+    store().recordDecision({
+      category: 'safety',
+      summary: 'Rear calipers need replacement — bleeding not enough',
+      madeBy: 'agent',
     });
-    expect(store().researchNotes).toHaveLength(2);
-    expect(store().researchNotes[0].topic).toBe('CJ8 brake booster');
-    expect(store().researchNotes[1].relatedTaskId).toBe('task-abc123');
+    expect(store().decisions[0].summary).toContain('Rear calipers');
   });
 
-  it('research notes have auto-generated id and addedAt', () => {
-    const note = store().addResearchNote({
-      topic: 'Torque specs', finding: 'Lug nuts: 85 ft-lbs', source: 'Manual',
+  it('multi-task phase simulation with notes and steps', () => {
+    const task1 = store().addStoreOnlyTask({
+      name: 'Drain old brake fluid',
+      systemId: 'brakes', phaseId: 'phase-safety', status: 'todo',
+      priority: 'critical', estimatedCostILS: 50, addedBy: 'agent', dependsOnTaskIds: [],
     });
-    expect(note.id).toBeTruthy();
-    expect(note.addedAt).toBeTruthy();
-    expect(new Date(note.addedAt).getTime()).toBeLessThanOrEqual(Date.now());
-  });
-});
+    const task2 = store().addStoreOnlyTask({
+      name: 'Bleed brake lines',
+      systemId: 'brakes', phaseId: 'phase-safety', status: 'todo',
+      priority: 'critical', estimatedCostILS: 400, addedBy: 'agent', dependsOnTaskIds: [],
+    });
 
-// ─── Flow 12: Notes on tasks ──────────────────────────────────────────────────
+    store().setTaskSteps(task1.id, ['Jack up car', 'Open bleeder', 'Drain fluid', 'Close bleeder']);
+    store().setTaskSteps(task2.id, ['Fill reservoir', 'Bleed all four corners', 'Check pedal feel']);
 
-describe('Flow 12: Task notes', () => {
-  it('adds a first note with date prefix', () => {
-    const { brakes } = buildSafetyPhase();
-    store().addTaskNote(brakes.id, 'Found scoring on rotor surface');
-    const notes = store().tasks[brakes.id].notes;
-    expect(notes).toContain('Found scoring on rotor surface');
-    expect(notes).toMatch(/^\[/); // starts with date prefix
-  });
+    store().completeTask(task1.id, 60);
+    store().setTaskStatus(task2.id, 'active');
 
-  it('appends subsequent notes with separator', () => {
-    const { brakes } = buildSafetyPhase();
-    store().addTaskNote(brakes.id, 'First note');
-    store().addTaskNote(brakes.id, 'Second note');
-    const notes = store().tasks[brakes.id].notes;
-    expect(notes).toContain('First note');
-    expect(notes).toContain('Second note');
-    expect(notes).toContain('\n\n');
-  });
+    expect(store().taskStatuses[task1.id]).toBe('done');
+    expect(store().taskStatuses[task2.id]).toBe('active');
+    expect(store().taskSteps[task1.id]).toHaveLength(4);
+    expect(store().taskSteps[task2.id]).toHaveLength(3);
 
-  it('addTaskNote on non-existent task is a no-op', () => {
-    expect(() => store().addTaskNote('does-not-exist', 'anything')).not.toThrow();
+    // Round-trip the whole state
+    const json = store().exportProgress();
+    store().resetAll();
+    store().importProgress(json);
+
+    expect(store().taskStatuses[task1.id]).toBe('done');
+    expect(store().taskStatuses[task2.id]).toBe('active');
+    expect(store().taskSteps[task1.id]).toHaveLength(4);
   });
 });

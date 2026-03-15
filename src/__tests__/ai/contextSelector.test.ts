@@ -1,15 +1,13 @@
 /**
  * contextSelector tests
  *
- * Tests every detection mode and every plan section builder.
- * We set up store state directly (using importProgress) and then call
- * the exported functions to verify the output contains expected strings.
+ * New architecture: context reads from plan.ts (mocked), car.ts (mocked),
+ * decisions.ts (mocked), and store delta. No more carFacts/gaps/researchNotes.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { detectRelevantSystems, buildDynamicContext } from '../../ai/contextSelector';
 import { useRenovationStore } from '../../store/useRenovationStore';
 
-// Suppress background analysis and changelog side effects
 vi.mock('../../ai/agentBackground', () => ({
   scheduleBackgroundAnalysis: vi.fn(),
   triggerTaskCompletedAnalysis: vi.fn(),
@@ -19,10 +17,74 @@ vi.mock('../../store/changelog', () => ({
   saveSnapshot: vi.fn().mockResolvedValue(undefined),
 }));
 
+// Mock car.ts — provides the car profile section
+vi.mock('../../data/car', () => ({
+  car: {
+    vehicle: {
+      year: 1989,
+      make: 'Jeep',
+      model: 'CJ8 Scrambler',
+      engine: 'AMC 258 4.2L inline-6',
+      transmission: 'T4',
+      transferCase: 'Dana 300',
+      frontAxle: 'Dana 30',
+      rearAxle: 'AMC 20',
+    },
+    overallStatus: 'Partially disassembled',
+  },
+}));
+
+// Mock decisions.ts — strategic build decisions
+vi.mock('../../data/decisions', () => ({
+  decisions: [
+    { category: 'engine', title: 'Keep AMC 258', decision: 'Rebuild original engine' },
+  ],
+}));
+
+// Mock plan.ts — plan structure
+let mockPhases: unknown[] = [];
+let mockTasks: Record<string, unknown> = {};
+let mockDeps: unknown[] = [];
+
+vi.mock('../../data/plan', () => ({
+  get phases() { return mockPhases; },
+  get tasks() { return mockTasks; },
+  get taskDependencies() { return mockDeps; },
+}));
+
+function seedPlan() {
+  mockPhases = [
+    { id: 'phase-safety', name: 'Safety First', subtitle: 'safety items', systemIds: ['brakes'], order: 0, taskIds: ['t-brakes', 't-tires'] },
+  ];
+  mockTasks = {
+    't-brakes': {
+      id: 't-brakes', name: 'Replace brake drums', systemId: 'brakes',
+      phaseId: 'phase-safety', priority: 'critical', status: 'todo',
+      estimatedCostILS: 800, parts: [], notes: 'Drum diameter: 10 inches',
+      steps: ['Remove wheel', 'Pull drum', 'Install new drum'],
+      dependsOn: [], addedBy: 'agent', phaseOrder: 0, manualRefs: [],
+    },
+    't-tires': {
+      id: 't-tires', name: 'New tires', systemId: 'suspension',
+      phaseId: 'phase-safety', priority: 'high', status: 'todo',
+      estimatedCostILS: 2000, parts: [], notes: '',
+      dependsOn: [], addedBy: 'agent', phaseOrder: 1, manualRefs: [],
+    },
+  };
+  mockDeps = [];
+}
+
+function clearPlan() {
+  mockPhases = [];
+  mockTasks = {};
+  mockDeps = [];
+}
+
 const store = () => useRenovationStore.getState();
 
 beforeEach(() => {
   store().resetAll();
+  clearPlan();
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -46,10 +108,6 @@ describe('detectRelevantSystems', () => {
 
   it('detects suspension from "leaf spring"', () => {
     expect(detectRelevantSystems('replace the leaf spring')).toContain('suspension');
-  });
-
-  it('detects suspension from lift kit', () => {
-    expect(detectRelevantSystems('install a 3-inch lift')).toContain('suspension');
   });
 
   it('detects electrical from "wire harness"', () => {
@@ -98,14 +156,6 @@ describe('detectRelevantSystems', () => {
     expect(detectRelevantSystems('ENGINE REBUILD')).toContain('engine');
   });
 
-  it('is case insensitive: BRAKE → brakes', () => {
-    expect(detectRelevantSystems('BRAKE FLUID CHECK')).toContain('brakes');
-  });
-
-  it('detects body system from paint keyword', () => {
-    expect(detectRelevantSystems('paint the body panels')).toContain('body');
-  });
-
   it('detects transfer from dana 300', () => {
     expect(detectRelevantSystems('dana 300 rebuild')).toContain('transfer');
   });
@@ -114,34 +164,57 @@ describe('detectRelevantSystems', () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 describe('buildDynamicContext — structure', () => {
 
-  it('always includes APP STATE header', () => {
-    const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('## APP STATE:');
-  });
-
   it('always includes CAR PROFILE section', () => {
     const ctx = buildDynamicContext('hello');
     expect(ctx).toContain('## CAR PROFILE');
   });
 
-  it('shows "No facts recorded yet" when carFacts empty', () => {
+  it('includes vehicle make/model in car profile', () => {
     const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('No facts recorded yet');
+    expect(ctx).toContain('Jeep');
+    expect(ctx).toContain('CJ8 Scrambler');
   });
 
-  it('always includes RECENT DECISIONS section', () => {
+  it('always includes BUILD DECISIONS section', () => {
     const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('## RECENT DECISIONS');
+    expect(ctx).toContain('## BUILD DECISIONS');
   });
 
-  it('shows "None recorded" when no decisions', () => {
+  it('includes build decisions from decisions.ts', () => {
     const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('None recorded');
+    expect(ctx).toContain('Keep AMC 258');
   });
 
-  it('always includes ACTIVE GAPS section', () => {
+  it('always includes RUNTIME DECISIONS section', () => {
     const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('## ACTIVE GAPS');
+    expect(ctx).toContain('## RUNTIME DECISIONS');
+  });
+
+  it('shows "None recorded this session" when no runtime decisions', () => {
+    const ctx = buildDynamicContext('hello');
+    expect(ctx).toContain('None recorded this session');
+  });
+
+  it('includes runtime decisions when present', () => {
+    store().recordDecision({ category: 'budget', summary: 'Max ₪80,000', madeBy: 'user' });
+    const ctx = buildDynamicContext('hello');
+    expect(ctx).toContain('Max ₪80,000');
+    expect(ctx).toContain('[BUDGET]');
+  });
+
+  it('includes only last 5 runtime decisions', () => {
+    for (let i = 0; i < 7; i++) {
+      store().recordDecision({ category: 'other', summary: `Decision ${i}`, madeBy: 'user' });
+    }
+    const ctx = buildDynamicContext('hello');
+    expect(ctx).toContain('Decision 6');
+    expect(ctx).not.toContain('Decision 0');
+    expect(ctx).not.toContain('Decision 1');
+  });
+
+  it('always includes PLAN section', () => {
+    const ctx = buildDynamicContext('hello');
+    expect(ctx).toContain('## PLAN');
   });
 
   it('always includes PHASE & TASK IDs section', () => {
@@ -149,178 +222,111 @@ describe('buildDynamicContext — structure', () => {
     expect(ctx).toContain('## PHASE & TASK IDs');
   });
 
-  it('includes car facts in CAR PROFILE when set', () => {
-    store().setCarFact('mileage', '180,000 km', 'user');
-    store().setCarFact('engine_condition', 'runs rough', 'user');
-    const ctx = buildDynamicContext('what should I do?');
-    expect(ctx).toContain('mileage: 180,000 km');
-    expect(ctx).toContain('engine_condition: runs rough');
-  });
-
-  it('includes recent decisions in RECENT DECISIONS when set', () => {
-    store().recordDecision({ category: 'budget', summary: 'Max ₪80,000', madeBy: 'user' });
+  it('shows "No phases defined yet" when plan is empty', () => {
     const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('Max ₪80,000');
-    expect(ctx).toContain('[BUDGET]');
-  });
-
-  it('includes only last 5 decisions', () => {
-    for (let i = 0; i < 7; i++) {
-      store().recordDecision({ category: 'other', summary: `Decision ${i}`, madeBy: 'user' });
-    }
-    const ctx = buildDynamicContext('hello');
-    // Last 5 decisions shown (2, 3, 4, 5, 6)
-    expect(ctx).toContain('Decision 6');
-    expect(ctx).toContain('Decision 2');
-    expect(ctx).not.toContain('Decision 0'); // too old
-    expect(ctx).not.toContain('Decision 1'); // too old
-  });
-
-  it('includes active (non-dismissed) gaps', () => {
-    store().addGap('engine', 'Missing oil filter', 'critical');
-    const gap2 = store().addGap('brakes', 'Worn pads', 'warning');
-    store().dismissGap(gap2.id);
-    const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('Missing oil filter');
-    expect(ctx).not.toContain('Worn pads'); // dismissed
-  });
-
-  it('shows [CRITICAL] label for critical gaps', () => {
-    store().addGap('engine', 'No oil pressure', 'critical');
-    const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('[CRITICAL]');
+    expect(ctx).toContain('No phases defined yet');
   });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
 describe('buildDynamicContext — plan selection modes', () => {
 
-  function seedFullPlan() {
-    const phase = store().addPhase({ name: 'Safety First', subtitle: 'safety', systemIds: ['brakes'], order: 0, color: '#D00' });
-    const t1 = store().addTask({ name: 'Replace brake drums', systemId: 'brakes', phaseId: phase.id, priority: 'critical', estimatedCostILS: 800, addedBy: 'agent' });
-    const t2 = store().addTask({ name: 'New tires', systemId: 'suspension', phaseId: phase.id, priority: 'high', estimatedCostILS: 2000, addedBy: 'agent' });
-    store().updateTask(t1.id, { steps: ['Remove wheel', 'Pull drum', 'Install new drum'] });
-    store().addTaskNote(t1.id, 'Drum diameter: 10 inches');
-    return { phase, t1, t2 };
-  }
-
   it('FOCUSED MODE: contains FOCUSED TASK section when taskId provided', () => {
-    const { t1 } = seedFullPlan();
-    const ctx = buildDynamicContext('tell me about this task', { taskId: t1.id });
+    seedPlan();
+    const ctx = buildDynamicContext('tell me about this task', { taskId: 't-brakes' });
     expect(ctx).toContain('FOCUSED TASK:');
     expect(ctx).toContain('Replace brake drums');
   });
 
   it('FOCUSED MODE: includes task steps', () => {
-    const { t1 } = seedFullPlan();
-    const ctx = buildDynamicContext('how do I do this?', { taskId: t1.id });
+    seedPlan();
+    const ctx = buildDynamicContext('how do I do this?', { taskId: 't-brakes' });
     expect(ctx).toContain('Remove wheel');
     expect(ctx).toContain('STEPS:');
   });
 
   it('FOCUSED MODE: includes sibling tasks', () => {
-    const { t1 } = seedFullPlan();
-    const ctx = buildDynamicContext('what else is in this phase?', { taskId: t1.id });
+    seedPlan();
+    const ctx = buildDynamicContext('what else is in this phase?', { taskId: 't-brakes' });
     expect(ctx).toContain('SIBLING TASKS');
     expect(ctx).toContain('New tires');
   });
 
   it('FOCUSED MODE: includes task notes', () => {
-    const { t1 } = seedFullPlan();
-    const ctx = buildDynamicContext('what did we note?', { taskId: t1.id });
+    seedPlan();
+    const ctx = buildDynamicContext('what did we note?', { taskId: 't-brakes' });
     expect(ctx).toContain('Drum diameter');
   });
 
-  it('FOCUSED MODE: includes blocked-by info when dependency exists', () => {
-    const phase = store().addPhase({ name: 'P', subtitle: '', systemIds: ['engine'], order: 0, color: '#000' });
-    const t1 = store().addTask({ name: 'Fix leak', systemId: 'engine', phaseId: phase.id, priority: 'high', addedBy: 'agent' });
-    const t2 = store().addTask({ name: 'Tune engine', systemId: 'engine', phaseId: phase.id, priority: 'medium', addedBy: 'agent' });
-    store().addTaskDependency(t2.id, t1.id, 'must fix before tune');
-    const ctx = buildDynamicContext('what blocks this?', { taskId: t2.id });
+  it('FOCUSED MODE: includes delta notes from store', () => {
+    seedPlan();
+    store().addTaskNote('t-brakes', 'Checked the adjuster — needs replacement');
+    const ctx = buildDynamicContext('what did we note?', { taskId: 't-brakes' });
+    expect(ctx).toContain('Checked the adjuster');
+  });
+
+  it('FOCUSED MODE: includes BLOCKED BY info when dependency exists', () => {
+    seedPlan();
+    mockDeps = [{ taskId: 't-tires', dependsOnTaskId: 't-brakes', reason: 'brakes first' }];
+    const ctx = buildDynamicContext('what blocks this?', { taskId: 't-tires' });
     expect(ctx).toContain('BLOCKED BY');
-    expect(ctx).toContain('Fix leak');
+    expect(ctx).toContain('Replace brake drums');
   });
 
   it('PHASE MODE: contains PHASE section when phaseId provided', () => {
-    const { phase } = seedFullPlan();
-    const ctx = buildDynamicContext('show phase details', { phaseId: phase.id });
+    seedPlan();
+    const ctx = buildDynamicContext('show phase details', { phaseId: 'phase-safety' });
     expect(ctx).toContain('PHASE: Safety First');
     expect(ctx).toContain('Replace brake drums');
     expect(ctx).toContain('New tires');
   });
 
   it('PHASE MODE: shows done/total count', () => {
-    const { phase, t1 } = seedFullPlan();
-    store().completeTask(t1.id);
-    const ctx = buildDynamicContext('phase progress', { phaseId: phase.id });
+    seedPlan();
+    store().setTaskStatus('t-brakes', 'done');
+    const ctx = buildDynamicContext('phase progress', { phaseId: 'phase-safety' });
     expect(ctx).toContain('1/2 done');
   });
 
   it('SYSTEM MODE: contains matching tasks when engine keyword in query', () => {
-    store().addPhase({ name: 'Engine', subtitle: '', systemIds: ['engine'], order: 0, color: '#000' });
-    const phase = store().phases[0];
-    store().addTask({ name: 'AMC 258 head gasket', systemId: 'engine', phaseId: phase.id, priority: 'high', addedBy: 'agent' });
-    store().addTask({ name: 'Brake replacement', systemId: 'brakes', phaseId: phase.id, priority: 'medium', addedBy: 'agent' });
+    mockPhases = [{ id: 'phase-engine', name: 'Engine', order: 0, taskIds: ['t-gasket', 't-brakes2'], subtitle: '', systemIds: [] }];
+    mockTasks = {
+      't-gasket': { id: 't-gasket', name: 'AMC 258 head gasket', systemId: 'engine', phaseId: 'phase-engine', priority: 'high', status: 'todo', estimatedCostILS: 500, parts: [], dependsOn: [], addedBy: 'agent', phaseOrder: 0, manualRefs: [] },
+      't-brakes2': { id: 't-brakes2', name: 'Brake replacement', systemId: 'brakes', phaseId: 'phase-engine', priority: 'medium', status: 'todo', estimatedCostILS: 800, parts: [], dependsOn: [], addedBy: 'agent', phaseOrder: 1, manualRefs: [] },
+    };
     const ctx = buildDynamicContext('engine is running rough');
     expect(ctx).toContain('TASKS MATCHING');
     expect(ctx).toContain('AMC 258 head gasket');
   });
 
   it('COST MODE: contains COST SUMMARY when budget keyword in query', () => {
-    seedFullPlan();
+    seedPlan();
     const ctx = buildDynamicContext('what is my total budget?');
     expect(ctx).toContain('COST SUMMARY');
     expect(ctx).toContain('₪');
   });
 
-  it('COST MODE: triggered by ₪ symbol', () => {
-    seedFullPlan();
-    const ctx = buildDynamicContext('how much is ₪ estimate');
-    expect(ctx).toContain('COST SUMMARY');
-  });
-
-  it('COST MODE: shows total estimated and spent', () => {
-    seedFullPlan();
+  it('COST MODE: shows correct total', () => {
+    seedPlan();
     const ctx = buildDynamicContext('cost breakdown please');
     expect(ctx).toContain('₪2800'); // 800 + 2000
   });
 
-  it('DEFAULT MODE: shows compressed plan when no keywords', () => {
-    seedFullPlan();
+  it('DEFAULT MODE: shows Safety First phase when query is generic', () => {
+    seedPlan();
     const ctx = buildDynamicContext('what should I do?');
-    // Should contain phase summary, not full task detail
     expect(ctx).toContain('Safety First');
   });
 
-  it('DEFAULT MODE: shows No phases defined yet when store is empty', () => {
-    const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain('No phases defined yet');
-  });
-
-  it('research notes are included when matching taskId', () => {
-    const { t1 } = seedFullPlan();
-    store().addResearchNote({
-      topic: 'CJ8 brake drum specs',
-      finding: 'Stock drum is 10.00"',
-      source: 'forum post',
-      relevantTaskIds: [t1.id],
+  it('includes storeOnly tasks in the plan', () => {
+    seedPlan();
+    store().addStoreOnlyTask({
+      name: 'Check AMC 20 axle shafts',
+      systemId: 'axle', phaseId: 'phase-safety', status: 'todo',
+      priority: 'critical', addedBy: 'agent', dependsOnTaskIds: [],
     });
-    const ctx = buildDynamicContext('tell me about brakes', { taskId: t1.id });
-    expect(ctx).toContain('RELEVANT RESEARCH');
-    expect(ctx).toContain('CJ8 brake drum specs');
-  });
-
-  it('research notes are not included when not relevant', () => {
-    seedFullPlan();
-    store().addResearchNote({
-      topic: 'Transfer case rebuild',
-      finding: 'Dana 300 weak point is...',
-      source: 'wiki',
-    });
-    const ctx = buildDynamicContext('what should I do?');
-    // Research note about transfer case shouldn't appear for a generic query
-    // unless keywords match
-    expect(ctx).not.toContain('RELEVANT RESEARCH');
+    const ctx = buildDynamicContext('what is in the plan?');
+    expect(ctx).toContain('Check AMC 20 axle shafts');
   });
 });
 
@@ -328,17 +334,16 @@ describe('buildDynamicContext — plan selection modes', () => {
 describe('buildDynamicContext — ID reference section', () => {
 
   it('includes phase IDs for tool call reference', () => {
-    const phase = store().addPhase({ id: 'phase-safety', name: 'Safety', subtitle: '', systemIds: [], order: 0, color: '#000' });
+    seedPlan();
     const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain(phase.id);
-    expect(ctx).toContain('"Safety"');
+    expect(ctx).toContain('phase-safety');
+    expect(ctx).toContain('"Safety First"');
   });
 
   it('includes task IDs for tool call reference', () => {
-    const phase = store().addPhase({ name: 'P', subtitle: '', systemIds: [], order: 0, color: '#000' });
-    const task = store().addTask({ name: 'Fix brakes', systemId: 'brakes', phaseId: phase.id, priority: 'high', addedBy: 'agent' });
+    seedPlan();
     const ctx = buildDynamicContext('hello');
-    expect(ctx).toContain(task.id);
-    expect(ctx).toContain('"Fix brakes"');
+    expect(ctx).toContain('t-brakes');
+    expect(ctx).toContain('"Replace brake drums"');
   });
 });

@@ -19,29 +19,43 @@ vi.mock('../../store/changelog', () => ({
   saveSnapshot: vi.fn().mockResolvedValue(undefined),
 }));
 
-// Mock store — agentBackground reads store state to check plan length and API key
-vi.mock('../../store/useRenovationStore', () => {
+// Mock plan.ts — agentBackground imports planPhases/planTasks/planDeps directly
+vi.mock('../../data/plan', () => {
   let _phases: unknown[] = [{ id: 'phase-1', name: 'Test Phase' }];
-  let _dependencies: unknown[] = [];
   let _tasks: Record<string, unknown> = {};
+  let _deps: unknown[] = [];
+
+  return {
+    get phases() { return _phases; },
+    get tasks() { return _tasks; },
+    get taskDependencies() { return _deps; },
+    __setMockPlan: (state: { phases?: unknown[]; tasks?: Record<string, unknown>; deps?: unknown[] }) => {
+      if (state.phases !== undefined) _phases = state.phases;
+      if (state.tasks !== undefined) _tasks = state.tasks;
+      if (state.deps !== undefined) _deps = state.deps;
+    },
+    __resetMockPlan: () => {
+      _phases = [{ id: 'phase-1', name: 'Test Phase' }];
+      _tasks = {};
+      _deps = [];
+    },
+  };
+});
+
+// Mock store — agentBackground reads storeOnlyTasks for additional tasks/deps
+vi.mock('../../store/useRenovationStore', () => {
+  let _storeOnlyTasks: Record<string, unknown> = {};
 
   return {
     useRenovationStore: {
       getState: vi.fn(() => ({
-        phases: _phases,
-        tasks: _tasks,
-        taskDependencies: _dependencies,
+        storeOnlyTasks: _storeOnlyTasks,
       })),
-      // Allow tests to override state
-      __setMockState: (state: { phases?: unknown[]; tasks?: Record<string, unknown>; deps?: unknown[] }) => {
-        if (state.phases !== undefined) _phases = state.phases;
-        if (state.tasks !== undefined) _tasks = state.tasks;
-        if (state.deps !== undefined) _dependencies = state.deps;
+      __setMockState: (state: { storeOnlyTasks?: Record<string, unknown> }) => {
+        if (state.storeOnlyTasks !== undefined) _storeOnlyTasks = state.storeOnlyTasks;
       },
       __resetMockState: () => {
-        _phases = [{ id: 'phase-1', name: 'Test Phase' }];
-        _tasks = {};
-        _dependencies = [];
+        _storeOnlyTasks = {};
       },
     },
   };
@@ -56,7 +70,11 @@ const {
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 } = await import('../../ai/agentBackground');
 
-// Helper to access mock state setter
+// Helpers to set mock state via the plan mock and store mock
+const planMock = await import('../../data/plan') as unknown as {
+  __setMockPlan: (s: unknown) => void;
+  __resetMockPlan: () => void;
+};
 const { useRenovationStore } = await import('../../store/useRenovationStore');
 const storeHelper = useRenovationStore as unknown as {
   __setMockState: (s: unknown) => void;
@@ -68,6 +86,7 @@ const WEEKLY_KEY = 'jeep-planner-last-weekly-check';
 beforeEach(() => {
   vi.useFakeTimers();
   vi.clearAllMocks();
+  planMock.__resetMockPlan();
   storeHelper.__resetMockState();
   localStorage.clear();
   __resetTimersForTesting__(); // reset module-level lastRunAt and debounce timers
@@ -101,8 +120,8 @@ describe('scheduleBackgroundAnalysis — debounce', () => {
     expect(mockSendAgentMessage).toHaveBeenCalledTimes(1);
   });
 
-  it('skips if no phases in store', async () => {
-    storeHelper.__setMockState({ phases: [] });
+  it('skips if no phases in plan', async () => {
+    planMock.__setMockPlan({ phases: [] });
     scheduleBackgroundAnalysis();
     await vi.advanceTimersByTimeAsync(8_000);
     expect(mockSendAgentMessage).not.toHaveBeenCalled();
@@ -153,7 +172,7 @@ describe('triggerTaskCompletedAnalysis', () => {
 
   it('does NOT fire if no tasks are unblocked', async () => {
     // No dependencies — completing task-1 unblocks nothing
-    storeHelper.__setMockState({
+    planMock.__setMockPlan({
       tasks: { 'task-1': { id: 'task-1', name: 'Fix leak' } },
       deps: [], // no one depends on task-1
     });
@@ -163,7 +182,7 @@ describe('triggerTaskCompletedAnalysis', () => {
   });
 
   it('fires with 3-second delay when a task is unblocked', async () => {
-    storeHelper.__setMockState({
+    planMock.__setMockPlan({
       tasks: {
         'task-1': { id: 'task-1', name: 'Fix leak' },
         'task-2': { id: 'task-2', name: 'Engine tune' },
@@ -177,7 +196,7 @@ describe('triggerTaskCompletedAnalysis', () => {
   });
 
   it('prompt mentions the completed task name', async () => {
-    storeHelper.__setMockState({
+    planMock.__setMockPlan({
       tasks: {
         'task-1': { id: 'task-1', name: 'Frame rust treatment' },
         'task-2': { id: 'task-2', name: 'Paint frame' },
@@ -192,7 +211,7 @@ describe('triggerTaskCompletedAnalysis', () => {
   });
 
   it('prompt mentions the unblocked task name', async () => {
-    storeHelper.__setMockState({
+    planMock.__setMockPlan({
       tasks: {
         'task-1': { id: 'task-1', name: 'Fix leak' },
         'task-2': { id: 'task-2', name: 'Carburetor rebuild' },
@@ -206,7 +225,7 @@ describe('triggerTaskCompletedAnalysis', () => {
   });
 
   it('debounces: rapid completions result in single delayed fire', async () => {
-    storeHelper.__setMockState({
+    planMock.__setMockPlan({
       tasks: {
         'task-1': { id: 'task-1', name: 'T1' },
         'task-2': { id: 'task-2', name: 'T2' },
@@ -223,8 +242,8 @@ describe('triggerTaskCompletedAnalysis', () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 describe('maybeRunWeeklyCheck', () => {
 
-  it('does not fire if no phases in store', async () => {
-    storeHelper.__setMockState({ phases: [] });
+  it('does not fire if no phases in plan', async () => {
+    planMock.__setMockPlan({ phases: [] });
     maybeRunWeeklyCheck();
     await vi.advanceTimersByTimeAsync(100);
     expect(mockSendAgentMessage).not.toHaveBeenCalled();

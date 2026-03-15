@@ -1,0 +1,1169 @@
+{
+  "appState": "plan_built",
+  "onboardingSystemsCompleted": [],
+  "phases": [
+    {
+      "id": "phase-gUPsdM",
+      "taskIds": [],
+      "name": "Phase 1 — Assessment & Inventory",
+      "subtitle": "Document exactly what's on, off, missing, and in what condition before touching anything",
+      "systemIds": [
+        "engine",
+        "transmission",
+        "body",
+        "frame",
+        "electrical",
+        "brakes",
+        "suspension"
+      ],
+      "order": 0,
+      "color": "#5C4A1E"
+    },
+    {
+      "id": "phase-RrFXBJ",
+      "taskIds": [
+        "task-d6-G-C8O",
+        "task-sQmcUCW3",
+        "task-dlWC46Kh",
+        "task-pcQuBL7k",
+        "task-MODtq4FJ",
+        "task-6sI4TM4o"
+      ],
+      "name": "Phase 1 — Assessment & Decisions",
+      "subtitle": "Before touching anything — know exactly what you have, what's salvageable, and which chassis to use",
+      "systemIds": [
+        "frame",
+        "engine",
+        "transmission",
+        "electrical",
+        "brakes",
+        "suspension"
+      ],
+      "order": 0,
+      "color": "#8B4513"
+    },
+    {
+      "id": "phase-rc0HHq",
+      "taskIds": [],
+      "name": "Phase 2 — Engine & Drivetrain",
+      "subtitle": "Get the engine healthy and drivetrain back together — the heart of making this driveable",
+      "systemIds": [
+        "engine",
+        "transmission",
+        "driveshafts",
+        "fuel",
+        "cooling"
+      ],
+      "order": 1,
+      "color": "#8B1A1A"
+    },
+    {
+      "id": "phase-5dxBV8",
+      "taskIds": [
+        "task-tGy2B8aH",
+        "task-It1NiN1z",
+        "task-84UC4Zo7",
+        "task-zwmDlXNd"
+      ],
+      "name": "Phase 2 — Frame & Chassis",
+      "subtitle": "Rust treatment, repairs, and full frame prep — must be done before anything goes on it",
+      "systemIds": [
+        "frame"
+      ],
+      "order": 1,
+      "color": "#5C4033"
+    },
+    {
+      "id": "phase-nsJ0EJ",
+      "taskIds": [
+        "task-BWnaRvrv",
+        "task-8t2Xhvvx",
+        "task-Cp7Jfh1_",
+        "task-WjPBCItX",
+        "task-wqdusBJo",
+        "task-9j67pxMx",
+        "task-6J3mvcuA"
+      ],
+      "name": "Phase 3 — Chassis & Suspension",
+      "subtitle": "Frame rust treatment, suspension install, axles, and steering",
+      "systemIds": [
+        "frame",
+        "suspension",
+        "steering",
+        "brakes",
+        "driveshafts"
+      ],
+      "order": 2,
+      "color": "#2E4A1E"
+    },
+    {
+      "id": "phase-J3E3cS",
+      "taskIds": [],
+      "name": "Phase 4 — Engine & Drivetrain",
+      "subtitle": "Engine refresh, transmission, transfer case — get the drivetrain running before the body goes on",
+      "systemIds": [
+        "engine",
+        "fuel",
+        "cooling",
+        "transmission"
+      ],
+      "order": 3,
+      "color": "#2C3E50"
+    },
+    {
+      "id": "phase-I_xMIW",
+      "taskIds": [],
+      "name": "Phase 5 — Brake & Fuel Lines",
+      "subtitle": "Run all hard lines along the frame while body is still off — nearly impossible to do properly with body on",
+      "systemIds": [
+        "brakes",
+        "fuel"
+      ],
+      "order": 4,
+      "color": "#922B21"
+    },
+    {
+      "id": "phase-d8uB0l",
+      "taskIds": [],
+      "name": "Phase 6 — Electrical & Wiring",
+      "subtitle": "Full wiring harness installation from scratch — frame wiring before body goes on",
+      "systemIds": [
+        "electrical"
+      ],
+      "order": 5,
+      "color": "#1A5276"
+    },
+    {
+      "id": "phase-UjkqPD",
+      "taskIds": [],
+      "name": "Phase 7 — Body & Tub",
+      "subtitle": "Body tub rust repair, prep, and lowering onto frame",
+      "systemIds": [
+        "body"
+      ],
+      "order": 6,
+      "color": "#6E2F7A"
+    },
+    {
+      "id": "phase-QIA35o",
+      "taskIds": [],
+      "name": "Phase 8 — Final Assembly & Commissioning",
+      "subtitle": "Everything comes together — engine bay connections, first start, safety checks, and first drive",
+      "systemIds": [
+        "engine",
+        "electrical",
+        "brakes",
+        "steering",
+        "body"
+      ],
+      "order": 7,
+      "color": "#1E8449"
+    }
+  ],
+  "tasks": {
+    "task-d6-G-C8O": {
+      "id": "task-d6-G-C8O",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 0,
+      "dependsOnTaskIds": [],
+      "name": "Inventory all removed parts and new parts waiting to install",
+      "systemId": "other",
+      "phaseId": "phase-RrFXBJ",
+      "priority": "critical",
+      "agentRationale": "8 years of stalled project means parts are scattered. We need a full list before planning anything — avoids buying duplicates and reveals what's missing.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": []
+    },
+    "task-sQmcUCW3": {
+      "id": "task-sQmcUCW3",
+      "parts": [
+        {
+          "id": "-9_C-l",
+          "name": "Penetrating oil spray (WD-40 or equivalent)",
+          "estimatedCostILS": 25,
+          "purchased": true
+        },
+        {
+          "id": "4_ujh1",
+          "name": "Distributor cap — AMC 258 6-cylinder",
+          "estimatedCostILS": 80,
+          "purchased": true
+        },
+        {
+          "id": "-X8gEE",
+          "name": "Distributor rotor — AMC 258",
+          "estimatedCostILS": 35,
+          "purchased": true
+        },
+        {
+          "id": "_kcJmW",
+          "name": "Spark plugs x6 — Champion RN12YC or NGK equivalent for AMC 258",
+          "estimatedCostILS": 120,
+          "purchased": false
+        }
+      ],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 1,
+      "dependsOnTaskIds": [],
+      "name": "Check engine condition — look for obvious damage, missing parts, and try turning crank by hand",
+      "systemId": "engine",
+      "phaseId": "phase-RrFXBJ",
+      "priority": "critical",
+      "agentRationale": "Engine has been sitting for 8 years. Need to know if it's seized, missing components, or leaking before planning any drivetrain work.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "Remove the air filter housing to get a clear view of the top of the engine — look for cracked intake manifold, broken vacuum lines, missing bolts, or corrosion on the carburetor (Carter YF). Photograph everything.",
+        "Check all fluid levels: pull the oil dipstick (driver's side of block) — if oil is black, sludgy, or smells like fuel that's a red flag. Check coolant in the radiator (NOT the overflow when cold) — look for rust color or oily sheen which indicates head gasket issues.",
+        "Inspect the valve cover for oil leaks dried around its edges — very common on the AMC 258. Check the rear of the engine where it meets the bellhousing for rear main seal leakage (dried black oil streaks).",
+        "To check if the engine turns: put a 1-1/8\" socket on the large crank pulley bolt at the front of the engine (below the radiator). Use a breaker bar — try turning CLOCKWISE only. If it moves even slightly, the engine is not seized. If it's completely stuck, try squirting penetrating oil (Wd-40 or Kroil equivalent) into each spark plug hole and wait 30 minutes before trying again.",
+        "Remove all 6 spark plugs (use a 5/8\" spark plug socket) and look at their condition: white/chalky = lean or coolant burning, black/sooty = rich or oil burning, normal = tan/light brown. Photograph each one labeled 1-6 front to back.",
+        "Check the distributor cap (pull it off — two spring clips) — look for cracks, carbon tracking (black lines inside), and corrosion on the contacts. Check the rotor underneath. These are cheap and should probably be replaced regardless.",
+        "Photograph the entire engine bay from multiple angles — top, both sides, from underneath if possible. This becomes your reference for what's missing."
+      ],
+      "guide": "This is an assessment task only — no repairs yet. Goal is to understand what the AMC 258 inline-6 actually needs before spending money. The most critical check is whether the engine turns freely, which tells you if it's seized from sitting 8 years.",
+      "estimatedCostILS": 260
+    },
+    "task-dlWC46Kh": {
+      "id": "task-dlWC46Kh",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 2,
+      "dependsOnTaskIds": [],
+      "name": "Inspect frame rails and body mounts for rust — photograph all problem areas",
+      "systemId": "frame",
+      "phaseId": "phase-RrFXBJ",
+      "priority": "critical",
+      "agentRationale": "CJ8 frames rust badly at body mount locations and rear crossmember. Extent of rust determines whether original frame is usable or if the spare chassis is needed.",
+      "status": "todo",
+      "addedBy": "agent"
+    },
+    "task-pcQuBL7k": {
+      "id": "task-pcQuBL7k",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 3,
+      "dependsOnTaskIds": [],
+      "name": "Inspect body tub floor and firewall for rust",
+      "systemId": "body",
+      "phaseId": "phase-RrFXBJ",
+      "priority": "high",
+      "agentRationale": "CJ8 tubs rust at floor corners and under the carpet/mat. Firewall rust can affect brake and clutch components. Important to document early.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": []
+    },
+    "task-MODtq4FJ": {
+      "id": "task-MODtq4FJ",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 4,
+      "dependsOnTaskIds": [],
+      "name": "Check transmission and transfer case condition — look for damage, missing parts, fluid state",
+      "systemId": "transmission",
+      "phaseId": "phase-RrFXBJ",
+      "priority": "high",
+      "agentRationale": "Trans and transfer have been stored for 8 years. Need to confirm they're complete and in rebuildable/usable condition before planning reinstall.",
+      "status": "todo",
+      "addedBy": "agent"
+    },
+    "task-6sI4TM4o": {
+      "id": "task-6sI4TM4o",
+      "parts": [
+        {
+          "id": "owaFbR",
+          "name": "Painless Wiring complete CJ7/CJ8 harness kit (if replacement needed)",
+          "estimatedCostILS": 2000,
+          "partNumber": "20101",
+          "purchased": false
+        }
+      ],
+      "notes": "[3/14/2026] Owner confirms the harness already has many changes and fixes over the years. This is a strong argument against trying to repair further — a heavily patched harness means inherited mistakes, unknown wire gauges, and untraceable faults. Recommendation: during inspection, count the number of old splices/repairs. If more than 5-6, budget for a complete Painless Wiring replacement kit rather than more patches.",
+      "manualRefs": [],
+      "phaseOrder": 5,
+      "dependsOnTaskIds": [],
+      "name": "Check wiring harness condition throughout — look for brittle/cracked insulation, rodent damage, missing connectors",
+      "systemId": "electrical",
+      "phaseId": "phase-RrFXBJ",
+      "priority": "high",
+      "agentRationale": "35+ year old wiring insulation gets brittle and cracks. 8 years of sitting in a workshop makes rodent damage likely. Electrical issues are a major obstacle to first start.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "Start at the fuse block (under dash, driver's side) — open it and photograph every fuse and metal clip. Corrosion here is a red flag for the whole harness.",
+        "Trace the engine harness from the fuse block across the engine bay. Gently bend the loom every 20cm — if insulation cracks or flakes off, that section is dead.",
+        "Look specifically at every splice, join, or repair you can find. Count them. Write down how many there are. More than 5-6 old splices on one harness = strong argument for full replacement.",
+        "Get under the dash with a flashlight and look for mouse damage (chewed wires, droppings, nesting). This is the #1 hidden damage area on stored CJ8s.",
+        "Under the car, follow the body/tail harness from the firewall to the rear lights. Note any sections where the loom wrap has disintegrated and wires are loose or exposed.",
+        "At the end of the inspection, make a judgment call: if the harness has many old repairs, unknown modifications, or widespread brittle insulation — plan to replace it fully rather than chase electrical gremlins forever. Ask your WhatsApp group if anyone has imported a Painless Wiring kit to Israel — it saves a lot of pain."
+      ],
+      "guide": "On a CJ8 with a history of repairs and modifications, wiring inspection is really a decision-making exercise: you're not just looking for damage, you're deciding whether to repair or replace the whole harness. A harness with many previous fixes is a hidden liability — every past splice and wrong-gauge wire is a future fault you didn't create."
+    },
+    "task-tGy2B8aH": {
+      "id": "task-tGy2B8aH",
+      "parts": [
+        {
+          "id": "hc7Bca",
+          "name": "lldd",
+          "purchased": false,
+          "url": "sd",
+          "addedBy": "user"
+        }
+      ],
+      "notes": "[3/15/2026] sds",
+      "manualRefs": [],
+      "phaseOrder": 0,
+      "dependsOnTaskIds": [],
+      "name": "Decide which chassis to use — original or spare",
+      "systemId": "frame",
+      "phaseId": "phase-5dxBV8",
+      "priority": "critical",
+      "agentRationale": "Everything downstream depends on which frame you build on. Rust treat, weld, and coat the chosen frame before anything goes on it.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": []
+    },
+    "task-Z9U_-vfc": {
+      "id": "task-Z9U_-vfc",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 8,
+      "dependsOnTaskIds": [],
+      "name": "Inspect front and rear leaf springs — check for cracks, broken leaves, and worn bushings",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "critical",
+      "agentRationale": "Before installing the new lift kit, you need to know what you're working with. After 8 years sitting, spring bushings are almost certainly cracked or collapsed. Any broken leaves will need addressing before installing new hardware.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "Lay the car on jack stands so the axles hang free — this unloads the springs so you can see their natural shape.",
+        "Inspect each leaf in the pack for cracks, especially at the center bolt hole and at the main leaf eyes — cracks here mean the spring is unsafe.",
+        "Check all four spring eyes: grab the axle and try to move it side to side — more than 5mm of play indicates worn or collapsed bushings.",
+        "Inspect both front and rear shackles — look for cracks in the brackets and elongated bolt holes (sign of heavy use or rust).",
+        "Photograph everything before disassembly — you'll want reference for re-assembly orientation.",
+        "Note which springs are being replaced by the Rubicon Express kit vs. which might be reused — on a CJ8, all four corners should get the new lift springs."
+      ],
+      "guide": "Visual and physical inspection of all four spring packs and their mounting hardware before the new lift kit goes in."
+    },
+    "task-BWnaRvrv": {
+      "id": "task-BWnaRvrv",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 1,
+      "dependsOnTaskIds": [],
+      "name": "Inspect all suspension mounting points — spring perches, shackle brackets, and frame mounts for rust and cracks",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "critical",
+      "agentRationale": "The CJ8's longer wheelbase puts more stress on the rear spring perches than a CJ7. Frame cracks at these mounting points are common. Any cracked or rusted mounting points must be repaired before installing new suspension — otherwise you're building on a weak foundation.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "Clean each mounting area with a wire brush before inspecting — surface rust hides cracks.",
+        "Check the front spring eye hangers (welded to the frame): tap with a hammer and listen for hollow sound indicating rust perforation.",
+        "Check the rear spring perches — on the CJ8 the longer wheelbase puts extra stress here. Look for cracks radiating from the spring perch weld.",
+        "Inspect the shackle reversal brackets at the rear — these take the most dynamic load during articulation.",
+        "Check all four U-bolt plates and spring perch saddles on the axle tubes for cracks or elongated holes.",
+        "Mark any cracked or suspect areas with a paint marker — these need to be welded before new suspension goes in."
+      ],
+      "guide": "Inspect every point where the suspension attaches to the frame — these are the highest-stress areas and the most common rust spots on CJ8s."
+    },
+    "task-8t2Xhvvx": {
+      "id": "task-8t2Xhvvx",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 2,
+      "dependsOnTaskIds": [
+        "task-Z9U_-vfc",
+        "task-BWnaRvrv"
+      ],
+      "name": "Install Rubicon Express 2.5\" front leaf spring pack",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "high",
+      "agentRationale": "New lift springs are already on hand — install front pack first so the axle geometry can be confirmed before moving to the rear.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "Support the front axle on a jack — don't let it hang by the brake hoses or steering components.",
+        "Remove the front U-bolts and U-bolt plate. Note: CJ8 front U-bolt nuts are 1/2-20 thread — torque spec is 75 Nm (55 ft-lb).",
+        "Remove the rear shackle bolts first, then the front spring eye bolt — the spring will drop free.",
+        "Install the new Rubicon Express front spring: front eye to frame hanger first, then swing the spring back and connect the shackle.",
+        "Install new U-bolts with the U-bolt plate — torque to 75 Nm (55 ft-lb) in a cross pattern.",
+        "Confirm the axle is centered side-to-side before final torque — measure from frame rail to axle tube on both sides."
+      ],
+      "guide": "Remove stock front springs and install the Rubicon Express 2.5\" front pack. The front uses a fixed eye at the frame and a shackle at the rear of the spring."
+    },
+    "task-Cp7Jfh1_": {
+      "id": "task-Cp7Jfh1_",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 3,
+      "dependsOnTaskIds": [
+        "task-Z9U_-vfc",
+        "task-BWnaRvrv"
+      ],
+      "name": "Install Rubicon Express 2.5\" rear leaf spring pack",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "high",
+      "agentRationale": "Rear springs go in after front is confirmed. The CJ8 bed adds weight behind the rear axle — confirm spring orientation and U-bolt torque carefully.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "Support the Dana 44 rear axle on a jack so it doesn't drop when the springs are removed.",
+        "Remove rear U-bolt nuts (9/16-18 thread on Dana 44) — torque spec for reinstall is 136 Nm (100 ft-lb).",
+        "Remove shackle bolts at the front, then the fixed eye bolt at the rear frame hanger — spring drops free.",
+        "Install new Rubicon Express rear spring with the shackle end at the FRONT (this is the CJ8 reversed shackle layout — don't install it backwards).",
+        "Install new U-bolts and torque to 136 Nm (100 ft-lb) in a cross pattern.",
+        "Recheck axle centering side-to-side before final torque — the Dana 44 housing is not symmetric, so measure to a fixed reference point on the frame."
+      ],
+      "guide": "Remove stock rear springs and install the Rubicon Express 2.5\" rear pack. The CJ8 rear uses a reversed shackle setup — shackle is at the FRONT of the spring."
+    },
+    "task-WjPBCItX": {
+      "id": "task-WjPBCItX",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 4,
+      "dependsOnTaskIds": [
+        "task-8t2Xhvvx",
+        "task-Cp7Jfh1_"
+      ],
+      "name": "Install front and rear shocks from Rubicon Express lift kit",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "high",
+      "agentRationale": "Shocks are included in the kit — install after springs are set so the correct shock length and mounting angle can be confirmed.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "With the vehicle at ride height (on the ground or axles supported at normal position), measure the available shock travel — the Rubicon Express kit specifies the correct shock length for 2.5\" lift.",
+        "Install upper shock mount bolt first — hand tight only until both ends are connected.",
+        "Connect the lower mount and install bolt — torque both ends to 61 Nm (45 ft-lb) per CJ8 spec.",
+        "Compress and extend each shock by hand to confirm smooth operation with no binding or dead spots.",
+        "Confirm the shock is not contacting the spring, spring perch, or any frame component through full travel — cycle the axle by hand to check.",
+        "Check that brake hoses and brake lines have adequate slack at full droop — a lifted CJ8 can pull brake hoses tight if they weren't already long enough."
+      ],
+      "guide": "Install the four shocks included with the Rubicon Express kit after both spring packs are installed and the axles are at ride height."
+    },
+    "task-wqdusBJo": {
+      "id": "task-wqdusBJo",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 5,
+      "dependsOnTaskIds": [
+        "task-Z9U_-vfc"
+      ],
+      "name": "Replace all spring eye bushings and shackle bushings — front and rear",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "high",
+      "agentRationale": "After 8 years sitting, the rubber bushings are cracked and compressed. Worn bushings cause vague handling, clunking, and accelerated wear on the new springs. Replace now while everything is apart — much harder once assembled.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": [
+        "Press or drive out old bushings from spring eyes using a socket slightly smaller than the bushing OD as a driver — a bench vise works well here.",
+        "Clean the spring eye bores with a wire brush — remove all rust and old rubber.",
+        "Press new bushings in squarely — they should sit flush with the spring eye face on both sides.",
+        "Install shackle bolts with new bushings in place — do NOT fully torque until the vehicle is at ride height (bushings must be torqued with the suspension loaded, not hanging).",
+        "Torque shackle bolts to 33 Nm (24 ft-lb) and front spring eye bolts to 136 Nm (100 ft-lb) — both with the vehicle weight on the suspension.",
+        "Apply a small amount of chassis grease to the bolt shafts before installation to prevent future seizure."
+      ],
+      "guide": "Replace all spring eye bushings and shackle pin bushings — 8 total (2 per corner). Do this before installing the new springs."
+    },
+    "task-9j67pxMx": {
+      "id": "task-9j67pxMx",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 6,
+      "dependsOnTaskIds": [
+        "task-8t2Xhvvx",
+        "task-Cp7Jfh1_"
+      ],
+      "name": "Check and set pinion angle — front and rear — after lift install",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "high",
+      "agentRationale": "A 2.5\" lift changes driveshaft angles significantly. Incorrect pinion angle causes driveshaft vibration and premature U-joint wear. On the CJ8 with its longer wheelbase, this is especially important for the rear driveshaft.",
+      "status": "todo",
+      "addedBy": "agent"
+    },
+    "task-6J3mvcuA": {
+      "id": "task-6J3mvcuA",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 7,
+      "dependsOnTaskIds": [],
+      "name": "Inspect and repack front wheel bearings (Dana 30)",
+      "systemId": "suspension",
+      "phaseId": "phase-nsJ0EJ",
+      "priority": "high",
+      "agentRationale": "Per the CJ8 manual: no provision for re-greasing inner bearings after assembly — they must be fully packed before installation. After 8 years sitting, the grease is dried out and the bearings should be inspected for pitting or rust.",
+      "status": "todo",
+      "addedBy": "agent",
+      "steps": []
+    },
+    "task-It1NiN1z": {
+      "id": "task-It1NiN1z",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 1,
+      "dependsOnTaskIds": [],
+      "name": "Strip chosen frame completely bare — remove all remaining brackets, mounts, and hardware",
+      "systemId": "frame",
+      "phaseId": "phase-5dxBV8",
+      "priority": "critical",
+      "agentRationale": "Full bare-metal strip is required before rust treatment — you can't treat or paint what's covered. Also surfaces all hidden rust at weld joints and body mount holes that are classic CJ8 failure points.",
+      "status": "todo",
+      "addedBy": "agent"
+    },
+    "task-84UC4Zo7": {
+      "id": "task-84UC4Zo7",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 2,
+      "dependsOnTaskIds": [
+        "task-It1NiN1z",
+        "task-tGy2B8aH"
+      ],
+      "name": "Treat all frame rust — grind to bare metal, apply rust converter, and prime entire frame",
+      "systemId": "frame",
+      "phaseId": "phase-5dxBV8",
+      "priority": "critical",
+      "agentRationale": "With the body off, this is the only time you can fully access every inch of the frame. Doing this now prevents rust from progressing under everything you're about to bolt on. Skipping it means pulling suspension and axles again in a few years.",
+      "status": "todo",
+      "addedBy": "agent"
+    },
+    "task-zwmDlXNd": {
+      "id": "task-zwmDlXNd",
+      "parts": [],
+      "notes": "",
+      "manualRefs": [],
+      "phaseOrder": 3,
+      "dependsOnTaskIds": [
+        "task-It1NiN1z"
+      ],
+      "name": "Weld repair any cracked or rust-through frame sections — crossmembers, body mounts, spring perches",
+      "systemId": "frame",
+      "phaseId": "phase-5dxBV8",
+      "priority": "critical",
+      "agentRationale": "CJ8 frame cracks at rear crossmember, body mount holes, and spring perch welds — these must be welded before suspension goes on. Any structural repair must happen before paint/primer so welds can be ground and treated.",
+      "status": "todo",
+      "addedBy": "agent"
+    }
+  },
+  "gaps": [
+    {
+      "id": "xUB8Rd",
+      "systemId": "brakes",
+      "description": "No brake system assessment or rebuild tasks exist in the plan. The car has a new brake booster waiting to install, but the master cylinder, wheel cylinders, brake lines, and drums have no inspection or replacement tasks. On a CJ8 that's been sitting 8+ years, brake fluid absorbs moisture and corrodes internals, rubber hoses crack internally, and wheel cylinders seize. This is safety-critical — the car cannot be driven without a full brake system verification.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "2OiFUk",
+      "systemId": "engine",
+      "description": "Clutch job is planned but no task covers the hydraulic clutch linkage components — specifically the clutch master cylinder and slave cylinder. On a CJ8 that's been sitting 8 years, these are almost certainly seized or leaking. If hydraulic: both should be replaced when doing the clutch. If mechanical linkage: the pivot ball and rod condition need checking. Missing this means the new clutch may go in but the clutch won't function.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "3pzwm0",
+      "systemId": "fuel",
+      "description": "No fuel system tasks exist. After 8 years sitting, the fuel tank almost certainly has degraded fuel, varnish deposits, and possible rust or sediment. The Carter YF carburetor will be gummed up. Fuel lines may be cracked or clogged. The car will not start or run reliably without addressing this. Needs at minimum: tank drain/flush/inspection, fuel line inspection, and carb rebuild or replacement.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "tfEHox",
+      "systemId": "electrical",
+      "description": "Battery and charging system not addressed. After 8 years, the battery is certainly dead and the alternator, voltage regulator, and starter motor condition are unknown. Without a confirmed charging system, the engine cannot be started or tested — which blocks all subsequent mechanical verification work.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "x3Rq8k",
+      "systemId": "suspension",
+      "description": "AMC Model 20 rear axle shaft condition not flagged for inspection. This is a known weak point on CJ8s — the C-clip axle shafts are prone to breaking, especially if the car was used off-road. Before installing the new suspension lift, the rear axle shaft condition (and ideally upgrade to aftermarket shafts) should be assessed. A broken axle shaft on the road means complete loss of drive and potential wheel separation.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "lKmoWS",
+      "systemId": "brakes",
+      "description": "No brake system assessment or rebuild tasks exist in the plan. The car has a new brake booster waiting to install, but the master cylinder, wheel cylinders, brake lines, and drums have no inspection or replacement tasks. On a CJ8 that's been sitting 8+ years, brake fluid absorbs moisture and corrodes internals, rubber hoses crack internally, and wheel cylinders seize. This is safety-critical — the car cannot be driven without a full brake system verification.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "GMYsrE",
+      "systemId": "transmission",
+      "description": "Clutch job is planned but no task covers the hydraulic clutch linkage components — specifically the clutch master cylinder and slave cylinder. On a CJ8 that's been sitting 8 years, these are almost certainly seized or leaking. If hydraulic: both should be replaced when doing the clutch. If mechanical linkage: the pivot ball and rod condition need checking. Missing this means the new clutch may go in but the clutch won't function.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "g_FWNz",
+      "systemId": "fuel",
+      "description": "No fuel system tasks exist. After 8 years sitting, the fuel tank almost certainly has degraded fuel, varnish deposits, and possible rust or sediment. The Carter YF carburetor will be gummed up. Fuel lines may be cracked or clogged. The car will not start or run reliably without addressing this. Needs at minimum: tank drain/flush/inspection, fuel line inspection, and carb rebuild or replacement.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "eYQnm7",
+      "systemId": "electrical",
+      "description": "Battery and charging system not addressed. After 8 years, the battery is certainly dead and the alternator, voltage regulator, and starter motor condition are unknown. Without a confirmed charging system, the engine cannot be started or tested — which blocks all subsequent mechanical verification work.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "gLTLDO",
+      "systemId": "driveshafts",
+      "description": "AMC Model 20 rear axle shaft condition not flagged for inspection. This is a known weak point on CJ8s — the C-clip axle shafts are prone to breaking, especially if the car was used off-road. Before installing the new suspension lift, the rear axle shaft condition (and ideally upgrade to aftermarket shafts) should be assessed. A broken axle shaft on the road means complete loss of drive and potential wheel separation.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "H6_TW-",
+      "systemId": "brakes",
+      "description": "No brake system assessment or rebuild tasks exist in the plan. The car has a new brake booster waiting to install, but the master cylinder, wheel cylinders, brake lines, and drums have no inspection or replacement tasks. On a CJ8 that's been sitting 8+ years, brake fluid absorbs moisture and corrodes internals, rubber hoses crack internally, and wheel cylinders seize. This is safety-critical — the car cannot be driven without a full brake system verification.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "A_xRl9",
+      "systemId": "transmission",
+      "description": "Clutch job is planned but no task covers the hydraulic clutch linkage components — specifically the clutch master cylinder and slave cylinder. On a CJ8 that's been sitting 8 years, these are almost certainly seized or leaking. If hydraulic: both should be replaced when doing the clutch. If mechanical linkage: the pivot ball and rod condition need checking. Missing this means the new clutch may go in but the clutch won't function.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "NsYNm2",
+      "systemId": "fuel",
+      "description": "No fuel system tasks exist. After 8 years sitting, the fuel tank almost certainly has degraded fuel, varnish deposits, and possible rust or sediment. The Carter YF carburetor will be gummed up. Fuel lines may be cracked or clogged. The car will not start or run reliably without addressing this. Needs at minimum: tank drain/flush/inspection, fuel line inspection, and carb rebuild or replacement.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "H9xc3Y",
+      "systemId": "electrical",
+      "description": "Battery and charging system not addressed. After 8 years, the battery is certainly dead and the alternator, voltage regulator, and starter motor condition are unknown. Without a confirmed charging system, the engine cannot be started or tested — which blocks all subsequent mechanical verification work.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "0lHmJd",
+      "systemId": "driveshafts",
+      "description": "AMC Model 20 rear axle shaft condition not flagged for inspection. This is a known weak point on CJ8s — the C-clip axle shafts are prone to breaking, especially if the car was used off-road. Before installing the new suspension lift, the rear axle shaft condition (and ideally upgrade to aftermarket shafts) should be assessed. A broken axle shaft on the road means complete loss of drive and potential wheel separation.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "KN-1lm",
+      "systemId": "steering",
+      "description": "No steering system tasks exist anywhere in the plan. The CJ8 Saginaw steering box, drag link, tie rod, and king pins on the Dana 30 are all known wear points. After 8+ years of sitting, the steering box may have dried out, king pins are likely worn, and tie rod ends may be seized or loose. Steering must be inspected and rebuilt before the car is driven — a separated tie rod or worn king pins at speed is a total loss-of-control event.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "MTB_WL",
+      "systemId": "engine",
+      "description": "No engine rebuild or inspection tasks exist in Phase 4 — Engine & Drivetrain. The AMC 258 was running before disassembly but has been sitting 8+ years. At minimum needs: valve cover off to check for sludge/cam wear, oil pan inspection, rear main seal replacement (notorious on AMC 258), head gasket condition check, and a compression test before reinstall. Installing a potentially compromised engine into a freshly rebuilt chassis wastes all the other work.",
+      "severity": "critical",
+      "dismissed": false
+    },
+    {
+      "id": "Ods6kW",
+      "systemId": "cooling",
+      "description": "No cooling system tasks in the plan. Radiator, hoses, thermostat, and water pump condition are all unknown. After 8 years sitting, coolant turns acidic and corrodes the radiator core and water pump internals. The AMC 258 water pump impeller is known to spin free on the shaft — engine overheats immediately under load. Must be addressed before first start.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "k_d-Wq",
+      "systemId": "driveshafts",
+      "description": "No driveshaft tasks in the plan. Front and rear driveshafts need U-joint inspection — after 8 years sitting, U-joints corrode and seize. A failed U-joint at speed can punch through the floor or lock up a driveshaft. With the 2.5\" lift going in, driveshaft angles change and the slip yoke travel needs to be verified — especially the front shaft which is already tight on stock CJ8 geometry.",
+      "severity": "warning",
+      "dismissed": false
+    },
+    {
+      "id": "jCA9Kj",
+      "systemId": "transmission",
+      "description": "No transmission or transfer case rebuild/inspection tasks exist. The T4 and Dana 300 were removed and have been sitting. No tasks cover: checking fluid condition, inspecting for case cracks, replacing input/output seals, or verifying shift mechanism function. The T4/T5 world-class variant requires ATF Dexron III — if someone topped it up with 80W-90 gear oil, the synchros may be damaged. This needs to be resolved before reinstall.",
+      "severity": "warning",
+      "dismissed": false
+    }
+  ],
+  "decisions": [
+    {
+      "id": "Yeu_-vQC",
+      "madeAt": "2026-03-14T11:43:26.050Z",
+      "category": "scope",
+      "summary": "Scaled back from full frame-off restoration to \"get it running and roadworthy in good shape\"",
+      "rationale": "Original full resto plan stalled 8 years ago. Owner wants to actually drive the car rather than pursue a perfect restoration that may never finish.",
+      "madeBy": "user"
+    }
+  ],
+  "carFacts": [
+    {
+      "id": "n9IDks",
+      "key": "brake_system",
+      "value": "Original brake hardware still on axles but doesn't look great. New brake lines waiting to install. New brake booster waiting. Owner also has a brake proportioning valve waiting.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:52:26.439Z"
+    },
+    {
+      "id": "vLSuAQ",
+      "key": "carburetor",
+      "value": "Carter BBD 2-barrel, still mounted on engine. Repair kit on hand.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:52:26.422Z"
+    },
+    {
+      "id": "65tyaL",
+      "key": "disassembly_state",
+      "value": "Fully disassembled: engine out, transmission out, transfer case out, body tub off frame, all wiring removed, no interior. Axles likely on bare frame but condition unknown.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T14:39:08.348Z"
+    },
+    {
+      "id": "uxODus",
+      "key": "diy_skills",
+      "value": "Owner is hands-on, can do most mechanical work or follow detailed steps. Has full tool set. Part of an Israeli Jeep/mechanics WhatsApp group for community support.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:50:04.082Z"
+    },
+    {
+      "id": "tGrteh",
+      "key": "engine",
+      "value": "AMC 258 4.2L inline-6. Was running before disassembly. Carburetor (Carter BBD) still mounted on engine. Out of car, sitting separately.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:52:26.380Z"
+    },
+    {
+      "id": "zGszkY",
+      "key": "engine_location",
+      "value": "Still in the car",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:43:26.035Z"
+    },
+    {
+      "id": "uuzW77",
+      "key": "frame_status",
+      "value": "Car still on original frame. Spare chassis also available.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:48:08.754Z"
+    },
+    {
+      "id": "jH7QMX",
+      "key": "front_axle",
+      "value": "Dana 30 front axle. Still mounted on frame. Condition unknown.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:44:27.015Z"
+    },
+    {
+      "id": "IGuyNj",
+      "key": "goals",
+      "value": "Clean, reliable, trail-capable daily driver. Smart budget — no wasted money. Not a show car.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T14:39:08.361Z"
+    },
+    {
+      "id": "05AgHI",
+      "key": "history",
+      "value": "Was running/working before disassembly. Taken apart ~8 years ago for a full redo, project stalled halfway through. Partial disassembly — some parts removed, some still on, some new parts purchased and waiting to be installed.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:48:14.340Z"
+    },
+    {
+      "id": "jJlIGP",
+      "key": "location",
+      "value": "Israel",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:50:04.093Z"
+    },
+    {
+      "id": "fjdCmd",
+      "key": "parts_on_hand_new",
+      "value": "New parts waiting to install: suspension with 2.5\" lift kit, clutch, engine mounts, brake booster. Likely more that owner doesn't remember.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:48:05.527Z"
+    },
+    {
+      "id": "wBPu0v",
+      "key": "parts_removed",
+      "value": "Clutch, gearbox (transmission), and transfer case removed. Not much else confirmed removed.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:48:05.521Z"
+    },
+    {
+      "id": "28GELk",
+      "key": "project_status",
+      "value": "Mid-restoration stall. Owner has partial memory of what was done. Needs full assessment before planning can proceed.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:42:14.814Z"
+    },
+    {
+      "id": "cU057l",
+      "key": "rear_axle",
+      "value": "Dana 44 rear axle — confirmed upgrade over stock AMC Model 20. Still mounted on frame. Condition unknown.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:52:26.404Z"
+    },
+    {
+      "id": "-EXUyX",
+      "key": "rust_status",
+      "value": "Some rust confirmed on both body and frame. Extent unknown — needs inspection.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:48:08.762Z"
+    },
+    {
+      "id": "xck5mg",
+      "key": "spare_chassis",
+      "value": "Spare chassis available, possibly slightly better condition than original. Decision pending on which to use.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:44:27.081Z"
+    },
+    {
+      "id": "gbplkw",
+      "key": "suspension",
+      "value": "Rubicon Express 2.5\" leaf spring lift kit with shocks — new, waiting to install.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:44:27.029Z"
+    },
+    {
+      "id": "-GNfKQ",
+      "key": "tools_available",
+      "value": "Basic hand tools, angle grinder, access to a welder",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T14:39:08.373Z"
+    },
+    {
+      "id": "lVR8wy",
+      "key": "transmission",
+      "value": "T4 4-speed manual. Removed and sitting out of car.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:52:26.387Z"
+    },
+    {
+      "id": "sJ-DZH",
+      "key": "usage_intent",
+      "value": "Serious rock crawling + daily driver. This means reliability and trail capability are both required — not a weekend toy.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:44:27.069Z"
+    },
+    {
+      "id": "3bAd8s",
+      "key": "vehicle",
+      "value": "Jeep CJ8 Scrambler 1989",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T11:41:04.309Z"
+    },
+    {
+      "id": "BOog-5",
+      "key": "wiring_status",
+      "value": "All wiring completely removed from vehicle. Starting from scratch.",
+      "confirmedBy": "user",
+      "updatedAt": "2026-03-14T15:52:26.456Z"
+    }
+  ],
+  "researchNotes": [
+    {
+      "id": "eIcV7RmF",
+      "addedAt": "2026-03-14T11:41:14.574Z",
+      "topic": "CJ8 Scrambler key known issues",
+      "finding": "The 1989 CJ8 Scrambler is the last year of production, making parts increasingly hard to source. Key chronic issues: (1) AMC Model 20 rear axle — weak C-clip axle shafts prone to breaking under load, especially off-road; (2) AMC 258 inline-6 — rear main seal leaks, worn Carter YF carburetor, head gasket failure on high-mileage units; (3) Frame rust at body mount locations, especially rear crossmembers; (4) Brake master cylinder failure (single-circuit feel), drum brake hardware deterioration; (5) Steering box wear (Ross or Saginaw); (6) Wiring harness brittleness — 35+ year old insulation cracks and shorts; (7) Body tub rust at floor corners and tailgate area; (8) Dana 300 transfer case — generally robust but seals weep; (9) T4/T5 transmission — synchros wear on 2nd gear. The CJ8's longer wheelbase (103.5\") makes it rarer and more valuable than CJ7.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "BOGxeocB",
+      "addedAt": "2026-03-14T11:59:36.734Z",
+      "topic": "CJ8 wiring harness layout and inspection",
+      "finding": "The CJ8 wiring system is divided into 4 main sections: (1) Engine harness — runs from battery/fuse block through engine bay, connects to alternator, ignition coil, distributor, starter, temperature sender, oil pressure sender; (2) Dash/instrument harness — behind the dashboard, connects gauges, ignition switch, light switches, fuse block; (3) Body/tail harness — runs from firewall along the frame to rear lights, fuel sender, brake lights; (4) Headlight harness — front of car, headlights, turn signals, parking lights. After 8+ years of storage, main failure points are: cracked/brittle insulation (especially near heat sources like exhaust), rodent chewing (especially in enclosed areas like under dash and along frame), corroded connectors (especially ground points on frame/body), and dried-out tape/loom wrapping that falls apart when touched. The fuse block on CJ8 is under the dash on driver's side — fuses and their metal clips corrode badly with age.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "URCnNmwp",
+      "addedAt": "2026-03-14T12:58:13.856Z",
+      "topic": "CJ8 wiring harness replacement options",
+      "finding": "For a CJ8 with an already-modified/patched harness, the decision is: (1) Repair existing — only viable if harness is mostly original and damage is isolated. A harness with many previous fixes is a liability — you inherit every past mistake, hidden splice, wrong gauge wire, and unknown modification. (2) Complete replacement — Painless Wiring makes a complete CJ7/CJ8 harness kit (part ~20101 or similar) that includes all 4 harnesses pre-labeled, with modern fuse block. Cost ~$400-600 USD imported to Israel (~₪1,500-2,200). This is actually the cleaner, safer option for a heavily modified old harness. (3) Partial replacement — replace only the harnesses that are damaged. Engine harness and body harness are most commonly available as individual sections. In Israel, the best route is to order from the US (Summit Racing, Quadratec, or Amazon US) and ship via a freight forwarder. Israeli Jeep WhatsApp community likely has experience with this.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "d4BsHs7d",
+      "addedAt": "2026-03-14T14:39:33.830Z",
+      "topic": "AMC 150 2.5L Iron Duke engine — CJ8 specific notes",
+      "finding": "The 2.5L AMC 150 (also called \"Iron Duke\" — borrowed from GM) was used in CJ7/CJ8 from 1983-1986, then replaced by the AMC 2.5L inline-4 through 1990. Key characteristics: (1) Robust short block — these engines rarely die from internal wear, but after long storage the main risks are: seized rings from rust inside cylinders, gummed oil passages, cracked or deteriorated valve stem seals, and dried-out gaskets. (2) Common weak points: oil pan gasket, valve cover gasket, front crankshaft seal, carburetor (Motorcraft 2150 or Carter BBD on these), and ignition distributor cap/rotor. (3) After 8 years sitting, the cylinders may have surface rust — a compression test and borescope inspection are essential before attempting to start. (4) The cylinder head on the 2.5L is prone to warping if overheated, but if it was stored drained and dry, warping is unlikely. (5) Good news: if the short block turns freely and compression is within spec (150-180 PSI per cylinder), these engines can often be brought back with a carb rebuild, fresh gaskets, and tune-up. Full rebuild cost in Israel: ~₪8,000-15,000 if needed. Partial refresh (gaskets, seals, carb): ~₪2,000-4,000.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "R2ScRhZD",
+      "addedAt": "2026-03-14T14:39:33.836Z",
+      "topic": "CJ8 bare-frame restoration — correct sequence of operations",
+      "finding": "When rebuilding a CJ8 from a bare frame up, the correct sequence is: (1) Frame first — treat all rust, repair any structural damage, paint/coat frame BEFORE anything goes on it. Much easier to weld, grind, and coat when bare. (2) Suspension next — install front and rear axles with new suspension while frame is accessible from all sides. Set pinion angles correctly before final torque. (3) Engine and transmission — once frame/suspension is solid, drop in engine, trans, transfer case as an assembly or sequentially. (4) Brake and fuel lines — run hard lines along frame before body goes on. Critical — almost impossible to do properly with body in place. (5) Wiring — run frame/body wiring harness along frame before body. (6) Body tub — lower onto frame last, once everything underneath is done. (7) Engine bay finishing — connect all hoses, wiring, throttle linkage once body is in place. This sequence avoids the #1 mistake: putting the body on too early and making frame/underbody work nearly impossible.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "bYF4Qm4K",
+      "addedAt": "2026-03-14T15:32:50.273Z",
+      "topic": "CJ8 Scrambler complete platform knowledge",
+      "finding": "The Jeep CJ8 Scrambler is a pickup-bodied variant of the CJ7, produced 1981-1986 (NOT 1989 — the last CJ8 was actually built in 1986. The CJ series ended in 1986 with the introduction of the YJ Wrangler). Wheelbase: 103.5\" (vs CJ7's 93.5\"). Key platform details:\n\nENGINES offered on CJ8:\n- AMC 150 (2.5L inline-4, Iron Duke/GM sourced) — 1983-1986\n- AMC 258 (4.2L inline-6) — most common, all years\n- AMC 304 (5.0L V8) — early years only\n\nTRANSMISSIONS:\n- T4 4-speed manual (early)\n- T5 5-speed manual (later, more common)\n- SR4 4-speed (early models)\n- Automatic: TF999 or TF904 Torqueflite 3-speed\n\nTRANSFER CASE:\n- Dana 300 — all CJ8s. Excellent unit, robust, low range ratio ~2.62:1. Common issues: front output shaft seal, rear output shaft seal, shift fork wear.\n\nFRONT AXLE:\n- Dana 30 — solid front axle, open differential standard. Weak points: U-joints, inner axle shaft seals, steering knuckle bushings. Upgrade path: ARB or Detroit locker, stronger U-joints (Spicer 5-760X).\n\nREAR AXLE:\n- AMC Model 20 — unique to AMC/Jeep. Uses C-clip axle retention (shafts retained by C-clips inside differential). This is the critical weak point: if an axle shaft breaks, the wheel can fall off completely. Ring gear is 8.875\" — actually good size. Weak point is the axle shafts themselves (small diameter) and the C-clip design. Upgrade: replace shafts with aftermarket units (Alloy USA, Rubicon Express) or swap entire axle to Dana 44.\n\nBRAKES:\n- Front: drum brakes standard (some later had disc upgrade)\n- Rear: drum brakes\n- Master cylinder: dual-circuit, firewall mounted\n- Brake booster: vacuum assisted\n- Lines: steel hard lines along frame, rubber flex hoses at each wheel\n\nSTEERING:\n- Ross cam-and-lever or Saginaw recirculating ball steering box\n- Drag link, tie rod, track bar\n- Common issues: steering box wear (lots of play), worn tie rod ends, worn drag link ends\n\nCOOLING:\n- Crossflow radiator\n- Water pump driven by V-belt\n- Thermostat 195°F\n- Common issues: water pump failure, radiator clogging, hose deterioration\n\nELECTRICAL:\n- 12V negative ground\n- Ammeter or voltmeter in dash\n- Simple fuse block under dash\n- Alternator charging system\n\nBODY/FRAME:\n- Ladder frame, 2 main rails with crossmembers\n- Body tub sits on frame via rubber body mounts (8-10 mount points)\n- Body mount rust is the #1 frame killer — water traps between body and frame mount\n- CJ8 has longer frame with additional crossmember vs CJ7\n- Fiberglass or steel hood options\n\nFUEL SYSTEM:\n- Fuel tank: rear-mounted under bed, ~15 gallons\n- Carter BBD 2-barrel carburetor (on 258), Motorcraft 2150 (on 2.5L)\n- Mechanical fuel pump on engine\n- Steel fuel lines along frame",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "dKtgy5xt",
+      "addedAt": "2026-03-14T15:32:50.277Z",
+      "topic": "CJ8 year clarification — 1986 was last year of production",
+      "finding": "The Jeep CJ series ended production in 1986, replaced by the YJ Wrangler. There is NO 1989 CJ8 Scrambler from the factory. The owner's vehicle is likely one of: (1) A 1981-1986 CJ8 Scrambler with a misremembered/unknown year, (2) A CJ8 that has been re-registered or has Israeli registration paperwork showing a different year, (3) Possibly a CJ7 mistakenly called CJ8. This needs clarification — it affects parts sourcing significantly. The most likely scenario in Israel is that the vehicle has Israeli registration papers that may show a different year than the actual build year, which is common with imported classic vehicles in Israel.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "1ZGeJon5",
+      "addedAt": "2026-03-14T15:45:22.402Z",
+      "topic": "Dana 44 rear axle on CJ8 — significance",
+      "finding": "The Dana 44 is a significant upgrade over the stock AMC Model 20. It uses full-float or semi-float axle shafts retained by a flange (not C-clips), meaning a broken shaft does NOT cause wheel separation. Ring gear is 8.5\" — stronger than the AMC 20. For serious rock crawling this is the right axle. Key things to inspect: axle shaft splines for wear, u-joints, differential fluid condition, pinion seal, axle tube seals. For rock crawling, a locker (ARB air locker or Detroit Truetrac) is the main upgrade to consider. The Dana 44 can handle 35\" tires with reasonable care.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "9Rw7OIHk",
+      "addedAt": "2026-03-14T15:45:22.407Z",
+      "topic": "AMC 258 4.2L inline-6 — full technical profile",
+      "finding": "The AMC 258 (4.2L inline-6) is one of the most reliable engines ever put in a Jeep. Key specs: 110 HP stock, 210 lb-ft torque, iron block and head, 7-bearing crankshaft. Known weak points after long storage: (1) Carter BBD 2-barrel carb — notorious for gumming up, accelerator pump failure, and idle issues. Rebuild kit is the right first step. (2) Rear main seal — rope-type seal on older units, tends to leak. (3) Head gasket — usually fine unless overheated. (4) Valve stem seals — dry out during storage, cause blue smoke on startup. (5) Timing chain — stretches with age/mileage. (6) Freeze plugs — can rust through on neglected engines. Since this engine was running before disassembly and has been sitting ~8 years, the priority checks are: does crank turn freely, compression test (should be 130-160 PSI per cylinder, within 10% of each other), oil condition, coolant condition. The 258 is a torquey, low-revving engine — perfect for rock crawling. Torque specs: head bolts 110 ft-lb, main bearing caps 80 ft-lb, rod bearing caps 33 ft-lb.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "1pbCNAtO",
+      "addedAt": "2026-03-14T15:45:22.423Z",
+      "topic": "T4 4-speed manual transmission — CJ8 specs",
+      "finding": "The T4 is a Warner Gear 4-speed manual. Gear ratios: 1st 4.03:1, 2nd 2.37:1, 3rd 1.50:1, 4th 1.00:1. Mated to Dana 300 transfer case (low range 2.62:1). Combined crawl ratio with Dana 300 low and 1st gear: approximately 10.56:1 before axle ratio. With 3.73 or 4.10 axle gears, final crawl ratio is excellent for rock crawling. T4 weak points: 2nd gear synchro wear, input shaft bearing, shift forks. After 8 years sitting: check for moisture in case (rust on gears), condition of input/output shaft seals. Generally robust if it was running fine before.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "dY6NwFDj",
+      "addedAt": "2026-03-14T15:45:22.438Z",
+      "topic": "Dana 300 transfer case — rock crawling capability",
+      "finding": "The Dana 300 is considered one of the best transfer cases ever made for off-road use. Low range ratio 2.62:1 is excellent. Key features: divorced design (separate from transmission), cast iron case, very robust internals. Common issues: front and rear output shaft seals leak, shift fork wear on high-mileage units, chain stretch (but rare). For serious rock crawling, the Dana 300 is capable as-is. Upgrade option: SYE (Slip Yoke Eliminator) kit to reduce driveshaft vibration at lifted heights — relevant with the 2.5\" lift. After 8 years sitting: drain and inspect fluid, check seals, verify shift operation.",
+      "source": "agent knowledge"
+    },
+    {
+      "id": "B96jbH-I",
+      "addedAt": "2026-03-14T15:45:22.453Z",
+      "topic": "Rubicon Express 2.5\" leaf spring lift — CJ8 installation notes",
+      "finding": "Rubicon Express makes quality lift kits for CJ series. A 2.5\" lift on the CJ8 with new leaf springs and shocks is a solid mild lift — good for 31-33\" tires comfortably, 35\" with trimming. Key installation considerations: (1) Pinion angle — with a leaf spring lift, the pinion angle changes and must be corrected with an adjustable upper control arm or shim to avoid driveshaft vibration. (2) Brake line length — a 2.5\" lift may require extended brake lines at the axles. Owner has new brake lines ready which is good. (3) Bump stop extensions — may be needed to prevent coil bind. (4) Shock length — new shocks included, verify extended/compressed length matches lift height. (5) U-bolt torque: typically 45-55 ft-lb on CJ leaf spring packs. (6) With the body off the frame, this is the IDEAL time to install the suspension — complete access to everything.",
+      "source": "agent knowledge"
+    }
+  ],
+  "taskDependencies": [
+    {
+      "taskId": "task-84UC4Zo7",
+      "dependsOnTaskId": "task-zwmDlXNd",
+      "reason": "All welding must be done before rust treatment and primer — welds get ground flush and treated as part of the same process"
+    }
+  ],
+  "agentHistory": [
+    {
+      "id": "ueiPt2og",
+      "role": "assistant",
+      "content": "[EARLIER CONVERSATION SUMMARY]\n# CJ8 Restoration Context Note\n\n**Vehicle:** 1989 CJ8 Scrambler (last production year), 2.5L Iron Duke 4-cyl, manual 4-speed transmission. Engine was running before 8-year disassembly; condition unknown now.\n\n**Current State:** Disassembled 8 years ago. Engine, trans, transfer case removed and stored nearby. Body off frame. Frame bare but intact. Spare chassis available (slightly better condition). Dana 30 front/Dana 44 rear axles still mounted.\n\n**Parts On Hand:** New Rubicon Express 2.5\" leaf suspension with shocks, clutch, engine mounts, brake booster, new brake lines, oil distributor. Some original body/frame rust present.\n\n**Goal Pivot:** Shift from full frame-off restoration to \"get it running and roadworthy\" — practical, achievable timeline.\n\n**Resources:** Local WhatsApp community (Israel-based knowledge network), owner has tools and DIY capability, can outsource alignment/welding.\n\n**Next Step:** Workshop inspection (Phase 1) to document drivetrain parts, wiring condition (old harness with many field repairs — needs assessment for repair vs. replacement), engine/trans condition, and detailed inventory.\n\n**Advisor Commitment:** Build detailed phase plan with specific task breakdowns once inspection data confirmed.",
+      "timestamp": "2026-03-14T23:17:49.496Z"
+    },
+    {
+      "id": "80JWdr4a",
+      "timestamp": "2026-03-14T23:16:06.602Z",
+      "role": "user",
+      "content": "lets map suspeension tasks"
+    },
+    {
+      "id": "Y0VLJBkn",
+      "timestamp": "2026-03-14T23:16:06.606Z",
+      "role": "assistant",
+      "content": ""
+    },
+    {
+      "id": "qFEkw7Ph",
+      "timestamp": "2026-03-14T23:16:35.577Z",
+      "role": "user",
+      "content": "lets map suspeension tasks"
+    },
+    {
+      "id": "gAxNBN78",
+      "timestamp": "2026-03-14T23:16:35.582Z",
+      "role": "assistant",
+      "content": "Let me build out the suspension tasks for your CJ8. Given you have the Rubicon Express 2.5\" lift kit with shocks waiting to install, here's what needs to happen:Now let me add steps and search for parts:",
+      "toolCalls": [
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Inspect front and rear leaf springs — check for cracks, broken leaves, and worn bushings\" (ID: task-Z9U_-vfc) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Inspect all suspension mounting points — spring perches, shackle brackets, and frame mounts for rust and cracks\" (ID: task-BWnaRvrv) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Install Rubicon Express 2.5\" front leaf spring pack\" (ID: task-8t2Xhvvx) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Install Rubicon Express 2.5\" rear leaf spring pack\" (ID: task-Cp7Jfh1_) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Install front and rear shocks from Rubicon Express lift kit\" (ID: task-WjPBCItX) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Replace all spring eye bushings and shackle bushings — front and rear\" (ID: task-wqdusBJo) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Check and set pinion angle — front and rear — after lift install\" (ID: task-9j67pxMx) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Inspect and repack front wheel bearings (Dana 30)\" (ID: task-6J3mvcuA) to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "set_task_steps",
+          "input": {},
+          "result": "Steps saved to \"Inspect front and rear leaf springs — check for cracks, broken leaves, and worn bushings\" (6 steps, with overview)"
+        },
+        {
+          "name": "set_task_steps",
+          "input": {},
+          "result": "Steps saved to \"Inspect all suspension mounting points — spring perches, shackle brackets, and frame mounts for rust and cracks\" (6 steps, with overview)"
+        },
+        {
+          "name": "set_task_steps",
+          "input": {},
+          "result": "Steps saved to \"Install Rubicon Express 2.5\" front leaf spring pack\" (6 steps, with overview)"
+        },
+        {
+          "name": "set_task_steps",
+          "input": {},
+          "result": "Steps saved to \"Install Rubicon Express 2.5\" rear leaf spring pack\" (6 steps, with overview)"
+        },
+        {
+          "name": "set_task_steps",
+          "input": {},
+          "result": "Steps saved to \"Install front and rear shocks from Rubicon Express lift kit\" (6 steps, with overview)"
+        },
+        {
+          "name": "set_task_steps",
+          "input": {},
+          "result": "Steps saved to \"Replace all spring eye bushings and shackle bushings — front and rear\" (6 steps, with overview)"
+        }
+      ]
+    },
+    {
+      "id": "AJIiNnTx",
+      "timestamp": "2026-03-14T23:22:18.214Z",
+      "role": "user",
+      "content": "reorganize the plan - macro. some duplicates i see as well."
+    },
+    {
+      "id": "N-zArsge",
+      "timestamp": "2026-03-14T23:22:18.216Z",
+      "role": "assistant",
+      "content": "Let me pull the full plan first to see everything clearly.Okay, clear picture. Here are the problems I see:\n\n1. **Two \"Phase 1 — Assessment\" phases** that should be one\n2. **Two \"Phase 2\"** — Engine & Drivetrain (empty) and Frame & Chassis\n3. **\"Decide which chassis\" task exists twice** — in Phase 1 Decisions AND Phase 2 Frame & Chassis\n4. **Phase 4 Engine & Drivetrain is empty** — orphaned placeholder\n5. **Phases 5–8 are all empty** — good structure, just need tasks later\n\nHere's the clean structure I'll reorganize into:\n\n| Phase | Name | What it covers |\n|---|---|---|\n| 1 | Assessment & Decisions | Inspection + chassis choice |\n| 2 | Frame & Chassis | Strip, treat, repair chosen frame |\n| 3 | Suspension & Axles | Lift install, steering, wheel bearings |\n| 4 | Engine & Drivetrain | Engine refresh, trans, transfer case, clutch |\n| 5 | Brake & Fuel Lines | Lines, master cylinder, wheel cylinders, fuel tank |\n| 6 | Electrical & Wiring | Full harness from scratch |\n| 7 | Body & Tub | Rust repair, body drop |\n| 8 | Final Assembly | First start, commissioning, alignment |\n\nDoing the cleanup now — merging duplicates and removing the empty orphan phases:Now I'll move the suspension and axle tasks to sit under Phase 3, and clean up the empty Engine & Drivetrain placeholder (Phase 2 order 1):Now remove the empty orphan phase (Phase 2 — Engine & Drivetrain, which was at order 1 with no tasks):Now let me re-add the frame strip task cleanly into the Frame & Chassis phase, and add the critical tasks that were missing:",
+      "toolCalls": [
+        {
+          "name": "get_full_plan",
+          "input": {},
+          "result": "Phase 0: Phase 1 — Assessment & Inventory (Document exactly what's on, off, missing, and in what condition before touching anything)\n  - [todo] Inventory all removed parts and new parts waiting to install\n  - [todo] Check engine condition — look for obvious damage, missing parts, and try turning crank by hand (₪260)\n  - [todo] Inspect frame rails and body mounts for rust — photograph all problem areas\n  - [todo] Inspect body tub floor and firewall for rust\n  - [todo] Check transmission and transfer case condition — look for damage, missing parts, fluid state\n  - [todo] Check wiring harness condition throughout — look for brittle/cracked insulation, rodent damage, missing connectors\n\nPhase 0: Phase 1 — Assessment & Decisions (Before touching anything — know exactly what you have, what's salvageable, and which chassis to use)\n  - [todo] Decide which chassis to use — original or spare\n\nPhase 1: Phase 2 — Engine & Drivetrain (Get the engine healthy and drivetrain back together — the heart of making this driveable)\n  (no tasks)\n\nPhase 1: Phase 2 — Frame & Chassis (Rust treatment, repairs, and full frame prep — must be done before anything goes on it)\n  - [todo] Decide which chassis to use — original or spare\n  - [todo] Strip frame completely bare — remove all brackets, axles, and hardware\n\nPhase 2: Phase 3 — Chassis & Suspension (Frame rust treatment, suspension install, axles, and steering)\n  - [todo] Inspect front and rear leaf springs — check for cracks, broken leaves, and worn bushings\n  - [todo] Inspect all suspension mounting points — spring perches, shackle brackets, and frame mounts for rust and cracks\n  - [todo] Install Rubicon Express 2.5\" front leaf spring pack\n  - [todo] Install Rubicon Express 2.5\" rear leaf spring pack\n  - [todo] Install front and rear shocks from Rubicon Express lift kit\n  - [todo] Replace all spring eye bushings and shackle bushings — front and rear\n  - [todo] Check and set pinion angle — front and rear — after lift install\n  - [todo] Inspect and repack front wheel bearings (Dana 30)\n\nPhase 3: Phase 4 — Engine & Drivetrain (Engine refresh, transmission, transfer case — get the drivetrain running before the body goes on)\n  (no tasks)\n\nPhase 4: Phase 5 — Brake & Fuel Lines (Run all hard lines along the frame while body is still off — nearly impossible to do properly with body on)\n  (no tasks)\n\nPhase 5: Phase 6 — Electrical & Wiring (Full wiring harness installation from scratch — frame wiring before body goes on)\n  (no tasks)\n\nPhase 6: Phase 7 — Body & Tub (Body tub rust repair, prep, and lowering onto frame)\n  (no tasks)\n\nPhase 7: Phase 8 — Final Assembly & Commissioning (Everything comes together — engine bay connections, first start, safety checks, and first drive)\n  (no tasks)"
+        },
+        {
+          "name": "remove_task",
+          "input": {},
+          "result": "Task \"Decide which chassis to use — original or spare\" removed from plan"
+        },
+        {
+          "name": "move_task",
+          "input": {},
+          "result": "Task \"Inventory all removed parts and new parts waiting to install\" moved to phase phase-RrFXBJ"
+        },
+        {
+          "name": "move_task",
+          "input": {},
+          "result": "Task \"Check engine condition — look for obvious damage, missing parts, and try turning crank by hand\" moved to phase phase-RrFXBJ"
+        },
+        {
+          "name": "move_task",
+          "input": {},
+          "result": "Task \"Inspect frame rails and body mounts for rust — photograph all problem areas\" moved to phase phase-RrFXBJ"
+        },
+        {
+          "name": "move_task",
+          "input": {},
+          "result": "Task \"Inspect body tub floor and firewall for rust\" moved to phase phase-RrFXBJ"
+        },
+        {
+          "name": "move_task",
+          "input": {},
+          "result": "Task \"Check transmission and transfer case condition — look for damage, missing parts, fluid state\" moved to phase phase-RrFXBJ"
+        },
+        {
+          "name": "move_task",
+          "input": {},
+          "result": "Task \"Check wiring harness condition throughout — look for brittle/cracked insulation, rodent damage, missing connectors\" moved to phase phase-RrFXBJ"
+        },
+        {
+          "name": "move_task",
+          "input": {},
+          "result": "Task \"Inspect front and rear leaf springs — check for cracks, broken leaves, and worn bushings\" moved to phase phase-nsJ0EJ"
+        },
+        {
+          "name": "remove_task",
+          "input": {},
+          "result": "Task \"Strip frame completely bare — remove all brackets, axles, and hardware\" removed from plan"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Strip chosen frame completely bare — remove all remaining brackets, mounts, and hardware\" (ID: task-It1NiN1z) to phase phase-5dxBV8"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Treat all frame rust — grind to bare metal, apply rust converter, and prime entire frame\" (ID: task-84UC4Zo7) to phase phase-5dxBV8"
+        },
+        {
+          "name": "add_task",
+          "input": {},
+          "result": "Task added: \"Weld repair any cracked or rust-through frame sections — crossmembers, body mounts, spring perches\" (ID: task-zwmDlXNd) to phase phase-5dxBV8"
+        },
+        {
+          "name": "set_task_dependency",
+          "input": {},
+          "result": "Dependency set: \"Treat all frame rust — grind to bare metal, apply rust converter, and prime entire frame\" requires \"Weld repair any cracked or rust-through frame sections — crossmembers, body mounts, spring perches\" first — All welding must be done before rust treatment and primer — welds get ground flush and treated as part of the same process"
+        }
+      ]
+    }
+  ]
+}
