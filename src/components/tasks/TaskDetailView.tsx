@@ -29,11 +29,26 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
   const addTaskNote = useRenovationStore((s) => s.addTaskNote);
   const markPartPurchased = useRenovationStore((s) => s.markPartPurchased);
   const updateTaskCost = useRenovationStore((s) => s.updateTaskCost);
+  const setTaskSteps = useRenovationStore((s) => s.setTaskSteps);
+  const setTaskGuide = useRenovationStore((s) => s.setTaskGuide);
 
-  // Always get the live task from the store so status updates reflect immediately
-  const liveTask = useRenovationStore((s) => s.tasks[task.id]) ?? task;
+  // Overlay store delta on top of the passed task prop so status/notes/steps
+  // update reactively without re-querying the full resolved task map.
+  const taskStatus = useRenovationStore((s) => s.taskStatuses[task.id]);
+  const taskNotes = useRenovationStore((s) => s.taskNotes[task.id]);
+  const taskActualCost = useRenovationStore((s) => s.taskActualCosts[task.id]);
+  const taskSteps = useRenovationStore((s) => s.taskSteps[task.id]);
+  const taskGuide = useRenovationStore((s) => s.taskGuides[task.id]);
+  const storeOnlyVersion = useRenovationStore((s) => s.storeOnlyTasks[task.id]);
 
-  const updateTask = useRenovationStore((s) => s.updateTask);
+  const liveTask = storeOnlyVersion ?? {
+    ...task,
+    status: taskStatus ?? task.status,
+    notes: taskNotes ?? task.notes ?? '',
+    actualCostILS: taskActualCost ?? task.actualCostILS,
+    steps: taskSteps ?? task.steps,
+    guide: taskGuide ?? task.guide,
+  };
 
   const [briefing, setBriefing] = useState<TaskBriefing | null>(null);
   const [briefingLoading, setBriefingLoading] = useState(false);
@@ -154,7 +169,8 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
   const fetchBriefing = (forceRefresh = false) => {
     if (forceRefresh) {
       // Clear persisted steps so enrichment re-runs
-      updateTask(liveTask.id, { steps: [], guide: undefined });
+      setTaskSteps(liveTask.id, []);
+      setTaskGuide(liveTask.id, '');
     }
     setBriefingLoading(true);
     setBriefingError(false);
@@ -527,7 +543,7 @@ export function TaskDetailView({ task, onBack }: TaskDetailViewProps) {
                         <input
                           type="checkbox"
                           checked={part.purchased}
-                          onChange={() => markPartPurchased(liveTask.id, part.id)}
+                          onChange={() => markPartPurchased(part.id)}
                           style={{ accentColor: 'var(--green)', flexShrink: 0 }}
                         />
                         <span style={{

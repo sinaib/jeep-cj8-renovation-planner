@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRenovationStore } from '../../store/useRenovationStore';
 import { sendAgentMessage, type PendingImage } from '../../ai/agentClient';
+import { makeToolLabel } from '../../ai/agentTools';
 import { saveFile, type ProjectFile } from '../../store/fileStore';
 import { PromptChips } from './PromptChips';
 import type { Task, Phase, FileMeta } from '../../types';
@@ -56,69 +57,7 @@ function AgentBarInner(
   const sendPromptRef = useRef<(text: string) => void>(() => {});
   useImperativeHandle(ref, () => ({ sendPrompt: (text) => sendPromptRef.current(text) }));
 
-  // Smart tool labels using live store state
-  const makeToolLabel = (toolName: string, input: Record<string, unknown>): string => {
-    const { phases, tasks } = useRenovationStore.getState();
-    const phaseCount = phases.length;
-    const taskCount = Object.keys(tasks).length;
-
-    switch (toolName) {
-      case 'get_full_plan':
-        return `Reviewing your ${phaseCount}-phase restoration plan (${taskCount} tasks)`;
-      case 'add_task': {
-        const phaseName = phases.find((p) => p.id === input.phaseId)?.name ?? (input.phaseId as string);
-        return `Adding "${input.name}" → ${phaseName}`;
-      }
-      case 'add_phase':
-        return `Creating phase: "${input.name}"`;
-      case 'update_task_status': {
-        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
-        return `Marking "${taskName}" as ${input.status}`;
-      }
-      case 'add_task_note': {
-        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
-        return `Adding note to "${taskName}"`;
-      }
-      case 'update_task_cost': {
-        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
-        return `Cost for "${taskName}": ₪${input.costILS}`;
-      }
-      case 'add_part_to_task': {
-        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
-        return `Part "${input.partName}" → ${taskName}`;
-      }
-      case 'flag_gap':
-        return `Gap flagged [${input.severity}]: ${String(input.description ?? '').slice(0, 50)}`;
-      case 'remove_task': {
-        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
-        return `Removing "${taskName}"`;
-      }
-      case 'move_task': {
-        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
-        const destPhase = phases.find((p) => p.id === input.toPhaseId)?.name ?? input.toPhaseId;
-        return `Moving "${taskName}" → ${destPhase}`;
-      }
-      case 'search_web':
-        return `Searching: "${String(input.query ?? '').slice(0, 50)}"`;
-      case 'set_car_fact':
-        return `Car fact: ${input.key} = ${input.value}`;
-      case 'record_decision':
-        return `Decision: ${String(input.summary ?? '').slice(0, 60)}`;
-      case 'add_research_note':
-        return `Research: ${String(input.topic ?? '').slice(0, 50)}`;
-      case 'set_task_dependency': {
-        const taskName = tasks[input.taskId as string]?.name ?? input.taskId;
-        const depName = tasks[input.dependsOnTaskId as string]?.name ?? input.dependsOnTaskId;
-        return `${taskName} depends on ${depName}`;
-      }
-      case 'set_task_steps':
-        return `Guide saved (${(input.steps as string[])?.length ?? 0} steps)`;
-      case 'annotate_file':
-        return `File annotated`;
-      default:
-        return toolName;
-    }
-  };
+  // makeToolLabel imported from agentTools — uses planTasks/planPhases directly
 
   // Scroll to bottom when messages change
   useEffect(() => {

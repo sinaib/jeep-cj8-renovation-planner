@@ -52,3 +52,65 @@
 {"t":"2026-03-14T20:25:55.911Z","type":"task_status","summary":"'Inspect body tub floor and firewall for rust' active → done","taskId":"task-pcQuBL7k","prev":"active","next":"done"}
 {"t":"2026-03-14T20:49:12.911Z","type":"task_status","summary":"'Inventory all removed parts and new parts waiting to install' todo → active","taskId":"task-d6-G-C8O","prev":"todo","next":"active"}
 {"t":"2026-03-14T22:08:50.244Z","type":"proactive_analysis","summary":"Weekly plan health check triggered"}
+{"t":"2026-03-14T22:44:51.269Z","type":"note_added","summary":"Note on 'Decide which chassis to use — original or spare': sds","taskId":"task-tGy2B8aH"}
+{"t":"2026-03-14T22:48:51.798Z","type":"task_status","summary":"'Inventory all removed parts and new parts waiting to install' active → todo","taskId":"task-d6-G-C8O","prev":"active","next":"todo"}
+{"t":"2026-03-14T22:48:52.695Z","type":"task_status","summary":"'Inventory all removed parts and new parts waiting to install' todo → done","taskId":"task-d6-G-C8O","prev":"todo","next":"done"}
+{"t":"2026-03-14T22:48:53.882Z","type":"task_status","summary":"'Inventory all removed parts and new parts waiting to install' done → active","taskId":"task-d6-G-C8O","prev":"done","next":"active"}
+{"t":"2026-03-14T22:48:55.595Z","type":"task_status","summary":"'Inventory all removed parts and new parts waiting to install' active → skipped","taskId":"task-d6-G-C8O","prev":"active","next":"skipped"}
+{"t":"2026-03-14T22:49:08.680Z","type":"task_status","summary":"'Inventory all removed parts and new parts waiting to install' skipped → todo","taskId":"task-d6-G-C8O","prev":"skipped","next":"todo"}
+{"t":"2026-03-14T23:16:56.956Z","type":"agent_bulk_change","summary":"Agent made 2 changes: add_task, add_task"}
+{"t":"2026-03-14T23:16:56.959Z","type":"task_added","summary":"Added 'Inspect front and rear leaf springs — check for cracks, broken leaves, and worn bushings'","taskId":"task-Z9U_-vfc","addedBy":"agent"}
+{"t":"2026-03-14T23:16:56.986Z","type":"task_added","summary":"Added 'Inspect all suspension mounting points — spring perches, shackle brackets, and frame mounts for rust and cracks'","taskId":"task-BWnaRvrv","addedBy":"agent"}
+{"t":"2026-03-14T23:16:57.035Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-16-56.json"}
+{"t":"2026-03-14T23:17:04.525Z","type":"agent_bulk_change","summary":"Agent made 2 changes: add_task, add_task"}
+{"t":"2026-03-14T23:17:04.529Z","type":"task_added","summary":"Added 'Install Rubicon Express 2.5\" front leaf spring pack'","taskId":"task-8t2Xhvvx","addedBy":"agent"}
+{"t":"2026-03-14T23:17:04.565Z","type":"task_added","summary":"Added 'Install Rubicon Express 2.5\" rear leaf spring pack'","taskId":"task-Cp7Jfh1_","addedBy":"agent"}
+{"t":"2026-03-14T23:17:04.616Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-17-04.json"}
+{"t":"2026-03-14T23:17:12.567Z","type":"proactive_analysis","summary":"Background plan gap scan triggered"}
+{"t":"2026-03-14T23:17:16.464Z","type":"agent_bulk_change","summary":"Agent made 2 changes: add_task, add_task"}
+{"t":"2026-03-14T23:17:16.467Z","type":"task_added","summary":"Added 'Install front and rear shocks from Rubicon Express lift kit'","taskId":"task-WjPBCItX","addedBy":"agent"}
+{"t":"2026-03-14T23:17:16.498Z","type":"task_added","summary":"Added 'Replace all spring eye bushings and shackle bushings — front and rear'","taskId":"task-wqdusBJo","addedBy":"agent"}
+{"t":"2026-03-14T23:17:16.539Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-17-16.json"}
+{"t":"2026-03-14T23:17:23.895Z","type":"agent_bulk_change","summary":"Agent made 2 changes: add_task, add_task"}
+{"t":"2026-03-14T23:17:23.898Z","type":"task_added","summary":"Added 'Check and set pinion angle — front and rear — after lift install'","taskId":"task-9j67pxMx","addedBy":"agent"}
+{"t":"2026-03-14T23:17:23.932Z","type":"task_added","summary":"Added 'Inspect and repack front wheel bearings (Dana 30)'","taskId":"task-6J3mvcuA","addedBy":"agent"}
+{"t":"2026-03-14T23:17:23.976Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-17-23.json"}
+{"t":"2026-03-14T23:17:31.963Z","type":"agent_bulk_change","summary":"Agent made 5 changes: flag_gap, flag_gap, flag_gap, flag_gap, flag_gap"}
+{"t":"2026-03-14T23:17:31.998Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-17-31.json"}
+{"t":"2026-03-14T23:17:49.498Z","type":"history_compressed","summary":"History compressed: 45 messages → summary","compressedCount":45}
+{"t":"2026-03-14T23:18:07.982Z","type":"agent_bulk_change","summary":"Agent made 6 changes: set_task_steps, set_task_steps, set_task_steps, set_task_steps, set_task_steps, set_task_steps"}
+{"t":"2026-03-14T23:18:08.140Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-18-07.json"}
+{"t":"2026-03-14T23:21:32.282Z","type":"task_status","summary":"'Inspect body tub floor and firewall for rust' done → todo","taskId":"task-pcQuBL7k","prev":"done","next":"todo"}
+{"t":"2026-03-14T23:22:30.542Z","type":"task_removed","summary":"Removed 'Decide which chassis to use — original or spare'","taskId":"task-C_U92f7w"}
+{"t":"2026-03-14T23:23:47.758Z","type":"task_removed","summary":"Removed 'Strip frame completely bare — remove all brackets, axles, and hardware'","taskId":"task-DHQTFzeu"}
+{"t":"2026-03-14T23:23:53.777Z","type":"task_added","summary":"Added 'Strip chosen frame completely bare — remove all remaining brackets, mounts, and hardware'","taskId":"task-It1NiN1z","addedBy":"agent"}
+{"t":"2026-03-14T23:23:58.595Z","type":"task_added","summary":"Added 'Treat all frame rust — grind to bare metal, apply rust converter, and prime entire frame'","taskId":"task-84UC4Zo7","addedBy":"agent"}
+{"t":"2026-03-14T23:24:06.597Z","type":"proactive_analysis","summary":"Background plan gap scan triggered"}
+{"t":"2026-03-14T23:24:37.698Z","type":"task_added","summary":"Added 'Weld repair any cracked or rust-through frame sections — crossmembers, body mounts, spring perches'","taskId":"task-zwmDlXNd","addedBy":"agent"}
+{"t":"2026-03-14T23:25:20.388Z","type":"agent_bulk_change","summary":"Agent made 5 changes: flag_gap, flag_gap, flag_gap, flag_gap, flag_gap"}
+{"t":"2026-03-14T23:25:20.416Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-25-20.json"}
+{"t":"2026-03-14T23:25:40.840Z","type":"agent_bulk_change","summary":"Agent made 5 changes: flag_gap, flag_gap, flag_gap, flag_gap, flag_gap"}
+{"t":"2026-03-14T23:25:40.868Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-25-40.json"}
+{"t":"2026-03-14T23:31:55.044Z","type":"task_removed","summary":"Removed 'Inspect front and rear leaf springs — check for cracks, broken leaves, and worn bushings'","taskId":"task-Z9U_-vfc"}
+{"t":"2026-03-14T23:32:05.913Z","type":"agent_bulk_change","summary":"Agent made 3 changes: add_task, add_task, add_task"}
+{"t":"2026-03-14T23:32:05.917Z","type":"task_added","summary":"Added 'Inspect axles — Dana 30 front and Dana 44 rear: check for leaks, damage, and fluid condition'","taskId":"task-hR982bXy","addedBy":"agent"}
+{"t":"2026-03-14T23:32:05.942Z","type":"task_added","summary":"Added 'Inspect steering components — steering box, drag link, tie rod, king pins on Dana 30'","taskId":"task-BM40dlfP","addedBy":"agent"}
+{"t":"2026-03-14T23:32:05.967Z","type":"task_added","summary":"Added 'Inspect driveshafts — check U-joints for rust and play, verify slip yoke condition'","taskId":"task-D15FkSv_","addedBy":"agent"}
+{"t":"2026-03-14T23:32:06.004Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-32-05.json"}
+{"t":"2026-03-14T23:32:12.391Z","type":"agent_bulk_change","summary":"Agent made 2 changes: add_task, add_task"}
+{"t":"2026-03-14T23:32:12.394Z","type":"task_added","summary":"Added 'Inspect brake hardware on axles — drums, wheel cylinders, brake lines condition'","taskId":"task-kosOgS8_","addedBy":"agent"}
+{"t":"2026-03-14T23:32:12.423Z","type":"task_added","summary":"Added 'Inspect fuel tank and fuel lines — check for rust, sediment, degraded fuel, and cracked lines'","taskId":"task-64eDvvPf","addedBy":"agent"}
+{"t":"2026-03-14T23:32:12.463Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-32-12.json"}
+{"t":"2026-03-14T23:32:44.026Z","type":"agent_bulk_change","summary":"Agent made 10 changes: add_task, add_task, add_task, add_task, add_task, add_task, add_task, add_task, add_task, add_task"}
+{"t":"2026-03-14T23:32:44.028Z","type":"task_added","summary":"Added 'AMC 258 engine inspection — remove valve cover, check for sludge, cam wear, and overall condition'","taskId":"task-dFDBAvA7","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.056Z","type":"task_added","summary":"Added 'Do a compression test on all 6 cylinders'","taskId":"task-s4MUpUtl","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.083Z","type":"task_added","summary":"Added 'Replace rear main seal and oil pan gasket on AMC 258'","taskId":"task-wwp4jk-4","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.108Z","type":"task_added","summary":"Added 'Replace all engine gaskets and seals — valve cover, intake, exhaust manifold, front cover'","taskId":"task-JtIz88db","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.140Z","type":"task_added","summary":"Added 'Inspect and rebuild Carter BBD carburetor — clean jets, replace needle/seat, float, and accelerator pump'","taskId":"task-HTAWopiQ","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.164Z","type":"task_added","summary":"Added 'Replace coolant hoses, thermostat (180°F), and inspect water pump'","taskId":"task-jMgpxKL2","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.191Z","type":"task_added","summary":"Added 'Flush and inspect radiator — check for blockage, leaks, and core condition'","taskId":"task-KnWXTaRz","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.218Z","type":"task_added","summary":"Added 'Install engine into chassis with new engine mounts'","taskId":"task-ciODMDd4","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.245Z","type":"task_added","summary":"Added 'Inspect T4 transmission — check fluid, shift mechanism, input/output seals, case for cracks'","taskId":"task-3e32PrOh","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.272Z","type":"task_added","summary":"Added 'Inspect Dana 300 transfer case — check fluid, shift linkage, input/output seals'","taskId":"task-xi96ryOL","addedBy":"agent"}
+{"t":"2026-03-14T23:32:44.320Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-32-44.json"}
+{"t":"2026-03-15T01:28:21.130Z","type":"fast_query","summary":"Fast query (haiku): \"What should I do next?\""}

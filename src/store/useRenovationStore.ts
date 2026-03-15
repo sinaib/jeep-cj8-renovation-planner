@@ -3,8 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { StateStorage } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
 import type {
-  Task, Phase, Gap, AgentMessage, TaskStatus, GapSeverity,
-  Decision, CarFact, ResearchNote, TaskDependency, FileMeta,
+  Task, AgentMessage, TaskStatus,
+  Decision, FileMeta, Part, TaskDependency,
 } from '../types';
 import { scheduleBackgroundAnalysis, triggerTaskCompletedAnalysis } from '../ai/agentBackground';
 import { logChange } from './changelog';
@@ -31,75 +31,61 @@ const fileBackedStorage: StateStorage = {
   },
 };
 
+// ─── State ────────────────────────────────────────────────────────────────────
+// Store persists ONLY the runtime delta. Plan structure (phases, tasks,
+// dependencies) lives in plan.ts and is read via usePlanData hook.
+
 interface RenovationState {
-  // App flow
-  appState: 'onboarding' | 'plan_built' | 'in_progress';
-  onboardingSystemsCompleted: string[];
+  // Runtime delta — overlaid on top of plan.ts at render time
+  taskStatuses: Record<string, TaskStatus>;   // taskId → overridden status
+  taskNotes: Record<string, string>;          // taskId → notes
+  taskActualCosts: Record<string, number>;    // taskId → actual cost ILS
+  taskSteps: Record<string, string[]>;        // taskId → steps (overrides plan.ts)
+  taskGuides: Record<string, string>;         // taskId → guide (overrides plan.ts)
+  taskExtraParts: Record<string, Part[]>;     // taskId → extra parts (agent/user added)
+  purchasedPartIds: string[];                 // stable part IDs marked purchased
 
-  // Plan data
-  phases: Phase[];
-  tasks: Record<string, Task>;
-  gaps: Gap[];
+  // Tasks added via in-app agent (not yet integrated into plan.ts)
+  storeOnlyTasks: Record<string, Task>;
 
-  // Intelligence layer
+  // Runtime state (persisted)
   decisions: Decision[];
-  carFacts: CarFact[];
-  researchNotes: ResearchNote[];
-  taskDependencies: TaskDependency[];
-
-  // Files (metadata only — binary lives in IndexedDB via fileStore.ts)
   fileIndex: FileMeta[];
-
-  // Agent
   agentHistory: AgentMessage[];
-  agentStreaming: boolean;
 
-  // Active UI state (not persisted)
+  // UI state (not persisted)
+  agentStreaming: boolean;
   activeTaskId: string | null;
   activePhaseId: string | null;
 }
 
+// ─── Actions ──────────────────────────────────────────────────────────────────
+
 interface RenovationActions {
-  // Onboarding
-  markSystemOnboarded: (systemId: string) => void;
-  finishOnboarding: () => void;
-
-  // Phase actions
-  addPhase: (phase: Omit<Phase, 'id' | 'taskIds'> & { id?: string }) => Phase;
-  updatePhase: (phaseId: string, updates: Partial<Phase>) => void;
-
-  // Task actions
-  addTask: (task: Omit<Task, 'id' | 'parts' | 'notes' | 'manualRefs' | 'phaseOrder'>) => Task;
-  updateTask: (taskId: string, updates: Partial<Task>) => void;
-  completeTask: (taskId: string, actualCostILS?: number) => void;
+  // Task delta
   setTaskStatus: (taskId: string, status: TaskStatus) => void;
+  completeTask: (taskId: string, actualCostILS?: number) => void;
   addTaskNote: (taskId: string, note: string) => void;
   updateTaskCost: (taskId: string, costILS: number) => void;
-  addPartToTask: (taskId: string, partName: string, estimatedCostILS?: number, partNumber?: string, url?: string, addedBy?: 'agent' | 'user') => void;
-  markPartPurchased: (taskId: string, partId: string) => void;
-  removeTask: (taskId: string) => void;
-  moveTask: (taskId: string, newPhaseId: string, newOrder?: number) => void;
+  setTaskSteps: (taskId: string, steps: string[]) => void;
+  setTaskGuide: (taskId: string, guide: string) => void;
 
-  // File index actions
+  // Parts
+  addPartToTask: (taskId: string, partName: string, estimatedCostILS?: number, partNumber?: string, url?: string, addedBy?: 'agent' | 'user') => void;
+  markPartPurchased: (partId: string) => void;
+
+  // storeOnly tasks (added by in-app agent)
+  addStoreOnlyTask: (taskData: Omit<Task, 'id' | 'parts' | 'notes' | 'manualRefs' | 'phaseOrder'>) => Task;
+  updateStoreOnlyTask: (taskId: string, updates: Partial<Task>) => void;
+
+  // Decisions
+  recordDecision: (decision: Omit<Decision, 'id' | 'madeAt'>) => Decision;
+
+  // File index
   addFileToIndex: (meta: FileMeta) => void;
   removeFileFromIndex: (id: string) => void;
   updateFileInIndex: (id: string, updates: Partial<FileMeta>) => void;
   getFilesForTask: (taskId: string) => FileMeta[];
-
-  // Gap actions
-  addGap: (systemId: string, description: string, severity: GapSeverity) => Gap;
-  dismissGap: (gapId: string) => void;
-  convertGapToTask: (gapId: string, taskId: string) => void;
-
-  // Intelligence layer
-  recordDecision: (decision: Omit<Decision, 'id' | 'madeAt'>) => Decision;
-  setCarFact: (key: string, value: string, confirmedBy: CarFact['confirmedBy']) => CarFact;
-  addResearchNote: (note: Omit<ResearchNote, 'id' | 'addedAt'>) => ResearchNote;
-  addTaskDependency: (taskId: string, dependsOnTaskId: string, reason: string) => void;
-  removeTaskDependency: (taskId: string, dependsOnTaskId: string) => void;
-  getCarProfile: () => Record<string, string>;
-  getBlockingTasks: (taskId: string) => Task[];
-  getDependentTasks: (taskId: string) => Task[];
 
   // Agent
   addAgentMessage: (message: Omit<AgentMessage, 'id' | 'timestamp'>) => void;
@@ -115,29 +101,20 @@ interface RenovationActions {
   exportProgress: () => string;
   importProgress: (json: string) => void;
   resetAll: () => void;
-
-  // Computed selectors
-  getTasksForPhase: (phaseId: string) => Task[];
-  getPhaseCompletionPercent: (phaseId: string) => number;
-  getOverallCompletionPercent: () => number;
-  getNextTask: () => Task | undefined;
-  getTotalCostEstimated: () => number;
-  getTotalCostSpent: () => number;
-  getActiveGaps: () => Gap[];
 }
 
 type RenovationStore = RenovationState & RenovationActions;
 
 const initialState: RenovationState = {
-  appState: 'onboarding',
-  onboardingSystemsCompleted: [],
-  phases: [],
-  tasks: {},
-  gaps: [],
+  taskStatuses: {},
+  taskNotes: {},
+  taskActualCosts: {},
+  taskSteps: {},
+  taskGuides: {},
+  taskExtraParts: {},
+  purchasedPartIds: [],
+  storeOnlyTasks: {},
   decisions: [],
-  carFacts: [],
-  researchNotes: [],
-  taskDependencies: [],
   fileIndex: [],
   agentHistory: [],
   agentStreaming: false,
@@ -150,61 +127,120 @@ export const useRenovationStore = create<RenovationStore>()(
     (set, get) => ({
       ...initialState,
 
-      markSystemOnboarded: (systemId) =>
-        set((s) => ({
-          onboardingSystemsCompleted: s.onboardingSystemsCompleted.includes(systemId)
-            ? s.onboardingSystemsCompleted
-            : [...s.onboardingSystemsCompleted, systemId],
-        })),
+      // ─── Task delta ───────────────────────────────────────────────────
 
-      finishOnboarding: () => set({ appState: 'plan_built' }),
-
-      addPhase: (phaseData) => {
-        // Deduplicate: if a phase with the same name already exists, return it
-        const existing = get().phases.find(
-          (p) => p.name.trim().toLowerCase() === phaseData.name.trim().toLowerCase()
-        );
-        if (existing) return existing;
-
-        const phase: Phase = {
-          id: phaseData.id ?? `phase-${nanoid(6)}`,
-          taskIds: [],
-          ...phaseData,
-        };
-        set((s) => ({ phases: [...s.phases, phase] }));
-        return phase;
+      setTaskStatus: (taskId, status) => {
+        const prev = get().taskStatuses[taskId] ?? 'todo';
+        set((s) => ({ taskStatuses: { ...s.taskStatuses, [taskId]: status } }));
+        logChange({
+          type: 'task_status',
+          summary: `Task ${taskId}: ${prev} → ${status}`,
+          taskId,
+          prev,
+          next: status,
+        });
       },
 
-      updatePhase: (phaseId, updates) =>
+      completeTask: (taskId, actualCostILS) => {
+        const prev = get().taskStatuses[taskId] ?? 'todo';
         set((s) => ({
-          phases: s.phases.map((p) => (p.id === phaseId ? { ...p, ...updates } : p)),
-        })),
+          taskStatuses: { ...s.taskStatuses, [taskId]: 'done' },
+          ...(actualCostILS !== undefined
+            ? { taskActualCosts: { ...s.taskActualCosts, [taskId]: actualCostILS } }
+            : {}),
+        }));
+        logChange({
+          type: 'task_completed',
+          summary: `Completed task ${taskId}`,
+          taskId,
+          ...(actualCostILS !== undefined ? { actualCostILS } : {}),
+        });
+        scheduleBackgroundAnalysis();
+        triggerTaskCompletedAnalysis(taskId, taskId);
+      },
 
-      addTask: (taskData) => {
-        const phaseId = taskData.phaseId;
-        const state = get();
-        const phaseTasks = state.getTasksForPhase(phaseId);
+      addTaskNote: (taskId, note) => {
+        set((s) => {
+          const existing = s.taskNotes[taskId] ?? '';
+          const newNote = existing
+            ? `${existing}\n\n[${new Date().toLocaleDateString()}] ${note}`
+            : `[${new Date().toLocaleDateString()}] ${note}`;
+          return { taskNotes: { ...s.taskNotes, [taskId]: newNote } };
+        });
+        logChange({ type: 'note_added', summary: `Note on ${taskId}: ${note.slice(0, 80)}`, taskId });
+      },
+
+      updateTaskCost: (taskId, costILS) => {
+        set((s) => ({ taskActualCosts: { ...s.taskActualCosts, [taskId]: costILS } }));
+        logChange({ type: 'cost_updated', summary: `Cost for ${taskId} → ₪${costILS}`, taskId, costILS });
+      },
+
+      setTaskSteps: (taskId, steps) => {
+        set((s) => ({ taskSteps: { ...s.taskSteps, [taskId]: steps } }));
+      },
+
+      setTaskGuide: (taskId, guide) => {
+        set((s) => ({ taskGuides: { ...s.taskGuides, [taskId]: guide } }));
+      },
+
+      // ─── Parts ───────────────────────────────────────────────────────
+
+      addPartToTask: (taskId, partName, estimatedCostILS, partNumber, url, addedBy = 'agent') => {
+        const part: Part = {
+          id: nanoid(6),
+          name: partName,
+          estimatedCostILS,
+          partNumber,
+          purchased: false,
+          url,
+          addedBy,
+        };
+        const storeOnly = get().storeOnlyTasks[taskId];
+        if (storeOnly) {
+          // For storeOnly tasks: add part directly to the task
+          set((s) => ({
+            storeOnlyTasks: {
+              ...s.storeOnlyTasks,
+              [taskId]: { ...storeOnly, parts: [...storeOnly.parts, part] },
+            },
+          }));
+        } else {
+          // For plan tasks: add to taskExtraParts
+          set((s) => ({
+            taskExtraParts: {
+              ...s.taskExtraParts,
+              [taskId]: [...(s.taskExtraParts[taskId] ?? []), part],
+            },
+          }));
+        }
+      },
+
+      markPartPurchased: (partId) => {
+        // For plan parts: add to purchasedPartIds (overlay in useResolvedTasks)
+        // For storeOnly parts: also add to purchasedPartIds — hook checks it universally
+        set((s) => ({
+          purchasedPartIds: s.purchasedPartIds.includes(partId)
+            ? s.purchasedPartIds
+            : [...s.purchasedPartIds, partId],
+        }));
+      },
+
+      // ─── storeOnly tasks ──────────────────────────────────────────────
+
+      addStoreOnlyTask: (taskData) => {
         const task: Task = {
           id: `task-${nanoid(8)}`,
           parts: [],
           notes: '',
           manualRefs: [],
-          phaseOrder: phaseTasks.length,
+          phaseOrder: 999,
           dependsOnTaskIds: [],
           ...taskData,
         };
-        set((s) => {
-          const updatedPhases = s.phases.map((p) =>
-            p.id === phaseId ? { ...p, taskIds: [...p.taskIds, task.id] } : p
-          );
-          return {
-            tasks: { ...s.tasks, [task.id]: task },
-            phases: updatedPhases,
-          };
-        });
+        set((s) => ({ storeOnlyTasks: { ...s.storeOnlyTasks, [task.id]: task } }));
         logChange({
           type: 'task_added',
-          summary: `Added '${task.name}'`,
+          summary: `Added '${task.name}' via in-app agent`,
           taskId: task.id,
           addedBy: task.addedBy,
         });
@@ -212,164 +248,20 @@ export const useRenovationStore = create<RenovationStore>()(
         return task;
       },
 
-      updateTask: (taskId, updates) =>
-        set((s) => ({
-          tasks: { ...s.tasks, [taskId]: { ...s.tasks[taskId], ...updates } },
-        })),
-
-      completeTask: (taskId, actualCostILS) => {
-        const task = get().tasks[taskId];
-        set((s) => ({
-          tasks: {
-            ...s.tasks,
-            [taskId]: {
-              ...s.tasks[taskId],
-              status: 'done',
-              completedAt: new Date().toISOString(),
-              ...(actualCostILS !== undefined ? { actualCostILS } : {}),
+      updateStoreOnlyTask: (taskId, updates) => {
+        set((s) => {
+          const existing = s.storeOnlyTasks[taskId];
+          if (!existing) return s;
+          return {
+            storeOnlyTasks: {
+              ...s.storeOnlyTasks,
+              [taskId]: { ...existing, ...updates },
             },
-          },
-        }));
-        logChange({
-          type: 'task_completed',
-          summary: `Completed '${task?.name ?? taskId}'`,
-          taskId,
-          ...(actualCostILS !== undefined ? { actualCostILS } : {}),
-        });
-        scheduleBackgroundAnalysis();
-        // Proactive: check what just got unblocked by this completion
-        if (task) {
-          triggerTaskCompletedAnalysis(taskId, task.name);
-        }
-      },
-
-      setTaskStatus: (taskId, status) => {
-        const task = get().tasks[taskId];
-        const prevStatus = task?.status;
-        set((s) => ({
-          tasks: { ...s.tasks, [taskId]: { ...s.tasks[taskId], status } },
-        }));
-        if (task) {
-          logChange({
-            type: 'task_status',
-            summary: `'${task.name}' ${prevStatus} → ${status}`,
-            taskId,
-            prev: prevStatus,
-            next: status,
-          });
-        }
-      },
-
-      addTaskNote: (taskId, note) => {
-        const task = get().tasks[taskId];
-        if (!task) return;
-        set((s) => {
-          const existing = s.tasks[taskId].notes;
-          const newNote = existing
-            ? `${existing}\n\n[${new Date().toLocaleDateString()}] ${note}`
-            : `[${new Date().toLocaleDateString()}] ${note}`;
-          return { tasks: { ...s.tasks, [taskId]: { ...s.tasks[taskId], notes: newNote } } };
-        });
-        logChange({
-          type: 'note_added',
-          summary: `Note on '${task.name}': ${note.slice(0, 80)}`,
-          taskId,
+          };
         });
       },
 
-      updateTaskCost: (taskId, costILS) => {
-        const task = get().tasks[taskId];
-        set((s) => ({
-          tasks: { ...s.tasks, [taskId]: { ...s.tasks[taskId], estimatedCostILS: costILS } },
-        }));
-        logChange({
-          type: 'cost_updated',
-          summary: `Cost for '${task?.name ?? taskId}' → ₪${costILS}`,
-          taskId,
-          costILS,
-        });
-      },
-
-      addPartToTask: (taskId, partName, estimatedCostILS, partNumber, url?, addedBy?: 'agent' | 'user') =>
-        set((s) => {
-          const task = s.tasks[taskId];
-          if (!task) return s;
-          const part = { id: nanoid(6), name: partName, estimatedCostILS, partNumber, purchased: false, url, addedBy };
-          return { tasks: { ...s.tasks, [taskId]: { ...task, parts: [...task.parts, part] } } };
-        }),
-
-      markPartPurchased: (taskId, partId) =>
-        set((s) => {
-          const task = s.tasks[taskId];
-          if (!task) return s;
-          const parts = task.parts.map((p) => (p.id === partId ? { ...p, purchased: true } : p));
-          return { tasks: { ...s.tasks, [taskId]: { ...task, parts } } };
-        }),
-
-      removeTask: (taskId) => {
-        const taskName = get().tasks[taskId]?.name ?? taskId;
-        set((s) => {
-          const task = s.tasks[taskId];
-          if (!task) return s;
-          const { [taskId]: _, ...remainingTasks } = s.tasks;
-          const updatedPhases = s.phases.map((p) =>
-            p.id === task.phaseId ? { ...p, taskIds: p.taskIds.filter((id) => id !== taskId) } : p
-          );
-          const updatedDeps = s.taskDependencies.filter(
-            (d) => d.taskId !== taskId && d.dependsOnTaskId !== taskId
-          );
-          return { tasks: remainingTasks, phases: updatedPhases, taskDependencies: updatedDeps };
-        });
-        logChange({ type: 'task_removed', summary: `Removed '${taskName}'`, taskId });
-      },
-
-      moveTask: (taskId, newPhaseId, newOrder) =>
-        set((s) => {
-          const task = s.tasks[taskId];
-          if (!task) return s;
-          const oldPhaseId = task.phaseId;
-          const phaseTasks = Object.values(s.tasks).filter((t) => t.phaseId === newPhaseId);
-          const updatedTask = { ...task, phaseId: newPhaseId, phaseOrder: newOrder ?? phaseTasks.length };
-          const updatedPhases = s.phases.map((p) => {
-            if (p.id === oldPhaseId) return { ...p, taskIds: p.taskIds.filter((id) => id !== taskId) };
-            if (p.id === newPhaseId) return { ...p, taskIds: [...p.taskIds, taskId] };
-            return p;
-          });
-          return { tasks: { ...s.tasks, [taskId]: updatedTask }, phases: updatedPhases };
-        }),
-
-      // ─── File index actions ───────────────────────────────────────────
-      addFileToIndex: (meta) =>
-        set((s) => ({ fileIndex: [...s.fileIndex, meta] })),
-
-      removeFileFromIndex: (id) =>
-        set((s) => ({ fileIndex: s.fileIndex.filter((f) => f.id !== id) })),
-
-      updateFileInIndex: (id, updates) =>
-        set((s) => ({
-          fileIndex: s.fileIndex.map((f) => (f.id === id ? { ...f, ...updates } : f)),
-        })),
-
-      getFilesForTask: (taskId) =>
-        get().fileIndex.filter((f) => f.taskId === taskId),
-
-      // ─── Gap actions ─────────────────────────────────────────────────
-
-      addGap: (systemId, description, severity) => {
-        const gap: Gap = { id: nanoid(6), systemId, description, severity, dismissed: false };
-        set((s) => ({ gaps: [...s.gaps, gap] }));
-        return gap;
-      },
-
-      dismissGap: (gapId) =>
-        set((s) => ({ gaps: s.gaps.map((g) => (g.id === gapId ? { ...g, dismissed: true } : g)) })),
-
-      convertGapToTask: (gapId, taskId) =>
-        set((s) => ({
-          gaps: s.gaps.map((g) => (g.id === gapId ? { ...g, convertedToTaskId: taskId, dismissed: true } : g)),
-        })),
-
-      // ─── Intelligence layer ───────────────────────────────────────────
+      // ─── Decisions ────────────────────────────────────────────────────
 
       recordDecision: (decisionData) => {
         const decision: Decision = {
@@ -387,69 +279,21 @@ export const useRenovationStore = create<RenovationStore>()(
         return decision;
       },
 
-      setCarFact: (key, value, confirmedBy) => {
-        const existing = get().carFacts.find((f) => f.key === key);
-        if (existing) {
-          const updated: CarFact = { ...existing, value, confirmedBy, updatedAt: new Date().toISOString() };
-          set((s) => ({
-            carFacts: s.carFacts.map((f) => (f.key === key ? updated : f)),
-          }));
-          return updated;
-        }
-        const fact: CarFact = {
-          id: nanoid(6),
-          key,
-          value,
-          confirmedBy,
-          updatedAt: new Date().toISOString(),
-        };
-        set((s) => ({ carFacts: [...s.carFacts, fact] }));
-        return fact;
-      },
+      // ─── File index ───────────────────────────────────────────────────
 
-      addResearchNote: (noteData) => {
-        const note: ResearchNote = {
-          id: nanoid(8),
-          addedAt: new Date().toISOString(),
-          ...noteData,
-        };
-        set((s) => ({ researchNotes: [...s.researchNotes, note] }));
-        return note;
-      },
+      addFileToIndex: (meta) =>
+        set((s) => ({ fileIndex: [...s.fileIndex, meta] })),
 
-      addTaskDependency: (taskId, dependsOnTaskId, reason) => {
-        const existing = get().taskDependencies.find(
-          (d) => d.taskId === taskId && d.dependsOnTaskId === dependsOnTaskId
-        );
-        if (existing) return;
+      removeFileFromIndex: (id) =>
+        set((s) => ({ fileIndex: s.fileIndex.filter((f) => f.id !== id) })),
+
+      updateFileInIndex: (id, updates) =>
         set((s) => ({
-          taskDependencies: [...s.taskDependencies, { taskId, dependsOnTaskId, reason }],
-        }));
-      },
-
-      removeTaskDependency: (taskId, dependsOnTaskId) =>
-        set((s) => ({
-          taskDependencies: s.taskDependencies.filter(
-            (d) => !(d.taskId === taskId && d.dependsOnTaskId === dependsOnTaskId)
-          ),
+          fileIndex: s.fileIndex.map((f) => (f.id === id ? { ...f, ...updates } : f)),
         })),
 
-      getCarProfile: () => {
-        const facts = get().carFacts;
-        return facts.reduce((acc, f) => ({ ...acc, [f.key]: f.value }), {} as Record<string, string>);
-      },
-
-      getBlockingTasks: (taskId) => {
-        const { taskDependencies, tasks } = get();
-        const deps = taskDependencies.filter((d) => d.taskId === taskId);
-        return deps.map((d) => tasks[d.dependsOnTaskId]).filter(Boolean) as Task[];
-      },
-
-      getDependentTasks: (taskId) => {
-        const { taskDependencies, tasks } = get();
-        const deps = taskDependencies.filter((d) => d.dependsOnTaskId === taskId);
-        return deps.map((d) => tasks[d.taskId]).filter(Boolean) as Task[];
-      },
+      getFilesForTask: (taskId) =>
+        get().fileIndex.filter((f) => f.taskId === taskId),
 
       // ─── Agent ───────────────────────────────────────────────────────
 
@@ -464,7 +308,11 @@ export const useRenovationStore = create<RenovationStore>()(
         set((s) => {
           if (s.agentHistory.length === 0) return s;
           const history = [...s.agentHistory];
-          history[history.length - 1] = { ...history[history.length - 1], content, ...(toolCalls ? { toolCalls } : {}) };
+          history[history.length - 1] = {
+            ...history[history.length - 1],
+            content,
+            ...(toolCalls ? { toolCalls } : {}),
+          };
           return { agentHistory: history };
         }),
 
@@ -481,21 +329,25 @@ export const useRenovationStore = create<RenovationStore>()(
           ],
         })),
 
+      // ─── UI ──────────────────────────────────────────────────────────
+
       setActiveTask: (taskId) => set({ activeTaskId: taskId }),
       setActivePhase: (phaseId) => set({ activePhaseId: phaseId }),
+
+      // ─── Persistence ─────────────────────────────────────────────────
 
       exportProgress: () => {
         const s = get();
         return JSON.stringify({
-          appState: s.appState,
-          onboardingSystemsCompleted: s.onboardingSystemsCompleted,
-          phases: s.phases,
-          tasks: s.tasks,
-          gaps: s.gaps,
+          taskStatuses: s.taskStatuses,
+          taskNotes: s.taskNotes,
+          taskActualCosts: s.taskActualCosts,
+          taskSteps: s.taskSteps,
+          taskGuides: s.taskGuides,
+          taskExtraParts: s.taskExtraParts,
+          purchasedPartIds: s.purchasedPartIds,
+          storeOnlyTasks: s.storeOnlyTasks,
           decisions: s.decisions,
-          carFacts: s.carFacts,
-          researchNotes: s.researchNotes,
-          taskDependencies: s.taskDependencies,
           agentHistory: s.agentHistory,
         }, null, 2);
       },
@@ -504,15 +356,15 @@ export const useRenovationStore = create<RenovationStore>()(
         try {
           const data = JSON.parse(json);
           set({
-            appState: data.appState,
-            onboardingSystemsCompleted: data.onboardingSystemsCompleted ?? [],
-            phases: data.phases ?? [],
-            tasks: data.tasks ?? {},
-            gaps: data.gaps ?? [],
+            taskStatuses: data.taskStatuses ?? {},
+            taskNotes: data.taskNotes ?? {},
+            taskActualCosts: data.taskActualCosts ?? {},
+            taskSteps: data.taskSteps ?? {},
+            taskGuides: data.taskGuides ?? {},
+            taskExtraParts: data.taskExtraParts ?? {},
+            purchasedPartIds: data.purchasedPartIds ?? [],
+            storeOnlyTasks: data.storeOnlyTasks ?? {},
             decisions: data.decisions ?? [],
-            carFacts: data.carFacts ?? [],
-            researchNotes: data.researchNotes ?? [],
-            taskDependencies: data.taskDependencies ?? [],
             agentHistory: data.agentHistory ?? [],
           });
         } catch (e) {
@@ -521,85 +373,57 @@ export const useRenovationStore = create<RenovationStore>()(
       },
 
       resetAll: () => set({ ...initialState }),
-
-      getTasksForPhase: (phaseId) => {
-        const s = get();
-        const phase = s.phases.find((p) => p.id === phaseId);
-        if (!phase) return [];
-        return phase.taskIds.map((id) => s.tasks[id]).filter(Boolean).sort((a, b) => a.phaseOrder - b.phaseOrder) as Task[];
-      },
-
-      getPhaseCompletionPercent: (phaseId) => {
-        const s = get();
-        const tasks = s.getTasksForPhase(phaseId);
-        if (tasks.length === 0) return 0;
-        const done = tasks.filter((t) => t.status === 'done' || t.status === 'skipped').length;
-        return Math.round((done / tasks.length) * 100);
-      },
-
-      getOverallCompletionPercent: () => {
-        const s = get();
-        const allTasks = Object.values(s.tasks);
-        if (allTasks.length === 0) return 0;
-        const done = allTasks.filter((t) => t.status === 'done' || t.status === 'skipped').length;
-        return Math.round((done / allTasks.length) * 100);
-      },
-
-      getNextTask: () => {
-        const s = get();
-        for (const phase of [...s.phases].sort((a, b) => a.order - b.order)) {
-          const tasks = s.getTasksForPhase(phase.id);
-          const pending = tasks.find((t) => t.status !== 'done' && t.status !== 'skipped');
-          if (pending) return pending;
-        }
-        return undefined;
-      },
-
-      getTotalCostEstimated: () => {
-        const s = get();
-        return Object.values(s.tasks).reduce((sum, t) => sum + (t.estimatedCostILS ?? 0), 0);
-      },
-
-      getTotalCostSpent: () => {
-        const s = get();
-        return Object.values(s.tasks).reduce((sum, t) => sum + (t.actualCostILS ?? 0), 0);
-      },
-
-      getActiveGaps: () => get().gaps.filter((g) => !g.dismissed),
     }),
     {
       name: 'jeep-renovation-planner',
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => fileBackedStorage),
-      migrate: (persistedState: unknown) => {
-        // v2 migration: deduplicate phases by name, merging taskIds from duplicates
-        const s = persistedState as { phases?: Phase[] };
-        if (s.phases && s.phases.length > 0) {
-          const seen = new Map<string, Phase>();
-          for (const phase of s.phases) {
-            const key = phase.name.trim().toLowerCase();
-            if (seen.has(key)) {
-              const existing = seen.get(key)!;
-              seen.set(key, { ...existing, taskIds: [...new Set([...existing.taskIds, ...phase.taskIds])] });
-            } else {
-              seen.set(key, phase);
+      migrate: (persistedState: unknown, version: number) => {
+        if (version < 3) {
+          // Rescue runtime delta from old v1/v2 store that had full tasks/phases
+          const old = persistedState as {
+            tasks?: Record<string, { status?: string; notes?: string; actualCostILS?: number }>;
+            agentHistory?: AgentMessage[];
+            decisions?: Decision[];
+          };
+          const taskStatuses: Record<string, TaskStatus> = {};
+          const taskNotes: Record<string, string> = {};
+          const taskActualCosts: Record<string, number> = {};
+          if (old.tasks) {
+            for (const [id, t] of Object.entries(old.tasks)) {
+              if (t.status && t.status !== 'todo') taskStatuses[id] = t.status as TaskStatus;
+              if (t.notes) taskNotes[id] = t.notes;
+              if (t.actualCostILS) taskActualCosts[id] = t.actualCostILS;
             }
           }
-          s.phases = [...seen.values()];
+          return {
+            taskStatuses,
+            taskNotes,
+            taskActualCosts,
+            taskSteps: {},
+            taskGuides: {},
+            taskExtraParts: {},
+            purchasedPartIds: [],
+            storeOnlyTasks: {},
+            decisions: old.decisions ?? [],
+            agentHistory: old.agentHistory ?? [],
+            fileIndex: [],
+          };
         }
-        return s;
+        return persistedState;
       },
       partialize: (state) => ({
-        appState: state.appState,
-        onboardingSystemsCompleted: state.onboardingSystemsCompleted,
-        phases: state.phases,
-        tasks: state.tasks,
-        gaps: state.gaps,
+        taskStatuses: state.taskStatuses,
+        taskNotes: state.taskNotes,
+        taskActualCosts: state.taskActualCosts,
+        taskSteps: state.taskSteps,
+        taskGuides: state.taskGuides,
+        taskExtraParts: state.taskExtraParts,
+        purchasedPartIds: state.purchasedPartIds,
+        storeOnlyTasks: state.storeOnlyTasks,
         decisions: state.decisions,
-        carFacts: state.carFacts,
-        researchNotes: state.researchNotes,
-        taskDependencies: state.taskDependencies,
         agentHistory: state.agentHistory,
+        fileIndex: state.fileIndex,
       }),
     }
   )

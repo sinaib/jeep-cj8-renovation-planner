@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { useRenovationStore } from './store/useRenovationStore';
+import { useResolvedTasks, useResolvedPhases } from './hooks/usePlanData';
 import { TopBar } from './components/layout/TopBar';
 import { JourneyStrip } from './components/layout/JourneyStrip';
 import { PlanContent, type PlanContentHandle } from './components/plan/PlanContent';
@@ -7,20 +7,23 @@ import { TaskDetailView } from './components/tasks/TaskDetailView';
 import { AgentBar, type AgentBarHandle } from './components/agent/AgentBar';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
+import { UserGuidePage } from './pages/UserGuidePage';
+import { ProjectOverviewPage } from './pages/ProjectOverviewPage';
 import { maybeRunWeeklyCheck } from './ai/agentBackground';
-import { buildSeedData } from './data/seed';
 import type { Task } from './types';
 import './styles/globals.css';
+
+type PageView = 'plan' | 'guide' | 'overview';
 
 function AppShell() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pageView, setPageView] = useState<PageView>('plan');
   const planRef = useRef<PlanContentHandle>(null);
   const agentBarRef = useRef<AgentBarHandle>(null);
 
-  const rawPhases = useRenovationStore((s) => s.phases);
-  const phases = useMemo(() => rawPhases, [rawPhases]);
-  const allTasks = useRenovationStore((s) => s.tasks);
+  const phases = useResolvedPhases();
+  const allTasks = useResolvedTasks();
 
   const selectedPhase = useMemo(
     () => selectedTask ? (phases.find((p) => p.id === selectedTask.phaseId) ?? null) : null,
@@ -58,7 +61,12 @@ function AppShell() {
       overflow: 'hidden',
     }}>
       {/* Top bar — full width */}
-      <TopBar onSettingsOpen={() => setSettingsOpen(true)} onCriticalClick={handleCriticalClick} />
+      <TopBar
+        onSettingsOpen={() => setSettingsOpen(true)}
+        onCriticalClick={handleCriticalClick}
+        onGuideOpen={() => setPageView('guide')}
+        onOverviewOpen={() => setPageView('overview')}
+      />
 
       {/* Two-column body */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
@@ -71,12 +79,18 @@ function AppShell() {
           borderRight: '2px solid var(--border)',
           overflow: 'hidden',
         }}>
-          <JourneyStrip
-            scrollToPhase={handleScrollToPhase}
-            activePhaseId={activePhaseId}
-          />
+          {pageView === 'plan' && (
+            <JourneyStrip
+              scrollToPhase={handleScrollToPhase}
+              activePhaseId={activePhaseId}
+            />
+          )}
           <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
-            {selectedTask ? (
+            {pageView === 'guide' ? (
+              <UserGuidePage onClose={() => setPageView('plan')} />
+            ) : pageView === 'overview' ? (
+              <ProjectOverviewPage onClose={() => setPageView('plan')} />
+            ) : selectedTask ? (
               <TaskDetailView
                 task={selectedTask}
                 onBack={() => setSelectedTask(null)}
@@ -107,30 +121,9 @@ function AppShell() {
 }
 
 export default function App() {
-  const phases = useRenovationStore((s) => s.phases);
-
-  // Seed store from plan.ts when empty or when old-format data lacks our plan IDs
   useEffect(() => {
-    const hasOurPlan = phases.some((p) => p.id === 'phase-1' || p.id === 'phase-2');
-    if (phases.length === 0 || !hasOurPlan) {
-      const { phases: seedPhases, tasks: seedTasks, taskDependencies, decisions } = buildSeedData();
-      useRenovationStore.setState({
-        appState: 'plan_built',
-        phases: seedPhases,
-        tasks: seedTasks,
-        taskDependencies,
-        decisions,
-      });
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const appState = useRenovationStore((s) => s.appState);
-
-  useEffect(() => {
-    if (appState === 'plan_built' || appState === 'in_progress') {
-      maybeRunWeeklyCheck();
-    }
-  }, [appState]);
+    maybeRunWeeklyCheck();
+  }, []);
 
   return (
     <ErrorBoundary>

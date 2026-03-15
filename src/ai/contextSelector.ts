@@ -10,22 +10,99 @@
  *   - Cost question? → cost summary, no notes or steps
  *   - General question? → compressed plan (names + statuses, no notes)
  *
- * Car facts, recent decisions, and active gaps are always included
- * (they're small and always relevant).
- *
- * Research notes are included only when they match the query topic
- * or the focused task.
+ * Build decisions (decisions.ts) and recent runtime decisions are always
+ * included — they're small and always relevant.
  *
  * This typically reduces dynamic context by 50–80% vs. sending the
  * full plan on every request.
  */
 
 import { useRenovationStore } from '../store/useRenovationStore';
-import type { Phase, Task, TaskDependency } from '../types';
+import { phases as planPhases, tasks as planTasks, taskDependencies as planDeps } from '../data/plan';
+import { decisions as buildDecisions } from '../data/decisions';
+import { car } from '../data/car';
+import type { Phase, Task, TaskDependency, TaskStatus, Part } from '../types';
+
+// ─── Non-hook snapshot merge ──────────────────────────────────────────────────
+// Used in non-React contexts (agentTools, agentBackground, contextSelector).
+
+export function getResolvedTasksSnapshot(): Record<string, Task> {
+  const store = useRenovationStore.getState();
+  const { taskStatuses, taskNotes, taskActualCosts, taskSteps, taskGuides, taskExtraParts, purchasedPartIds, storeOnlyTasks } = store;
+  const purchasedSet = new Set(purchasedPartIds);
+  const resolved: Record<string, Task> = {};
+
+  for (const [id, pt] of Object.entries(planTasks)) {
+    const phase = planPhases.find((p) => p.id === pt.phaseId);
+    const phaseOrder = phase ? phase.taskIds.indexOf(id) : 0;
+    const baseParts: Part[] = pt.parts.map((pp) => {
+      const partId = `${id}:${pp.name}`;
+      return {
+        id: partId,
+        name: pp.name,
+        estimatedCostILS: pp.status === 'on-hand' ? 0 : (pp.estimatedCostILS ?? 0),
+        supplier: pp.source,
+        purchased: purchasedSet.has(partId) || pp.status === 'on-hand' || pp.status === 'installed',
+        addedBy: 'agent' as const,
+      };
+    });
+    const extraParts = (taskExtraParts[id] ?? []).map((p) =>
+      purchasedSet.has(p.id) ? { ...p, purchased: true } : p
+    );
+
+    resolved[id] = {
+      id,
+      name: pt.name,
+      systemId: pt.systemId,
+      phaseId: pt.phaseId,
+      phaseOrder,
+      status: (taskStatuses[id] ?? pt.status ?? 'todo') as TaskStatus,
+      priority: pt.priority,
+      estimatedCostILS: pt.estimatedCostILS,
+      actualCostILS: taskActualCosts[id],
+      parts: [...baseParts, ...extraParts],
+      notes: taskNotes[id] ?? pt.notes ?? '',
+      manualRefs: [],
+      addedBy: 'agent',
+      completedAt: pt.completedAt,
+      dependsOnTaskIds: pt.dependsOn ?? [],
+      steps: taskSteps[id] ?? pt.steps,
+      guide: taskGuides[id] ?? pt.guide,
+    };
+  }
+
+  for (const [id, t] of Object.entries(storeOnlyTasks)) {
+    resolved[id] = t;
+  }
+
+  return resolved;
+}
+
+export function getResolvedPhasesSnapshot(): Phase[] {
+  const storeOnlyTasks = useRenovationStore.getState().storeOnlyTasks;
+  return planPhases.map((phase) => {
+    const extraTaskIds = Object.values(storeOnlyTasks)
+      .filter((t) => t.phaseId === phase.id)
+      .map((t) => t.id);
+    return extraTaskIds.length > 0
+      ? { ...phase, taskIds: [...phase.taskIds, ...extraTaskIds] }
+      : phase;
+  });
+}
+
+export function getTaskDependenciesSnapshot(): TaskDependency[] {
+  const storeOnlyTasks = useRenovationStore.getState().storeOnlyTasks;
+  const storeOnlyDeps: TaskDependency[] = Object.values(storeOnlyTasks).flatMap((t) =>
+    (t.dependsOnTaskIds ?? []).map((depId) => ({
+      taskId: t.id,
+      dependsOnTaskId: depId,
+      reason: 'required sequence' as const,
+    }))
+  );
+  return [...planDeps, ...storeOnlyDeps];
+}
 
 // ─── System keyword map ────────────────────────────────────────────────────────
-// Maps logical system names → keywords that might appear in a query.
-// Used to detect which vehicle systems a query is about.
 
 const SYSTEM_KEYWORDS: Record<string, string[]> = {
   engine:       ['engine', 'motor', 'amc', 'iron duke', '2.5', '4.2', 'carb', 'carburetor',
@@ -58,52 +135,42 @@ export function detectRelevantSystems(query: string): string[] {
 
 // ─── Main context builder ──────────────────────────────────────────────────────
 
-/**
- * Build the dynamic part of the system prompt, selecting only what's
- * relevant to this specific query.
- *
- * @param query       The user's message text
- * @param opts.taskId If the user is viewing a specific task
- * @param opts.phaseId If the user is viewing a specific phase
- */
 export function buildDynamicContext(
   query: string,
   opts?: { taskId?: string; phaseId?: string },
 ): string {
-  const store = useRenovationStore.getState();
-  const { phases, tasks, gaps, appState, decisions, carFacts, researchNotes, taskDependencies } = store;
+  const tasks = getResolvedTasksSnapshot();
+  const phases = getResolvedPhasesSnapshot();
+  const taskDependencies = getTaskDependenciesSnapshot();
+  const decisions = useRenovationStore.getState().decisions;
 
   const q = query.toLowerCase();
   const relevantSystems = detectRelevantSystems(query);
   const isCostQuery = /cost|budget|price|₪|money|spend|expensive|cheap|afford/.test(q);
 
-  // ── Car profile (always — small, always relevant) ────────────────────────
-  const carProfile = carFacts.length === 0
-    ? '  No facts recorded yet.'
-    : carFacts
-        .sort((a, b) => a.key.localeCompare(b.key))
-        .map((f) => `  ${f.key}: ${f.value} [by: ${f.confirmedBy}]`)
-        .join('\n');
+  // ── Car profile (from car.ts — always relevant) ──────────────────────────
+  const v = car.vehicle;
+  const carProfile = [
+    `  ${v.year} ${v.make} ${v.model}`,
+    `  Engine: ${v.engine}`,
+    `  Transmission: ${v.transmission} | Transfer: ${v.transferCase}`,
+    `  Axles: front ${v.frontAxle} / rear ${v.rearAxle}`,
+    `  Status: ${car.overallStatus}`,
+  ].join('\n');
 
-  // ── Recent decisions (last 5, always) ────────────────────────────────────
-  const recentDecisions = decisions.length === 0
-    ? '  None recorded.'
+  // ── Build decisions (strategic, from decisions.ts — always included) ──────
+  const buildDecisionLines = buildDecisions
+    .slice(-8)
+    .map((d) => `  [${d.category.toUpperCase()}] ${d.title} — ${d.decision}`)
+    .join('\n') || '  None.';
+
+  // ── Runtime decisions (from store — agent-recorded during session) ────────
+  const runtimeDecisionLines = decisions.length === 0
+    ? '  None recorded this session.'
     : decisions
         .slice(-5)
         .map((d) => `  [${d.category.toUpperCase()}] ${d.summary}${d.rationale ? ` — ${d.rationale}` : ''}`)
         .join('\n');
-
-  // ── Research notes (only if relevant to query or focused task) ───────────
-  const relevantNotes = researchNotes.filter((n) => {
-    if (opts?.taskId && n.relevantTaskIds?.includes(opts.taskId)) return true;
-    if (relevantSystems.some((s) => n.topic.toLowerCase().includes(s))) return true;
-    return false;
-  }).slice(-6);
-  const notesSection = relevantNotes.length > 0
-    ? `\n## RELEVANT RESEARCH\n${relevantNotes.map((n) =>
-        `  [${n.topic}] ${n.finding}${n.source ? ` (${n.source})` : ''}`
-      ).join('\n')}\n`
-    : '';
 
   // ── Plan section (smart selection) ───────────────────────────────────────
   let planSection: string;
@@ -142,12 +209,6 @@ export function buildDynamicContext(
     planSection = buildCompressedPlan(phases, tasks);
   }
 
-  // ── Active gaps (always — important for awareness) ────────────────────────
-  const activeGaps = gaps.filter((g) => !g.dismissed);
-  const gapLines = activeGaps.length === 0
-    ? '  None'
-    : activeGaps.map((g) => `  [${g.severity.toUpperCase()}] ${g.description}`).join('\n');
-
   // ── Phase & task IDs (always — needed for tool calls) ─────────────────────
   const phaseIds = phases
     .sort((a, b) => a.order - b.order)
@@ -161,19 +222,17 @@ export function buildDynamicContext(
     .join('\n') || '  (none)';
   const taskIdExtra = allTasks.length > 50 ? `\n  ...and ${allTasks.length - 50} more` : '';
 
-  return `## APP STATE: ${appState.toUpperCase()}
-
-## CAR PROFILE
+  return `## CAR PROFILE
 ${carProfile}
 
-## RECENT DECISIONS
-${recentDecisions}
-${notesSection}
+## BUILD DECISIONS (strategic — set by Claude Code)
+${buildDecisionLines}
+
+## RUNTIME DECISIONS (this session)
+${runtimeDecisionLines}
+
 ## PLAN
 ${planSection}
-
-## ACTIVE GAPS
-${gapLines}
 
 ## PHASE & TASK IDs (for tool calls)
 Phases:
@@ -184,7 +243,6 @@ ${taskIdLines}${taskIdExtra}`;
 
 // ─── Plan section builders ─────────────────────────────────────────────────────
 
-/** Full detail for a specific task + compressed sibling view. */
 function buildFocusedTaskContext(
   taskId: string,
   tasks: Record<string, Task>,
@@ -206,7 +264,7 @@ function buildFocusedTaskContext(
     : '';
 
   const steps = (task.steps ?? []).length > 0
-    ? `\n  STEPS:\n${task.steps.map((s, i) => `    ${i + 1}. ${s}`).join('\n')}`
+    ? `\n  STEPS:\n${task.steps!.map((s, i) => `    ${i + 1}. ${s}`).join('\n')}`
     : '';
 
   const notes = task.notes ? `\n  NOTES: ${task.notes.slice(-300)}` : '';
@@ -224,7 +282,7 @@ function buildFocusedTaskContext(
       .filter((id) => id !== task.id)
       .map((id) => tasks[id])
       .filter(Boolean)
-      .map((t) => `  [${t.id}] [${t.status}] ${t.name}`);
+      .map((t) => `  [${t!.id}] [${t!.status}] ${t!.name}`);
     if (siblings.length > 0) {
       result += `\n\nSIBLING TASKS IN ${phase.name.toUpperCase()}:\n${siblings.join('\n')}`;
     }
@@ -233,13 +291,12 @@ function buildFocusedTaskContext(
   return result;
 }
 
-/** Full task list for a specific phase with dependencies. */
 function buildPhaseContext(
   phase: Phase,
   tasks: Record<string, Task>,
   taskDependencies: TaskDependency[],
 ): string {
-  const phaseTasks = phase.taskIds.map((id) => tasks[id]).filter(Boolean);
+  const phaseTasks = phase.taskIds.map((id) => tasks[id]).filter(Boolean) as Task[];
   const done = phaseTasks.filter((t) => t.status === 'done').length;
 
   const lines = phaseTasks.map((t) => {
@@ -253,7 +310,6 @@ function buildPhaseContext(
   return `PHASE: ${phase.name} — ${phase.subtitle}\n${done}/${phaseTasks.length} done\n\n${lines.join('\n') || '  (no tasks)'}`;
 }
 
-/** Compressed plan: names + statuses + priorities only, no notes/steps/parts. */
 function buildCompressedPlan(
   phases: Phase[],
   tasks: Record<string, Task>,
@@ -262,7 +318,7 @@ function buildCompressedPlan(
   return phases
     .sort((a, b) => a.order - b.order)
     .map((p) => {
-      const phaseTasks = p.taskIds.map((id) => tasks[id]).filter(Boolean);
+      const phaseTasks = p.taskIds.map((id) => tasks[id]).filter(Boolean) as Task[];
       const done = phaseTasks.filter((t) => t.status === 'done').length;
       const active = phaseTasks.filter((t) => t.status === 'active').length;
       const lines = phaseTasks.map((t) =>
@@ -273,7 +329,6 @@ function buildCompressedPlan(
     .join('\n\n');
 }
 
-/** Cost-focused summary: totals per phase with individual task costs. */
 function buildCostSummary(
   phases: Phase[],
   tasks: Record<string, Task>,
@@ -285,7 +340,7 @@ function buildCostSummary(
   const phaseLines = phases
     .sort((a, b) => a.order - b.order)
     .map((p) => {
-      const pts = p.taskIds.map((id) => tasks[id]).filter(Boolean);
+      const pts = p.taskIds.map((id) => tasks[id]).filter(Boolean) as Task[];
       const phaseEst = pts.reduce((s, t) => s + (t.estimatedCostILS ?? 0), 0);
       const phaseSpent = pts.reduce((s, t) => s + (t.actualCostILS ?? 0), 0);
       const taskCosts = pts

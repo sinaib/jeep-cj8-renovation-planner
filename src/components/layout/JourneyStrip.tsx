@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useRenovationStore } from '../../store/useRenovationStore';
+import { useResolvedPhases, useResolvedTasks } from '../../hooks/usePlanData';
 
 interface JourneyStripProps {
   scrollToPhase: (phaseId: string) => void;
@@ -8,8 +8,8 @@ interface JourneyStripProps {
 }
 
 export function JourneyStrip({ scrollToPhase, activePhaseId }: JourneyStripProps) {
-  const rawPhases = useRenovationStore((s) => s.phases);
-  const tasks = useRenovationStore((s) => s.tasks);
+  const rawPhases = useResolvedPhases();
+  const tasks = useResolvedTasks();
 
   const phases = useMemo(
     () => [...rawPhases].sort((a, b) => a.order - b.order),

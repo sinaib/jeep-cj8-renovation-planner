@@ -1,5 +1,11 @@
 import { useRenovationStore } from '../store/useRenovationStore';
-import type { GapSeverity, Priority, TaskStatus } from '../types';
+import { phases as planPhases, tasks as planTasks, taskDependencies as planDeps } from '../data/plan';
+import {
+  getResolvedTasksSnapshot,
+  getResolvedPhasesSnapshot,
+  getTaskDependenciesSnapshot,
+} from './contextSelector';
+import type { Priority, TaskStatus } from '../types';
 
 // Tool definitions sent to Claude
 export const AGENT_TOOL_DEFINITIONS = [
@@ -26,81 +32,16 @@ export const AGENT_TOOL_DEFINITIONS = [
       required: ['query'],
     },
   },
-  {
-    name: 'add_research_note',
-    description: 'Store a research finding that is relevant to this project. Use after web searches or when drawing on specific technical knowledge that should be remembered and referenced later.',
-    input_schema: {
-      type: 'object',
-      properties: {
-        topic: { type: 'string', description: 'Short topic label, e.g. "AMC 258 head gasket failure modes"' },
-        finding: { type: 'string', description: 'The actual finding, insight, or data point' },
-        source: { type: 'string', description: 'URL, forum name, manual reference, or "agent knowledge"' },
-      },
-      required: ['topic', 'finding'],
-    },
-  },
 
-  // ─── Car profile tools ───────────────────────────────────────────────────
-  {
-    name: 'set_car_fact',
-    description: 'Record a fact about this specific car or project. Call this throughout the conversation as you learn things. Keys should be descriptive snake_case strings.',
-    input_schema: {
-      type: 'object',
-      properties: {
-        key: {
-          type: 'string',
-          description: 'Fact category, e.g.: engine_condition, mileage, history, body_rust, electrical_state, goals, budget, diy_skills, tools_available, location, transmission_type, engine_variant, last_driven, known_issues, usage_intent',
-        },
-        value: { type: 'string', description: 'The fact value in plain language' },
-        confirmedBy: { type: 'string', enum: ['user', 'agent', 'inspection'] },
-      },
-      required: ['key', 'value', 'confirmedBy'],
-    },
-  },
-
-  // ─── Decision tools ──────────────────────────────────────────────────────
-  {
-    name: 'record_decision',
-    description: 'Record an important project decision. Use whenever the user commits to an approach, priority level, budget constraint, scope choice, timeline, or any decision that should be remembered and influence future planning.',
-    input_schema: {
-      type: 'object',
-      properties: {
-        category: {
-          type: 'string',
-          enum: ['priority', 'budget', 'approach', 'scope', 'timeline', 'supplier', 'safety', 'other'],
-        },
-        summary: { type: 'string', description: 'One-line summary of the decision, e.g. "Prioritize mechanical safety over aesthetics"' },
-        rationale: { type: 'string', description: 'Brief reason why this decision was made' },
-        madeBy: { type: 'string', enum: ['user', 'agent'] },
-      },
-      required: ['category', 'summary', 'madeBy'],
-    },
-  },
-
-  // ─── Plan building tools ─────────────────────────────────────────────────
-  {
-    name: 'add_phase',
-    description: 'Create a new phase in the renovation plan. Phases should reflect logical work groupings based on what this specific car needs — do not follow a predetermined template.',
-    input_schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' },
-        subtitle: { type: 'string', description: 'One-line description of what this phase covers' },
-        systemIds: { type: 'array', items: { type: 'string' }, description: 'Which vehicle systems this phase covers' },
-        order: { type: 'number', description: 'Phase order (0 = first)' },
-        color: { type: 'string', description: 'Hex color for this phase, e.g. #4A5C3A' },
-      },
-      required: ['name', 'subtitle', 'systemIds', 'order'],
-    },
-  },
+  // ─── Task management ─────────────────────────────────────────────────────
   {
     name: 'add_task',
-    description: 'Add a new task to a phase. Be specific and actionable. Include your rationale so the user understands why this task exists.',
+    description: 'Add a new task to the plan. Tasks added here go to the in-app store until the next Claude Code session integrates them into plan.ts. Be specific and actionable. Include your rationale so the user understands why this task exists.',
     input_schema: {
       type: 'object',
       properties: {
         name: { type: 'string', description: 'Clear, specific, actionable task name' },
-        systemId: { type: 'string', description: 'Vehicle system: engine, fuel, cooling, transmission, driveshafts, brakes, steering, suspension, electrical, body, frame, interior, or custom string for novel systems' },
+        systemId: { type: 'string', description: 'Vehicle system: engine, fuel, cooling, transmission, driveshafts, brakes, steering, suspension, electrical, body, frame, interior, or custom string' },
         phaseId: { type: 'string', description: 'Phase ID to add the task to' },
         priority: { type: 'string', enum: ['critical', 'high', 'medium', 'low'] },
         estimatedCostILS: { type: 'number', description: 'Estimated cost in Israeli Shekels if known' },
@@ -110,23 +51,6 @@ export const AGENT_TOOL_DEFINITIONS = [
       required: ['name', 'systemId', 'phaseId', 'priority'],
     },
   },
-
-  // ─── Dependency tools ────────────────────────────────────────────────────
-  {
-    name: 'set_task_dependency',
-    description: 'Declare that one task must be completed before another can start. Use this to encode logical ordering — e.g. oil leak must be fixed before engine tuning, frame rust treated before body panels.',
-    input_schema: {
-      type: 'object',
-      properties: {
-        taskId: { type: 'string', description: 'The task that cannot start yet' },
-        dependsOnTaskId: { type: 'string', description: 'The task that must be done first' },
-        reason: { type: 'string', description: 'Why this dependency exists (mechanical, logical, practical reason)' },
-      },
-      required: ['taskId', 'dependsOnTaskId', 'reason'],
-    },
-  },
-
-  // ─── Progress tracking tools ─────────────────────────────────────────────
   {
     name: 'update_task_status',
     description: 'Update the status of a task. Use when user reports completing or starting a task.',
@@ -154,7 +78,7 @@ export const AGENT_TOOL_DEFINITIONS = [
   },
   {
     name: 'update_task_cost',
-    description: 'Set or update the estimated cost of a task in ILS.',
+    description: 'Set or update the actual cost of a task in ILS.',
     input_schema: {
       type: 'object',
       properties: {
@@ -178,8 +102,6 @@ export const AGENT_TOOL_DEFINITIONS = [
       required: ['taskId', 'partName'],
     },
   },
-
-  // ─── Task content tools ──────────────────────────────────────────────────
   {
     name: 'set_task_steps',
     description: 'Save a step-by-step how-to guide directly into a task. ALWAYS call this when you explain how to do a task — your explanation should live in the task, not just in chat. Also use it proactively after add_task to give every new task real content immediately.',
@@ -198,6 +120,25 @@ export const AGENT_TOOL_DEFINITIONS = [
     },
   },
 
+  // ─── Decision recording ──────────────────────────────────────────────────
+  {
+    name: 'record_decision',
+    description: 'Record an important project decision made during this session. Use whenever the user commits to an approach, priority level, budget constraint, scope choice, or any decision that should be remembered.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        category: {
+          type: 'string',
+          enum: ['priority', 'budget', 'approach', 'scope', 'timeline', 'supplier', 'safety', 'other'],
+        },
+        summary: { type: 'string', description: 'One-line summary of the decision' },
+        rationale: { type: 'string', description: 'Brief reason why this decision was made' },
+        madeBy: { type: 'string', enum: ['user', 'agent'] },
+      },
+      required: ['category', 'summary', 'madeBy'],
+    },
+  },
+
   // ─── File annotation ─────────────────────────────────────────────────────
   {
     name: 'annotate_file',
@@ -212,46 +153,23 @@ export const AGENT_TOOL_DEFINITIONS = [
     },
   },
 
-  // ─── Gap detection ───────────────────────────────────────────────────────
+  // ─── Gap flagging (converts to a task note) ──────────────────────────────
   {
     name: 'flag_gap',
-    description: 'Flag a potential gap, missing item, or risk in the renovation plan. Use when you notice something important that hasn\'t been addressed — based on your knowledge of this car model, typical failure patterns, or logical dependencies.',
+    description: 'Flag a potential gap, missing item, or risk in the renovation plan. This adds a note to a related task (or creates a general advisory note). Use when you notice something important that hasn\'t been addressed.',
     input_schema: {
       type: 'object',
       properties: {
         systemId: { type: 'string' },
         description: { type: 'string', description: 'Clear description of what is missing and why it matters for this car' },
         severity: { type: 'string', enum: ['critical', 'warning', 'suggestion'] },
+        relatedTaskId: { type: 'string', description: 'Optional: task ID to attach this gap note to' },
       },
       required: ['systemId', 'description', 'severity'],
     },
   },
 
-  // ─── Plan management ─────────────────────────────────────────────────────
-  {
-    name: 'remove_task',
-    description: 'Remove a task from the plan.',
-    input_schema: {
-      type: 'object',
-      properties: {
-        taskId: { type: 'string' },
-        reason: { type: 'string' },
-      },
-      required: ['taskId'],
-    },
-  },
-  {
-    name: 'move_task',
-    description: 'Move a task to a different phase (e.g. to reorder based on new understanding of dependencies or priority).',
-    input_schema: {
-      type: 'object',
-      properties: {
-        taskId: { type: 'string' },
-        newPhaseId: { type: 'string' },
-      },
-      required: ['taskId', 'newPhaseId'],
-    },
-  },
+  // ─── Plan overview ────────────────────────────────────────────────────────
   {
     name: 'get_full_plan',
     description: 'Get a complete summary of the current renovation plan with all phases, tasks, and their statuses.',
@@ -270,8 +188,6 @@ export async function executeToolCall(
   switch (toolName) {
 
     case 'search_web': {
-      // Routes through the Vite server-side proxy (/api/search) to bypass
-      // browser CORS restrictions on the DuckDuckGo API. No API key required.
       const query = toolInput.query as string;
       try {
         const response = await fetch(
@@ -287,8 +203,6 @@ export async function executeToolCall(
     }
 
     case 'search_jeepland': {
-      // Routes through /api/jeepland — server-side scraper for jeepland.co.il
-      // (ב. ינוביץ, Israel's premier Jeep parts shop). Returns real ₪ prices.
       const query = toolInput.query as string;
       try {
         const response = await fetch(
@@ -303,47 +217,8 @@ export async function executeToolCall(
       }
     }
 
-    case 'add_research_note': {
-      const note = store.addResearchNote({
-        topic: toolInput.topic as string,
-        finding: toolInput.finding as string,
-        source: toolInput.source as string | undefined,
-      });
-      return `Research note saved: "${note.topic}"`;
-    }
-
-    case 'set_car_fact': {
-      const fact = store.setCarFact(
-        toolInput.key as string,
-        toolInput.value as string,
-        toolInput.confirmedBy as 'user' | 'agent' | 'inspection'
-      );
-      return `Car fact recorded: ${fact.key} = "${fact.value}"`;
-    }
-
-    case 'record_decision': {
-      const decision = store.recordDecision({
-        category: toolInput.category as 'priority' | 'budget' | 'approach' | 'scope' | 'timeline' | 'supplier' | 'safety' | 'other',
-        summary: toolInput.summary as string,
-        rationale: toolInput.rationale as string | undefined,
-        madeBy: toolInput.madeBy as 'user' | 'agent',
-      });
-      return `Decision recorded: "${decision.summary}"`;
-    }
-
-    case 'set_task_dependency': {
-      store.addTaskDependency(
-        toolInput.taskId as string,
-        toolInput.dependsOnTaskId as string,
-        toolInput.reason as string
-      );
-      const task = store.tasks[toolInput.taskId as string];
-      const blocker = store.tasks[toolInput.dependsOnTaskId as string];
-      return `Dependency set: "${task?.name ?? toolInput.taskId}" requires "${blocker?.name ?? toolInput.dependsOnTaskId}" first — ${toolInput.reason}`;
-    }
-
     case 'add_task': {
-      const task = store.addTask({
+      const task = store.addStoreOnlyTask({
         name: toolInput.name as string,
         systemId: toolInput.systemId as string,
         phaseId: toolInput.phaseId as string,
@@ -357,17 +232,6 @@ export async function executeToolCall(
       return `Task added: "${task.name}" (ID: ${task.id}) to phase ${task.phaseId}`;
     }
 
-    case 'add_phase': {
-      const phase = store.addPhase({
-        name: toolInput.name as string,
-        subtitle: toolInput.subtitle as string,
-        systemIds: toolInput.systemIds as string[],
-        order: toolInput.order as number,
-        color: (toolInput.color as string) ?? '#4A5C3A',
-      });
-      return `Phase added: "${phase.name}" (ID: ${phase.id})`;
-    }
-
     case 'update_task_status': {
       const status = toolInput.status as TaskStatus;
       store.setTaskStatus(toolInput.taskId as string, status);
@@ -377,76 +241,93 @@ export async function executeToolCall(
       if (status === 'done') {
         store.completeTask(toolInput.taskId as string);
       }
-      const task = store.tasks[toolInput.taskId as string];
-      return `Task "${task?.name ?? toolInput.taskId}" status updated to ${status}`;
+      const taskId = toolInput.taskId as string;
+      const taskName = planTasks[taskId]?.name ?? store.storeOnlyTasks[taskId]?.name ?? taskId;
+      return `Task "${taskName}" status updated to ${status}`;
     }
 
     case 'add_task_note': {
-      store.addTaskNote(toolInput.taskId as string, toolInput.note as string);
-      const task = store.tasks[toolInput.taskId as string];
-      return `Note added to task "${task?.name ?? toolInput.taskId}"`;
+      const taskId = toolInput.taskId as string;
+      store.addTaskNote(taskId, toolInput.note as string);
+      const taskName = planTasks[taskId]?.name ?? store.storeOnlyTasks[taskId]?.name ?? taskId;
+      return `Note added to task "${taskName}"`;
     }
 
     case 'update_task_cost': {
-      store.updateTaskCost(toolInput.taskId as string, toolInput.costILS as number);
-      const task = store.tasks[toolInput.taskId as string];
-      return `Cost updated for "${task?.name ?? toolInput.taskId}": ₪${toolInput.costILS}`;
+      const taskId = toolInput.taskId as string;
+      store.updateTaskCost(taskId, toolInput.costILS as number);
+      const taskName = planTasks[taskId]?.name ?? store.storeOnlyTasks[taskId]?.name ?? taskId;
+      return `Cost updated for "${taskName}": ₪${toolInput.costILS}`;
     }
 
     case 'add_part_to_task': {
+      const taskId = toolInput.taskId as string;
       store.addPartToTask(
-        toolInput.taskId as string,
+        taskId,
         toolInput.partName as string,
         toolInput.estimatedCostILS as number | undefined,
         toolInput.partNumber as string | undefined
       );
-      const task = store.tasks[toolInput.taskId as string];
-      return `Part "${toolInput.partName}" added to task "${task?.name ?? toolInput.taskId}"`;
+      const taskName = planTasks[taskId]?.name ?? store.storeOnlyTasks[taskId]?.name ?? taskId;
+      return `Part "${toolInput.partName}" added to task "${taskName}"`;
     }
 
     case 'set_task_steps': {
+      const taskId = toolInput.taskId as string;
       const steps = toolInput.steps as string[];
       const guide = toolInput.guide as string | undefined;
-      store.updateTask(toolInput.taskId as string, { steps, ...(guide ? { guide } : {}) });
-      const task = store.tasks[toolInput.taskId as string];
-      return `Steps saved to "${task?.name ?? toolInput.taskId}" (${steps.length} steps${guide ? ', with overview' : ''})`;
+      store.setTaskSteps(taskId, steps);
+      if (guide) store.setTaskGuide(taskId, guide);
+      const taskName = planTasks[taskId]?.name ?? store.storeOnlyTasks[taskId]?.name ?? taskId;
+      return `Steps saved to "${taskName}" (${steps.length} steps${guide ? ', with overview' : ''})`;
+    }
+
+    case 'record_decision': {
+      const decision = store.recordDecision({
+        category: toolInput.category as 'priority' | 'budget' | 'approach' | 'scope' | 'timeline' | 'supplier' | 'safety' | 'other',
+        summary: toolInput.summary as string,
+        rationale: toolInput.rationale as string | undefined,
+        madeBy: toolInput.madeBy as 'user' | 'agent',
+      });
+      return `Decision recorded: "${decision.summary}"`;
     }
 
     case 'annotate_file': {
-      // Import and call fileStore async — fire and forget (tool handler must be sync)
-      import('../store/fileStore').then(({ updateFileAnalysis, updateFileCaption }) => {
+      import('../store/fileStore').then(({ updateFileAnalysis }) => {
         const note = toolInput.note as string;
         updateFileAnalysis(toolInput.fileId as string, note);
-        // Also update the Zustand file index
         store.updateFileInIndex(toolInput.fileId as string, { analysisNote: note });
       });
       return `File annotated: "${String(toolInput.note).slice(0, 60)}..."`;
     }
 
     case 'flag_gap': {
-      const gap = store.addGap(
-        toolInput.systemId as string,
-        toolInput.description as string,
-        toolInput.severity as GapSeverity
-      );
-      return `Gap flagged (${gap.severity}): ${gap.description}`;
-    }
+      // Repurposed: write as a task note instead of a Gap object
+      const desc = toolInput.description as string;
+      const severity = toolInput.severity as string;
+      const relatedTaskId = toolInput.relatedTaskId as string | undefined;
+      const prefix = severity === 'critical' ? '⚠️ CRITICAL GAP' : severity === 'warning' ? '⚠️ WARNING' : '💡 SUGGESTION';
+      const note = `${prefix} [${toolInput.systemId}]: ${desc}`;
 
-    case 'remove_task': {
-      const task = store.tasks[toolInput.taskId as string];
-      const name = task?.name ?? toolInput.taskId;
-      store.removeTask(toolInput.taskId as string);
-      return `Task "${name}" removed from plan`;
-    }
-
-    case 'move_task': {
-      const task = store.tasks[toolInput.taskId as string];
-      store.moveTask(toolInput.taskId as string, toolInput.newPhaseId as string);
-      return `Task "${task?.name}" moved to phase ${toolInput.newPhaseId}`;
+      if (relatedTaskId) {
+        store.addTaskNote(relatedTaskId, note);
+        const taskName = planTasks[relatedTaskId]?.name ?? store.storeOnlyTasks[relatedTaskId]?.name ?? relatedTaskId;
+        return `Gap flagged (${severity}) and added to task "${taskName}"`;
+      }
+      // No related task: record as a decision so it's not lost
+      store.recordDecision({
+        category: 'other',
+        summary: `[GAP ${severity.toUpperCase()}] ${desc}`,
+        rationale: `System: ${toolInput.systemId}`,
+        madeBy: 'agent',
+      });
+      return `Gap flagged (${severity}): ${desc}`;
     }
 
     case 'get_full_plan': {
-      const { phases, tasks, taskDependencies } = store;
+      const tasks = getResolvedTasksSnapshot();
+      const phases = getResolvedPhasesSnapshot();
+      const taskDependencies = getTaskDependenciesSnapshot();
       const summary = phases
         .sort((a, b) => a.order - b.order)
         .map((p) => {
@@ -454,10 +335,10 @@ export async function executeToolCall(
           const taskList = phaseTasks
             .map((t) => {
               const deps = taskDependencies
-                .filter((d) => d.taskId === t.id)
+                .filter((d) => d.taskId === t!.id)
                 .map((d) => tasks[d.dependsOnTaskId]?.name ?? d.dependsOnTaskId);
               const depStr = deps.length > 0 ? ` [needs: ${deps.join(', ')}]` : '';
-              return `  - [${t.status}] ${t.name}${t.estimatedCostILS ? ` (₪${t.estimatedCostILS})` : ''}${depStr}`;
+              return `  - [${t!.status}] ${t!.name}${t!.estimatedCostILS ? ` (₪${t!.estimatedCostILS})` : ''}${depStr}`;
             })
             .join('\n');
           return `Phase ${p.order}: ${p.name} (${p.subtitle})\n${taskList || '  (no tasks)'}`;
@@ -468,5 +349,41 @@ export async function executeToolCall(
 
     default:
       return `Unknown tool: ${toolName}`;
+  }
+}
+
+// ─── Tool label builder (used by AgentBar to show tool result labels) ─────────
+
+export function makeToolLabel(toolName: string, toolInput: Record<string, unknown>): string {
+  switch (toolName) {
+    case 'search_web': return `🔍 Web: "${String(toolInput.query).slice(0, 40)}"`;
+    case 'search_jeepland': return `🛒 Jeepland: "${String(toolInput.query).slice(0, 40)}"`;
+    case 'add_task': {
+      const phaseId = toolInput.phaseId as string;
+      const phase = planPhases.find((p) => p.id === phaseId);
+      return `+ Task: "${toolInput.name}" → ${phase?.name ?? phaseId}`;
+    }
+    case 'update_task_status': {
+      const taskId = toolInput.taskId as string;
+      const name = planTasks[taskId]?.name ?? useRenovationStore.getState().storeOnlyTasks[taskId]?.name ?? taskId;
+      return `✓ ${name} → ${toolInput.status}`;
+    }
+    case 'add_task_note': {
+      const taskId = toolInput.taskId as string;
+      const name = planTasks[taskId]?.name ?? useRenovationStore.getState().storeOnlyTasks[taskId]?.name ?? taskId;
+      return `📝 Note → "${name}"`;
+    }
+    case 'set_task_steps': {
+      const taskId = toolInput.taskId as string;
+      const name = planTasks[taskId]?.name ?? useRenovationStore.getState().storeOnlyTasks[taskId]?.name ?? taskId;
+      const count = (toolInput.steps as string[]).length;
+      return `📋 ${count} steps → "${name}"`;
+    }
+    case 'add_part_to_task': return `🔧 Part: ${toolInput.partName}`;
+    case 'record_decision': return `📌 Decision: ${String(toolInput.summary).slice(0, 50)}`;
+    case 'annotate_file': return `📸 Photo annotated`;
+    case 'flag_gap': return `⚠️ Gap [${toolInput.severity}]: ${String(toolInput.description).slice(0, 50)}`;
+    case 'get_full_plan': return `📋 Full plan loaded`;
+    default: return toolName;
   }
 }

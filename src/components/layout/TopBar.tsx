@@ -1,25 +1,27 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useRenovationStore } from '../../store/useRenovationStore';
+import { useResolvedPhases, useResolvedTasks } from '../../hooks/usePlanData';
 
 interface TopBarProps {
   onSettingsOpen: () => void;
   onCriticalClick?: () => void;
+  onGuideOpen?: () => void;
+  onOverviewOpen?: () => void;
 }
 
-export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
-  const pct = useRenovationStore((s) => s.getOverallCompletionPercent());
-  const totalTasks = useRenovationStore((s) => Object.keys(s.tasks).length);
-  const doneTasks = useRenovationStore((s) =>
-    Object.values(s.tasks).filter((t) => t.status === 'done').length
-  );
-  const rawGaps = useRenovationStore((s) => s.gaps);
+export function TopBar({ onSettingsOpen, onCriticalClick, onGuideOpen, onOverviewOpen }: TopBarProps) {
+  const phases = useResolvedPhases();
+  const tasks = useResolvedTasks();
+
+  const allTasks = useMemo(() => Object.values(tasks), [tasks]);
+  const totalTasks = allTasks.length;
+  const doneTasks = useMemo(() => allTasks.filter((t) => t.status === 'done').length, [allTasks]);
+  const pct = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
+  const totalCost = useMemo(() => allTasks.reduce((s, t) => s + (t.estimatedCostILS ?? 0), 0), [allTasks]);
   const criticalGaps = useMemo(
-    () => rawGaps.filter((g) => !g.dismissed && g.severity === 'critical').length,
-    [rawGaps]
+    () => allTasks.filter((t) => t.priority === 'critical' && t.status !== 'done' && t.status !== 'skipped').length,
+    [allTasks]
   );
-  const phases = useRenovationStore((s) => s.phases);
-  const totalCost = useRenovationStore((s) => s.getTotalCostEstimated());
 
   return (
     <div style={{
@@ -125,7 +127,7 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
 
         <div style={{ flex: 1 }} />
 
-        {/* Critical gaps badge */}
+        {/* Critical tasks badge */}
         {criticalGaps > 0 && (
           <button
             onClick={onCriticalClick}
@@ -143,6 +145,20 @@ export function TopBar({ onSettingsOpen, onCriticalClick }: TopBarProps) {
             }}
           >
             ⚠ {criticalGaps} critical
+          </button>
+        )}
+
+        {/* Guide + Overview */}
+        {onGuideOpen && (
+          <button onClick={onGuideOpen} title="User Guide"
+            style={{ color: 'var(--text-dim)', fontSize: 15, padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4 }}>
+            ?
+          </button>
+        )}
+        {onOverviewOpen && (
+          <button onClick={onOverviewOpen} title="Project Overview"
+            style={{ color: 'var(--text-dim)', fontSize: 13, padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4 }}>
+            ◎
           </button>
         )}
 

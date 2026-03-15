@@ -6,8 +6,12 @@
 // Each task has: id, name, phase, priority, status, parts on hand, steps summary,
 // estimated cost (₪), and dependencies.
 
-export type TaskStatus = 'todo' | 'in-progress' | 'done' | 'skipped' | 'blocked';
-export type Priority = 'critical' | 'high' | 'medium' | 'low';
+// ─── Types ────────────────────────────────────────────────────────────────────
+// Priority and TaskStatus imported from store types (single source of truth).
+// PlanPart is the plan-file format; converted to Part[] at render time by usePlanData.
+// Phase imported from store types (phases export matches directly).
+
+import type { TaskStatus, Priority, Phase, TaskDependency } from '../types';
 
 export interface PlanPart {
   name: string;
@@ -23,33 +27,25 @@ export interface PlanTask {
   phaseId: string;
   systemId: string;
   priority: Priority;
-  status: TaskStatus;
+  status?: TaskStatus;           // optional — runtime status stored in delta
   dependsOn: string[];           // task IDs that must be done first
-  steps: string[];               // key steps — not full guide, just the sequence
+  steps?: string[];              // key steps — not full guide, just the sequence
   parts: PlanPart[];
   estimatedCostILS: number;      // parts cost estimate (labor = 0, DIY)
-  notes: string;
+  notes?: string;
   completedAt?: string;
-  guideRef?: string;             // link to knowledge/guides/*.md when written
-}
-
-export interface PlanPhase {
-  id: string;
-  order: number;
-  name: string;
-  description: string;
-  color: string;                 // hex color for UI
-  taskIds: string[];
+  guide?: string;                // technical overview for this job
 }
 
 // ─── PHASES ───────────────────────────────────────────────────────────────────
 
-export const phases: PlanPhase[] = [
+export const phases: Phase[] = [
   {
     id: 'phase-1',
     order: 1,
     name: 'Assessment & Documentation',
-    description: 'Full inspection of every system before any wrenching. Know exactly what you have before committing to anything.',
+    subtitle: 'Full inspection of every system before any wrenching. Know exactly what you have before committing to anything.',
+    systemIds: ['engine', 'frame', 'axle', 'transmission', 'transfer', 'brakes', 'electrical', 'body', 'steering', 'suspension', 'fuel', 'cooling'],
     color: '#6366f1',
     taskIds: [
       'assess-engine',
@@ -73,7 +69,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-2',
     order: 2,
     name: 'Frame',
-    description: 'Choose and prepare the frame. Everything else assembles onto this foundation.',
+    subtitle: 'Choose and prepare the frame. Everything else assembles onto this foundation.',
+    systemIds: ['frame'],
     color: '#ef4444',
     taskIds: [
       'frame-rust-treatment',
@@ -86,7 +83,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-3',
     order: 3,
     name: 'Drivetrain',
-    description: 'Transmission, transfer case, and axles — rebuilt and ready while everything is accessible.',
+    subtitle: 'Transmission, transfer case, and axles — rebuilt and ready while everything is accessible.',
+    systemIds: ['transmission', 'transfer', 'axle'],
     color: '#f97316',
     taskIds: [
       'rebuild-transfer-case',
@@ -102,7 +100,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-4',
     order: 4,
     name: 'Engine',
-    description: 'Assess engine condition, decide rebuild depth, execute. Tune for reliable running.',
+    subtitle: 'Assess engine condition, decide rebuild depth, execute. Tune for reliable running.',
+    systemIds: ['engine'],
     color: '#eab308',
     taskIds: [
       'engine-oil-inspection',
@@ -117,7 +116,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-5',
     order: 5,
     name: 'Brakes',
-    description: 'Complete brake system rebuild. Non-negotiable before the car moves under its own power.',
+    subtitle: 'Complete brake system rebuild. Non-negotiable before the car moves under its own power.',
+    systemIds: ['brakes'],
     color: '#dc2626',
     taskIds: [
       'replace-brake-lines',
@@ -132,7 +132,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-6',
     order: 6,
     name: 'Suspension & Steering',
-    description: 'Install lift kit and sort steering. Makes the car driveable and correct.',
+    subtitle: 'Install lift kit and sort steering. Makes the car driveable and correct.',
+    systemIds: ['suspension', 'steering'],
     color: '#22c55e',
     taskIds: [
       'inspect-spring-mounts',
@@ -147,7 +148,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-7',
     order: 7,
     name: 'Fuel System',
-    description: 'Tank, lines, carb — all fresh. Must be right before any extended running.',
+    subtitle: 'Tank, lines, carb — all fresh. Must be right before any extended running.',
+    systemIds: ['fuel'],
     color: '#06b6d4',
     taskIds: [
       'inspect-fuel-tank',
@@ -160,7 +162,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-8',
     order: 8,
     name: 'Cooling System',
-    description: 'Pressure test, hoses, electric fan installation. Engine cannot run reliably without this.',
+    subtitle: 'Pressure test, hoses, electric fan installation. Engine cannot run reliably without this.',
+    systemIds: ['cooling'],
     color: '#3b82f6',
     taskIds: [
       'pressure-test-radiator',
@@ -173,7 +176,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-9',
     order: 9,
     name: 'Electrical',
-    description: 'Full harness inspection, fix bodge repairs, ground straps. Make all circuits trustworthy.',
+    subtitle: 'Full harness inspection, fix bodge repairs, ground straps. Make all circuits trustworthy.',
+    systemIds: ['electrical'],
     color: '#a855f7',
     taskIds: [
       'check-ground-straps',
@@ -186,7 +190,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-10',
     order: 10,
     name: 'Body & Assembly',
-    description: 'Tub rust treatment, bed repair, then assemble the car back together.',
+    subtitle: 'Tub rust treatment, bed repair, then assemble the car back together.',
+    systemIds: ['body', 'frame'],
     color: '#64748b',
     taskIds: [
       'tub-rust-treatment',
@@ -200,7 +205,8 @@ export const phases: PlanPhase[] = [
     id: 'phase-11',
     order: 11,
     name: 'Commissioning',
-    description: 'First start, break-in, systems check, initial drive. The car becomes a car again.',
+    subtitle: 'First start, break-in, systems check, initial drive. The car becomes a car again.',
+    systemIds: ['engine', 'brakes', 'transmission', 'electrical'],
     color: '#f59e0b',
     taskIds: [
       'pre-start-checklist',
@@ -213,6 +219,8 @@ export const phases: PlanPhase[] = [
 
 // ─── TASKS ────────────────────────────────────────────────────────────────────
 
+// Tasks: plan-maintained definition. Runtime delta (status, notes, costs) lives in the store.
+// usePlanData hook merges these with store delta at render time to produce full Task objects.
 export const tasks: Record<string, PlanTask> = {
 
   // ── PHASE 1: ASSESSMENT ────────────────────────────────────────────────────
@@ -633,7 +641,7 @@ export const tasks: Record<string, PlanTask> = {
     ],
     estimatedCostILS: 560,
     notes: 'Noise + hard shifting = rebuild required. Do while drivetrain is accessible.',
-    guideRef: 'guides/dana-300-rebuild.md',
+    guide: 'guides/dana-300-rebuild.md',
   },
 
   'service-front-diff': {
@@ -838,7 +846,7 @@ export const tasks: Record<string, PlanTask> = {
     ],
     estimatedCostILS: 40,
     notes: 'All parts on hand. After 8 years, a full rebuild is mandatory — gummed passages certain.',
-    guideRef: 'guides/carter-yf-rebuild.md',
+    guide: 'guides/carter-yf-rebuild.md',
   },
 
   'tune-up-ignition': {
@@ -896,7 +904,7 @@ export const tasks: Record<string, PlanTask> = {
     phaseId: 'phase-4',
     systemId: 'engine',
     priority: 'high',
-    status: 'blocked',
+    status: 'todo',  // depends on compression test result — task stays todo until decision made
     dependsOn: ['compression-test'],
     steps: [
       'Pull engine from vehicle',
@@ -1642,3 +1650,14 @@ export const tasks: Record<string, PlanTask> = {
   },
 
 };
+
+// ─── Task Dependencies ────────────────────────────────────────────────────────
+// Derived from task.dependsOn arrays. Exported for use in usePlanData hook
+// and non-React contexts (agentTools, contextSelector, agentBackground).
+export const taskDependencies: TaskDependency[] = Object.values(tasks).flatMap((task) =>
+  task.dependsOn.map((depId) => ({
+    taskId: task.id,
+    dependsOnTaskId: depId,
+    reason: 'required sequence' as const,
+  }))
+);

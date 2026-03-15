@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useImperativeHandle, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRenovationStore } from '../../store/useRenovationStore';
+import { useResolvedTasks, useResolvedPhases, useTaskDependencies } from '../../hooks/usePlanData';
 import type { Task } from '../../types';
 
 export interface PlanContentHandle {
@@ -39,9 +40,9 @@ type ViewMode = 'plan' | 'work' | 'journey';
 
 export const PlanContent = forwardRef<PlanContentHandle, PlanContentProps>(
   ({ onSelectTask, onMapPhase }, ref) => {
-    const rawPhases = useRenovationStore((s) => s.phases);
-    const tasks = useRenovationStore((s) => s.tasks);
-    const taskDependencies = useRenovationStore((s) => s.taskDependencies);
+    const rawPhases = useResolvedPhases();
+    const tasks = useResolvedTasks();
+    const taskDependencies = useTaskDependencies();
     const setTaskStatus = useRenovationStore((s) => s.setTaskStatus);
     const fileIndex = useRenovationStore((s) => s.fileIndex);
     const decisions = useRenovationStore((s) => s.decisions);

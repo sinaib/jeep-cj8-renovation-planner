@@ -23,6 +23,7 @@
 
 import { sendAgentMessage } from './agentClient';
 import { useRenovationStore } from '../store/useRenovationStore';
+import { phases as planPhases, tasks as planTasks, taskDependencies as planDeps } from '../data/plan';
 import { logChange } from '../store/changelog';
 
 // ─── 1. Debounced plan-change scan ────────────────────────────────────────────
@@ -45,7 +46,7 @@ export function scheduleBackgroundAnalysis() {
 async function runPlanGapScan() {
   const store = useRenovationStore.getState();
   // Skip if no plan yet or no API key
-  if (store.phases.length === 0) return;
+  if (planPhases.length === 0) return;
   if (!import.meta.env.VITE_ANTHROPIC_API_KEY) return;
 
   logChange({
@@ -73,9 +74,13 @@ let completionAnalysisTimer: ReturnType<typeof setTimeout> | null = null;
 export function triggerTaskCompletedAnalysis(taskId: string, taskName: string) {
   // Check if this completion actually unblocks anything
   const store = useRenovationStore.getState();
-  const unblocked = store.taskDependencies
+  const allTasks = { ...planTasks, ...store.storeOnlyTasks };
+  const allDeps = [...planDeps, ...Object.values(store.storeOnlyTasks).flatMap((t) =>
+    (t.dependsOnTaskIds ?? []).map((depId) => ({ taskId: t.id, dependsOnTaskId: depId, reason: '' }))
+  )];
+  const unblocked = allDeps
     .filter((d) => d.dependsOnTaskId === taskId)
-    .map((d) => store.tasks[d.taskId])
+    .map((d) => allTasks[d.taskId])
     .filter(Boolean);
 
   // If nothing is unblocked, skip — not worth a call
@@ -116,7 +121,7 @@ export function maybeRunWeeklyCheck() {
   if (!import.meta.env.VITE_ANTHROPIC_API_KEY) return;
 
   const store = useRenovationStore.getState();
-  if (store.phases.length === 0) return; // no plan yet
+  if (planPhases.length === 0) return; // no plan yet
 
   const lastRun = parseInt(localStorage.getItem(WEEKLY_CHECK_KEY) ?? '0');
   if (Date.now() - lastRun < ONE_WEEK_MS) return;

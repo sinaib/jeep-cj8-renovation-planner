@@ -70,11 +70,11 @@ Make the steps concrete and actionable — someone doing this job for the first 
     const briefing: TaskBriefing = JSON.parse(jsonMatch[0]);
     cache.set(task.id, briefing);
 
-    // Persist steps + overview into the task store so they survive reload
-    useRenovationStore.getState().updateTask(task.id, {
-      steps: briefing.steps,
-      guide: briefing.overview,
-    });
+    // Persist steps + overview into the store so they survive reload.
+    // For storeOnly tasks this also updates the task object.
+    const store = useRenovationStore.getState();
+    store.setTaskSteps(task.id, briefing.steps);
+    store.setTaskGuide(task.id, briefing.overview);
 
     return briefing;
   } catch {
