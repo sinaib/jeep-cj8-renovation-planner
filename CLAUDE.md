@@ -52,7 +52,7 @@ Notion DB schema: Task (title) · Phase (select, zero-padded: `01 · Assess`, `0
 | Lessons about THIS bike | `motorcycle/lessons-learned.md` |
 | Owner's manual (.xls) | `manuals/MuZ_Skorpion_owners_manual.xls` · engine service manual PDF is attached on the Notion project page |
 
-Origin: the bike plan was built entirely in a claude.ai co-work conversation (transcript not yet obtained — first export attempt was a blank PDF; if a file appears under `motorcycle/sources/`, process it into the dossier).
+Origin: the bike plan was built entirely in a claude.ai co-work conversation — transcript archived at `motorcycle/sources/cowork-transcript-2026-07.pdf` (identification from photos, ID-plate decoding, risk-first plan philosophy). Eliyahu is Sinai's grandfather.
 
 ## Session Ritual
 

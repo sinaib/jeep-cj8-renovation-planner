@@ -23,3 +23,8 @@ Market value €1,500–3,700 doesn't justify the project economically; sentimen
 ## moto-dec-005 · Adopted into the shared garage system
 **2026-07-08 · tooling**
 Notion tracker stays exactly as built (its own structure — phases 0–8, Step ordering, Parts & Tools DB — is NOT normalized to the Jeep's). Added: Bike Inbox page, this dossier + decisions in the repo, Claude Code session ritual covers both vehicles.
+
+## moto-dec-006 · No maintenance or cosmetic layers until it runs
+**2026-07-08 · scope (from co-work transcript, Sinai's explicit words: "לא, אין צורך עד שלא נשמיש")**
+The offered add-on layers — a routine maintenance schedule and a cosmetic/restoration track — are deferred until the bike is actually recommissioned. The 43-task plan stays purely about getting it running, safe, and road-legal.
+- **Why:** different goals deserve separate plans; mixing them bloats the recommission.
