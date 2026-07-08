@@ -114,3 +114,7 @@
 {"t":"2026-03-14T23:32:44.272Z","type":"task_added","summary":"Added 'Inspect Dana 300 transfer case — check fluid, shift linkage, input/output seals'","taskId":"task-xi96ryOL","addedBy":"agent"}
 {"t":"2026-03-14T23:32:44.320Z","type":"snapshot","summary":"Snapshot saved: 2026-03-14T23-32-44.json"}
 {"t":"2026-03-15T01:28:21.130Z","type":"fast_query","summary":"Fast query (haiku): \"What should I do next?\""}
+{"t":"2026-03-18T19:28:04.406Z","type":"agent_bulk_change","summary":"Agent made 2 changes: search_web, search_jeepland"}
+{"t":"2026-03-18T19:28:04.414Z","type":"snapshot","summary":"Snapshot saved: 2026-03-18T19-28-04.json"}
+{"t":"2026-03-18T19:28:10.835Z","type":"task_added","summary":"Added 'Install 220V inverter system' via in-app agent","taskId":"task-_JJt-ab9","addedBy":"agent"}
+{"t":"2026-03-18T19:28:18.837Z","type":"proactive_analysis","summary":"Background plan gap scan triggered"}

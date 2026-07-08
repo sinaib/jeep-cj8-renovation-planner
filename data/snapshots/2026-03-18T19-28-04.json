@@ -1,0 +1,157 @@
+{
+  "taskStatuses": {},
+  "taskNotes": {
+    "assess-engine": "Do this BEFORE any start attempt. What you find here determines next steps.",
+    "compression-test": "Results determine whether engine needs full rebuild or just tuning. This is the decision gate for Phase 4 depth.",
+    "inspect-primary-frame": "Be ruthless. Do not underestimate rust. This decision determines whether to use this frame or the spare.",
+    "inspect-spare-frame": "Run parallel to primary frame inspection. Both results compared in choose-frame task.",
+    "choose-frame": "Bring photos to a Claude Code session to help evaluate if unsure. This is the most important decision of the project.",
+    "inspect-tub": "Any rust-through in floor or body mounts requires welding — mark for shop.",
+    "inspect-bed": "Bed rust is confirmed — this task determines the scope of the repair.",
+    "inspect-front-axle": "Car is on stands — good access.",
+    "inspect-rear-axle": "Confirm this is a Dana 44 (look for axle tube diameter and casting number).",
+    "confirm-gear-ratio": "Critical — mismatched ratios damage the transfer case in 4WD. The previous owner who swapped in the Dana 44 may or may not have matched ratios.",
+    "inspect-transfer-case": "Noise and hard shifting already known. This confirms the extent and guides rebuild scope.",
+    "inspect-transmission": "New clutch and mounts on hand. Transmission internals may be fine — inspect before assuming rebuild needed.",
+    "inspect-brake-lines": "Assume all rubber components need replacement. Steel lines: assess individually.",
+    "inspect-wiring-harness": "Document all bodge repairs — each is a task. Assessment only; no power until wiring is cleared.",
+    "inspect-tires": "Brand new but 8 years in Israeli sun. Most likely: replace. Confirm with DOT date.",
+    "frame-rust-treatment": "This is the most important prep step. A properly treated frame lasts another 30 years. Do not rush.",
+    "frame-weld-repairs": "Shop job — owner does not weld. Cost estimate is rough — depends on inspection findings.",
+    "frame-body-mount-inspection": "Old rubber mounts are certain to be deteriorated. Replace as part of frame prep.",
+    "strip-spare-frame": "Only if spare frame is not chosen as primary build frame.",
+    "rebuild-transfer-case": "Noise + hard shifting = rebuild required. Do while drivetrain is accessible.",
+    "service-front-diff": "Minimal service unless inspection reveals bearing issues.",
+    "replace-front-ujoint": "Replace regardless of apparent condition — cheap insurance while accessible.",
+    "replace-trans-mounts": "Parts on hand. Straightforward job.",
+    "install-clutch": "Clutch kit on hand. Do this while transmission is out for inspection.",
+    "engine-oil-inspection": "What comes out tells you a lot about engine health. Cut the filter open with a rag and look.",
+    "replace-engine-mounts": "Parts on hand. Old mounts are 30+ years old and certainly deteriorated.",
+    "carb-rebuild": "All parts on hand. After 8 years, a full rebuild is mandatory — gummed passages certain.",
+    "tune-up-ignition": "All original ignition components are 30+ years old. Replace everything.",
+    "replace-exhaust-manifold": "AMC 258 exhaust manifold cracks are nearly universal. Inspect first — if cracked, must replace.",
+    "engine-deep-rebuild": "CONDITIONAL: only if compression test shows low/uneven compression. If compression is good, skip this and do tune-up only. This is the most expensive task on the plan.",
+    "replace-brake-lines": "Lines from the spare frame may be reusable — compare condition. If spare frame lines are clean, use them.",
+    "replace-wheel-cylinders": "After 8 years sitting, all wheel cylinders are seized or corroded. Replace all four.",
+    "replace-brake-drums-shoes": "May not need replacement — measure first.",
+    "install-brake-booster": "Brake booster on hand. Need new master cylinder.",
+    "install-proportioning-valve": "On hand. Straightforward installation.",
+    "bleed-brakes": "Last brake task. Do not move the car until pedal is firm.",
+    "inspect-spring-mounts": "Installing new springs on compromised mounts defeats the purpose.",
+    "install-lift-kit": "Kit is on hand. At 2.5\" no SYE needed, but check brake line length after install.",
+    "replace-drag-link": "Known bad. Priority steering task.",
+    "install-steering-damper": "On hand. Straightforward after drag link is installed.",
+    "inspect-steering-box": "Box replacement or rebuild is a significant cost — adjust first if possible.",
+    "replace-tie-rod-ends": "After tie rod end replacement, get a proper toe alignment.",
+    "inspect-fuel-tank": "Condition unknown — must inspect. Best case: clean and seal. Worst case: replace.",
+    "clean-fuel-tank": "Only if inspection shows rust but not holes.",
+    "replace-fuel-lines": "All rubber fuel lines are 30+ years old and ethanol has attacked the rubber. Replace entirely.",
+    "install-electric-fan": "Fan has been waiting since the radiator was upgraded. Good addition for Israeli summers.",
+    "pressure-test-radiator": "Prior crack + repair is a risk. Pressure test BEFORE attempting any start.",
+    "replace-cooling-hoses": "All hoses are 30+ years old. Replace entirely before any startup attempt.",
+    "replace-thermostat": "$10 part, easy job, must be done.",
+    "replace-water-pump": "After 8 years sitting, impeller may have corroded off shaft. Replace as standard practice.",
+    "check-ground-straps": "Bad grounds cause 80% of mysterious electrical problems. Do this first before chasing anything.",
+    "test-all-circuits": "Systematic circuit-by-circuit test. Document what works and what doesn't.",
+    "repair-wiring-harness": "Repair known issues. If extensive, consider a full harness replacement (Painless Performance — major cost).",
+    "test-charging-system": "Test before buying anything — may be fine.",
+    "tub-rust-treatment": "Scope unknown until inspection. Weld repairs are shop work.",
+    "bed-rust-repair": "CJ8 bed floors are hard to find as replacement panels — repair in place is the usual approach.",
+    "install-body-mounts": "Body mount kit covered in frame-body-mount-inspection task.",
+    "mount-tires": "If 8-year-old tires pass inspection: ₪150 for mounting. If they fail: ₪2,000+ for replacements.",
+    "final-assembly": "Checklist before first start — all fluids in, all lines connected, all grounds clean.",
+    "pre-start-checklist": "Do not skip this. Check everything before cranking.",
+    "first-start": "The moment 8 years of work pays off. Have a camera ready.",
+    "break-in-drive": "Stay close to home for first drive.",
+    "post-drive-inspection": "The first drive always reveals something. Document it all."
+  },
+  "taskActualCosts": {},
+  "taskSteps": {},
+  "taskGuides": {},
+  "taskExtraParts": {},
+  "purchasedPartIds": [
+    "service-front-diff:Pinion seal (Dana 30)",
+    "service-front-diff:Axle seals (pair)",
+    "frame-rust-treatment:POR-15 or Rustbullet rust converter",
+    "frame-rust-treatment:Chassis black paint / epoxy primer",
+    "frame-rust-treatment:Wire wheels / abrasive discs"
+  ],
+  "storeOnlyTasks": {},
+  "decisions": [
+    {
+      "id": "dec-001",
+      "category": "scope",
+      "summary": "Keep AMC 258 — no engine swap",
+      "rationale": "Owner preference for stock-ish build focused on mechanical reliability. The 258 is a strong, proven unit when properly rebuilt. Swapping adds complexity, cost, and fabrication work inconsistent with the build goals.",
+      "madeAt": "2026-03-15T00:00:00.000Z",
+      "madeBy": "user"
+    },
+    {
+      "id": "dec-002",
+      "category": "scope",
+      "summary": "Stock-ish look, mechanical reliability focus",
+      "rationale": "Owner wants a reliable daily driver with light off-road capability. Not a rock crawler or show build. This keeps the scope manageable and the budget focused on mechanical integrity.",
+      "madeAt": "2026-03-15T00:00:00.000Z",
+      "madeBy": "user"
+    },
+    {
+      "id": "dec-003",
+      "category": "scope",
+      "summary": "2.5\" lift — Rubicon Express kit",
+      "rationale": "Kit is already on hand. 2.5\" is appropriate for mild off-road use — good clearance without requiring driveline angle correction. No SYE needed at this lift height.",
+      "madeAt": "2026-03-15T00:00:00.000Z",
+      "madeBy": "user"
+    },
+    {
+      "id": "dec-004",
+      "category": "scope",
+      "summary": "Two frames — choose the better one",
+      "rationale": "Primary frame has concerning rust. A matching spare CJ8 frame (with brake and fuel lines) is available. This is unusual luck — use it. The better frame becomes the build foundation.",
+      "madeAt": "2026-03-15T00:00:00.000Z",
+      "madeBy": "user"
+    },
+    {
+      "id": "dec-005",
+      "category": "approach",
+      "summary": "Full DIY — owner has welding equipment and workshop",
+      "rationale": "Owner confirmed: has tools, workshop, equipment, and welding knowledge. Nothing goes to a shop unless specifically chosen to.",
+      "madeAt": "2026-03-15T00:00:00.000Z",
+      "madeBy": "user"
+    },
+    {
+      "id": "dec-006",
+      "category": "scope",
+      "summary": "Retain Dana 44 rear axle",
+      "rationale": "Dana 44 is significantly stronger than the AMC 20. No axle shaft cracking risk. No reason to downgrade. Only action: confirm gear ratio matches Dana 30 front, service the diff.",
+      "madeAt": "2026-03-15T00:00:00.000Z",
+      "madeBy": "user"
+    }
+  ],
+  "agentHistory": [
+    {
+      "id": "aj_SxyZs",
+      "timestamp": "2026-03-18T19:09:49.299Z",
+      "role": "user",
+      "content": "How long will \"Rebuild Carter YF carburetor\" take?"
+    },
+    {
+      "id": "xhBfv8BW",
+      "timestamp": "2026-03-18T19:09:49.301Z",
+      "role": "assistant",
+      "content": "For a first-time Carter YF rebuild on a bench, budget **3–5 hours** — broken down roughly like this:\n\n- **Removal from engine:** 20–30 min (throttle linkage, fuel line, vacuum lines, choke — it's straightforward on the 258)\n- **Disassembly & cleaning:** 1–1.5 hrs (soaking passages, compressed air, making sure every orifice is clear)\n- **Reassembly with new kit parts:** 1–1.5 hrs (setting float level is the fiddly bit — takes patience)\n- **Reinstall + initial adjustment:** 30–45 min\n- **Tuning on a running engine:** 30–60 min (idle mixture screws, idle speed — needs a warm engine)\n\n**The honest gotcha on your car:** After 8 years sitting, the passages may be badly varnished. If the idle circuit or main jet is gummed solid, cleaning alone can add an hour. Have a can of carb cleaner ready and don't rush the soak.\n\n**Float level is the critical spec** — Carter YF should be set to **7/16\" (11mm)** from the top of the float bowl to the fuel surface with the bowl inverted and gasket removed. Get this wrong and you'll be chasing a rich or lean condition for days.\n\nOne practical tip: take photos before you pull each circuit plug and before removing the accelerator pump. The pump linkage geometry is easy to reassemble wrong, and it affects throttle response significantly.\n\nAre you doing this on the bench or on the engine? And do you know if the choke is the manual or automatic type on yours?",
+      "toolCalls": []
+    },
+    {
+      "id": "OUqLPzAv",
+      "timestamp": "2026-03-18T19:27:59.526Z",
+      "role": "user",
+      "content": "i want to add a 220v installation. not urgent of course but i want it in the plan"
+    },
+    {
+      "id": "Ujiw4Pcj",
+      "timestamp": "2026-03-18T19:27:59.527Z",
+      "role": "assistant",
+      "content": "Got it — adding that to the plan now. And I'll handle the frame task you're viewing too.\n\nLet me search for relevant parts while adding the task."
+    }
+  ]
+}
