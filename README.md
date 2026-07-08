@@ -1,6 +1,6 @@
-# The Jeep — 1989 CJ8 Scrambler Restoration
+# The Garage — CJ8 Restoration & Skorpion Recommissioning
 
-The knowledge base and archive for restoring my 1989 Jeep CJ8 Scrambler (AMC 258 · T4 · Dana 300 · Dana 30/44), stalled since ~2018, restarted July 2026. Goal: reliable daily driver + light off-road. Full DIY, in Israel, costs in ₪.
+The knowledge base and archive for two vehicle projects: restoring my 1989 Jeep CJ8 Scrambler (AMC 258 · T4 · Dana 300 · Dana 30/44 — stalled since ~2018, restarted July 2026) and recommissioning Eliyahu's 1994 MuZ Skorpion 660. Full DIY, in Israel, costs in ₪.
 
 ## How this project runs
 
@@ -19,7 +19,8 @@ The knowledge base and archive for restoring my 1989 Jeep CJ8 Scrambler (AMC 258
 | [knowledge/cj8-technical.md](knowledge/cj8-technical.md) | CJ8 / AMC 258 / Dana 300 technical reference |
 | [knowledge/israel-context.md](knowledge/israel-context.md) | Local sourcing: Jeepland, imports, customs math |
 | [knowledge/parts-library.md](knowledge/parts-library.md) | Part numbers, cross-refs, ₪ estimates |
-| [manuals/](manuals/) | Three CJ8 PDF manuals (Battlefield Repairs EN, JEEPOLOG Hebrew ×2) |
+| [motorcycle/](motorcycle/) | The Skorpion's dossier, decisions, and lessons — same system, second vehicle |
+| [manuals/](manuals/) | Three CJ8 PDF manuals + MuZ Skorpion owner's manual |
 | [archive/](archive/) | Retired history — see below |
 
 ## The archive

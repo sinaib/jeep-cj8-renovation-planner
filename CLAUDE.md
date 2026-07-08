@@ -1,6 +1,8 @@
-# CJ8 Restoration — Claude Session Bootstrap
+# Garage Projects — Claude Session Bootstrap
 
-Read this at the start of every session. Architecture v3 (2026-07-08): **Notion is the tracker, Claude Code is the only brain, the local `knowledge/` folder is its library.** The old React app is archived — do not develop it.
+Read this at the start of every session. This repo serves **two vehicle projects**: the CJ8 Jeep restoration (primary) and Eliyahu's motorcycle recommissioning. Architecture v3 (2026-07-08): **Notion is the tracker, Claude Code is the only brain, the local knowledge folders are its library.** The old React app is archived — do not develop it.
+
+Each project has its own Notion structure and they are **allowed to differ** — never normalize one to look like the other. The *system* is shared: per-vehicle dossier + decisions files here, per-vehicle inbox in Notion, same session ritual.
 
 ---
 
@@ -35,11 +37,28 @@ Notion DB schema: Task (title) · Phase (select, zero-padded: `01 · Assess`, `0
 
 ---
 
+## The Motorcycle Project — Eliyahu's bike (שיפוץ האופנוע של אליהו)
+
+**1994 MuZ Skorpion 660 Tour** (656cc Yamaha single, dry sump), VIN SNZ6TE200R7501011, family heirloom, stored years, recommissioning not restoration. Full dossier: `motorcycle/bike.md`.
+
+| What | Where |
+|---|---|
+| Project page (Hebrew, lives under Sinai's Dashboard To-Do) | https://app.notion.com/p/396c634fa4e9811996dce1f0c59df0ec |
+| Tasks DB "🔧 Recommissioning Tasks" — 43 tasks, phases `0 · Safety` … `8 · Roadworthy`, global Step ordering (half-steps exist). Schema differs from Jeep — that's fine, never normalize | db `f89d3d8d-1feb-4ef6-8c36-d0813a0e3c8f` · data source `collection://2d3ee0a1-6c59-400d-a52f-f98c0e184614` |
+| Parts DB "🛠️ Parts, Tools & Costs" — 37 items, `Needed` = Likely/Maybe/**Have it** (Have it = purchased) | db `bfdfa846-c0a2-492f-aee9-08529154857a` · data source `collection://686a2ab7-0c67-485b-a9c9-8de5c9f3c8fe` |
+| **Bike Inbox** (raw notes — separate from the Jeep's) | https://app.notion.com/p/397c634fa4e98128958cc52cdaf21e42 |
+| Bike dossier (living document) | `motorcycle/bike.md` |
+| Decisions (append-only) | `motorcycle/decisions.md` |
+| Lessons about THIS bike | `motorcycle/lessons-learned.md` |
+| Owner's manual (.xls) | `manuals/MuZ_Skorpion_owners_manual.xls` · engine service manual PDF is attached on the Notion project page |
+
+Origin: the bike plan was built entirely in a claude.ai co-work conversation (transcript not yet obtained — first export attempt was a blank PDF; if a file appears under `motorcycle/sources/`, process it into the dossier).
+
 ## Session Ritual
 
 1. Read this file (done).
-2. **Fetch the Garage Inbox.** If it has content, process every line: route to plan tasks (create/update in Notion), `car.md` history, `decisions.md`, or lessons-learned. Then empty the inbox (leave the instructions header).
-3. **Query the plan DB** for recently edited tasks (Sinai ticks things directly in Notion — that's expected and needs no announcement). Reconcile: completions → add `car.md` history entries; a completion that implies new information → ask about it (e.g. compression test done → ask for the numbers).
+2. **Fetch both inboxes** — the Jeep Garage Inbox and the Bike Inbox. If either has content, process every line: route to that project's tasks (create/update in Notion), its dossier history (`knowledge/car.md` / `motorcycle/bike.md`), its `decisions.md`, or lessons-learned. Then empty the inbox (leave the instructions header).
+3. **Query both task DBs** for recently edited tasks (Sinai ticks things directly in Notion — that's expected and needs no announcement). Reconcile: completions → history entries in the right dossier (`knowledge/car.md` / `motorcycle/bike.md`); a completion that implies new information → ask about it (e.g. compression test done → ask for the numbers).
 4. Ask what this session is for, or continue obvious pending work.
 5. Work. Update Notion + local files together so they never drift.
 6. **Refresh the cockpit** on The Jeep page: update the 📍 NOW callout (current phase, next garage move, date); when the active phase changes, replace the "Work Now" linked view on the page with a new one filtered to the new phase (views can't be edited via the connector — create a new view with parent_page_id, then swap the block via update_content; current block: `397c634fa4e98176b495c57ef302c448`).
