@@ -37,9 +37,15 @@ The living dossier for **this specific motorcycle**. Updated by Claude Code when
 - **The plan's philosophy (explicit):** *recommissioning* sits deliberately between "just get it started" (unsafe — brakes/tyres/compression matter too) and "full restoration" (no cosmetics, no chrome/paint, no performance work). Not routine maintenance either — that's a separate later layer. **Ordering principle: risk-first** — long storage kills engines via varnished fuel, dry bore, dead battery, hardened rubber/seals, seized brakes, aged fluids; tasks are sequenced so no step can damage a later stage (clean fuel + fresh oil + charged battery + verified compression → *before* first crank).
 - Headline warning throughout: **don't try to start it yet** — the fastest way to ruin a long-stored engine.
 
+## The story (owner interview, 2026-07-08)
+
+Eliyahu (Sinai's grandfather) rode the bike until he had a **stroke and stopped riding — the bike was parked in the underground garage and has stood ~10 years** (so last ran ~2016, and it was parked for health reasons, **not** because of any known mechanical fault — it was presumably in working order at layup). Lay-up care unknown (fuel likely left in, battery likely left connected — assume worst case, which the plan already does). **Sinai will be the rider.** Nothing is on hand yet — no parts bought, no bike-specific tools.
+
+⚠️ **License check (verify):** the Skorpion's plate says 35 kW. Israeli A1 licenses are capped below that (A1 ≈ up to 33 kW) — riding this bike likely requires a full A license. Verify Sinai's license class against current Ministry of Transport rules before the road phase.
+
 ## Current state (2026-07-08)
 
-**Stored for several years (duration not quantified); no physical work done yet.** Project is at the planning/paperwork stage: 0 done, 1 in progress (VIN/registration documentation), 42 to-do. Nothing purchased (all 37 parts-list items still Likely/Maybe).
+**Stood ~10 years in an underground garage; no physical work done yet.** Project is at the planning/paperwork stage: 0 done, 1 in progress (VIN/registration documentation), 42 to-do. Nothing purchased (all 37 parts-list items still Likely/Maybe).
 
 **Unknowns that gate everything (the plan's Go/No-Go):**
 - Does the engine turn freely by hand? (seized = reassess project)
@@ -69,11 +75,12 @@ The living dossier for **this specific motorcycle**. Updated by Claude Code when
 - 2026-07-07/08 — plan built (co-work conversation → Notion: 43 tasks, 9 phases 0–8, parts DB; second pass added 5 half-step tasks + manual refs)
 - 2026-07-08 — VIN read and recorded; project adopted into the garage system (this dossier, Bike Inbox created); co-work transcript obtained and archived
 
-## Open questions for the owner interview
+## Open questions (remaining)
 
-1. Mileage / odometer reading (visible on the dash photo — just needs reading off) ; service history before storage
-2. How many years stored, and how it was laid up (fuel drained? battery removed/out?)
-3. Why it was parked — last known running condition, faults at the time
-4. Registration status + papers/title in whose name ("רשום MZ" hints a registration document exists — confirm); insurance history; keys
-5. Who will ride it (license class), target date, budget ceiling
-6. Anything already on hand (tools, parts)?
+1. Odometer reading (visible on the dash photo — read it off next garage visit → Bike Inbox)
+2. **Registration status — Sinai is checking** (current / lapsed / de-registered determines the re-licensing path); papers/title in whose name; keys located?
+3. Sinai's license class — covers 35 kW? (see license check above)
+4. Lay-up details if anyone remembers: fuel drained? battery disconnected? (assume no)
+5. Target date / budget ceiling (optional — plan works without them)
+
+*Answered 2026-07-08: ~10 years standing · underground garage · parked due to Eliyahu's stroke (no known faults at layup) · Sinai rides it · nothing on hand.*
