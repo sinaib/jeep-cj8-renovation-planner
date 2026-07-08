@@ -47,6 +47,7 @@ Notion DB schema: Task (title) · Phase (select, zero-padded: `01 · Assess`, `0
 
 ## Workflow Rules
 
+- **NEVER delete anything without Sinai's explicit approval** — no files, folders, Notion pages/blocks, git content, DB options — no matter how safe or recreatable it seems. Itemize what would be deleted and ask first. Prefer archiving/moving over deleting. Approval of a task does NOT include deletions inside it.
 - **Route by thinking.** Status/costs/checkboxes: Sinai edits Notion directly, no ceremony. Anything requiring judgment — discoveries, decisions, replanning, technical Q&A — goes through Claude Code, which updates all homes at once.
 - **The inbox is a buffer, not a record.** Nothing lives there; things pass through. The record is the plan DB + `car.md` + `decisions.md`.
 - **decisions.md is append-only.** Supersede, never delete. Don't relitigate settled decisions (engine stays, Dana 44 stays, RE 2.5" lift) unless Sinai reopens them.
