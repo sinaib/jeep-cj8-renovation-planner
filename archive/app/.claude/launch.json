@@ -4,7 +4,7 @@
     {
       "name": "jeep-planner",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "jeep-planner"],
+      "runtimeArgs": ["run", "dev"],
       "port": 5175
     }
   ]

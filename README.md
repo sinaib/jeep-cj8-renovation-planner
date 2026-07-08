@@ -1,38 +1,31 @@
-# Jeep CJ8 1989 Renovation Planner
+# The Jeep — 1989 CJ8 Scrambler Restoration
 
-An AI-powered, interactive renovation tracker for a Jeep CJ8 1989 restoration — built to keep a multi-year project organized, motivated, and technically informed.
+The knowledge base and archive for restoring my 1989 Jeep CJ8 Scrambler (AMC 258 · T4 · Dana 300 · Dana 30/44), stalled since ~2018, restarted July 2026. Goal: reliable daily driver + light off-road. Full DIY, in Israel, costs in ₪.
 
-## What it does
+## How this project runs
 
-- **Agent-built plan**: On first launch, an AI mechanic advisor interviews you system by system (engine, brakes, suspension, electrical, body…) and builds a custom renovation plan from your answers — not from a template
-- **Living plan**: Always-visible plan document showing all phases and tasks. Talk to the agent at any time to update progress, add discoveries, reorganize priorities
-- **Gap detection**: The agent knows common CJ8 1989 failure points and flags things you might have missed
-- **Per-task AI briefings**: On-demand technical briefing per task — tools needed, common mistakes, CJ8-specific tips, part suggestions
-- **Parts tracking**: Parts list per task with purchase status
-- **Cost tracking**: Estimated and actual costs in ILS (₪)
-- **PDF manuals**: All three CJ8 reference manuals available inline
-- **Progress persistence**: Auto-saves to localStorage + export/import JSON
+- **The plan lives in Notion** — a 66-task, 11-phase restoration database with steps, parts, and costs, plus a Garage Inbox for raw field notes. That's the day-to-day surface (phone in the garage).
+- **Claude Code is the planning and technical brain.** Sessions start from [CLAUDE.md](CLAUDE.md), process the inbox, update the plan and the files here, and commit.
+- **This repo is the memory**: the car's documented state, decisions with rationale, technical references, and version history of all of it.
 
-## Setup
+## What's here
 
-1. Clone the repo
-2. Install dependencies: `npm install`
-3. Create `.env.local` and add your Anthropic API key:
-   ```
-   VITE_ANTHROPIC_API_KEY=your_key_here
-   ```
-4. Run: `npm run dev`
-5. Open `http://localhost:5173`
+| Path | What it is |
+|---|---|
+| [CLAUDE.md](CLAUDE.md) | Session bootstrap — architecture, locations, workflow rules |
+| [knowledge/car.md](knowledge/car.md) | The living vehicle dossier — every system's condition + history |
+| [knowledge/decisions.md](knowledge/decisions.md) | Build decisions, append-only, with rationale |
+| [knowledge/lessons-learned.md](knowledge/lessons-learned.md) | What we've confirmed about *this specific car* |
+| [knowledge/cj8-technical.md](knowledge/cj8-technical.md) | CJ8 / AMC 258 / Dana 300 technical reference |
+| [knowledge/israel-context.md](knowledge/israel-context.md) | Local sourcing: Jeepland, imports, customs math |
+| [knowledge/parts-library.md](knowledge/parts-library.md) | Part numbers, cross-refs, ₪ estimates |
+| [manuals/](manuals/) | Three CJ8 PDF manuals (Battlefield Repairs EN, JEEPOLOG Hebrew ×2) |
+| [archive/](archive/) | Retired history — see below |
 
-## Tech stack
+## The archive
 
-- React + Vite + TypeScript
-- Zustand (state + localStorage persistence)
-- Framer Motion (animations)
-- Anthropic Claude API (`claude-sonnet-4-6`) with streaming + tool use
+This project's first incarnation (March 2026) was an AI-powered React app — in-app Claude advisor, streaming chat, plan-editing tools, three persistence layers, a jeepland.co.il scraper. It produced an excellent 65-task plan in four days of use, then went quiet; the plan outlived the software. In July 2026 the plan migrated to Notion and the app was retired.
 
-## PDF Manuals included
-
-- `Battlefield_Repairs_Manual.pdf` — English field repair guide (8 pages)
-- `CJ8_Hebrew_Manual_(JEEPOLOG).pdf` — Comprehensive Hebrew reference
-- `CJ8_Manual_-_Gimel_(JEEPOLOG).pdf` — Hebrew supplementary manual
+- `archive/app/` — the complete React app, kept for reference (its `src/data/plan.ts` was the original plan source)
+- `archive/app-data/` — the app's runtime data and snapshots
+- `archive/notion-export-2018/` — the original pre-app Notion to-do list, where it all started
